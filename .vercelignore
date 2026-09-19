@@ -1,0 +1,8 @@
+.git
+.gitignore
+.vercel
+tests/
+__pycache__/
+*.pyc
+.system_generated/
+data/*.json
