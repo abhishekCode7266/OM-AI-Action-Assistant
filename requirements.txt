@@ -1,3 +1,2 @@
-# OM – AI Action Assistant
-# Vercel Serverless Function Dependencies
-# Uses Python Standard Library for zero-cold-start performance
+requests>=2.28.0
+urllib3>=1.26.0

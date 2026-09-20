@@ -22,6 +22,7 @@ class OMApp {
     this.loadActivityLog();
     this.setupNavigation();
     this.setupModals();
+    this.setupApiKeyHandlers();
     this.setupHeroButtons();
     this.dismissLoadingScreen();
   }
@@ -52,11 +53,84 @@ class OMApp {
       brandBtn.addEventListener('click', () => this.switchView('overview'));
     }
 
+    // API Key trigger
+    const apikeyBtn = document.getElementById('nav-apikey-btn');
+    if (apikeyBtn) {
+      apikeyBtn.addEventListener('click', () => this.openApiKeyModal());
+    }
+
     const authBtn = document.getElementById('nav-auth-btn');
     if (authBtn) {
       authBtn.addEventListener('click', () => this.openAuthModal());
     }
   }
+
+  openApiKeyModal() {
+    const modal = document.getElementById('apikey-modal');
+    if (!modal) return;
+
+    let savedKey = localStorage.getItem('om_active_api_key');
+    if (!savedKey) {
+      savedKey = 'om_live_' + Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem('om_active_api_key', savedKey);
+    }
+
+    const keyField = document.getElementById('om-generated-key-field');
+    if (keyField) keyField.value = savedKey;
+
+    const customKeyInput = document.getElementById('custom-provider-key-input');
+    const savedCustomKey = localStorage.getItem('om_custom_provider_key') || '';
+    if (customKeyInput) customKeyInput.value = savedCustomKey;
+
+    modal.classList.add('active');
+  }
+
+  setupApiKeyHandlers() {
+    const copyBtn = document.getElementById('btn-copy-om-key');
+    const genBtn = document.getElementById('btn-generate-om-key');
+    const saveBtn = document.getElementById('btn-save-api-settings');
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const keyField = document.getElementById('om-generated-key-field');
+        if (keyField) {
+          navigator.clipboard.writeText(keyField.value).then(() => {
+            this.showToast('OM API Key copied to clipboard!', 'success');
+          }).catch(() => {
+            keyField.select();
+            document.execCommand('copy');
+            this.showToast('OM API Key copied!', 'success');
+          });
+        }
+      });
+    }
+
+    if (genBtn) {
+      genBtn.addEventListener('click', () => {
+        const newKey = 'om_live_' + Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b => b.toString(16).padStart(2, '0')).join('');
+        const keyField = document.getElementById('om-generated-key-field');
+        if (keyField) keyField.value = newKey;
+        localStorage.setItem('om_active_api_key', newKey);
+        this.showToast('Generated fresh OM Engine Master Key!', 'info');
+      });
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const customKey = document.getElementById('custom-provider-key-input')?.value.trim() || '';
+        localStorage.setItem('om_custom_provider_key', customKey);
+
+        const statusEl = document.getElementById('apikey-save-status');
+        if (statusEl) {
+          statusEl.style.display = 'inline';
+          setTimeout(() => { statusEl.style.display = 'none'; }, 2500);
+        }
+
+        const msg = customKey ? 'External Model Provider Key connected!' : 'OM Neural Native Engine selected (Free & Active)!';
+        this.showToast(msg, 'success');
+        document.getElementById('apikey-modal')?.classList.remove('active');
+      });
+    }
 
   switchView(viewName) {
     const sections = document.querySelectorAll('.view-section');

@@ -64,6 +64,9 @@
         <span class="status-dot"></span>
         <span>OM Core v2.4 Online</span>
       </div>
+      <button class="om-btn om-btn-secondary om-btn-sm" id="nav-apikey-btn" style="border-color: rgba(6, 182, 212, 0.4); color: var(--om-cyan);">
+        <span>🔑 API Key</span>
+      </button>
       <button class="om-btn om-btn-secondary om-btn-sm" id="nav-auth-btn">
         <span>👤 Account</span>
       </button>
@@ -476,6 +479,59 @@
         </button>
         <div style="text-align: center; font-size: 0.75rem; color: var(--om-text-muted);">
           Protected by OM Biometric & Passkey Protocols
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key & Neural Engine Modal -->
+  <div class="om-modal-overlay" id="apikey-modal">
+    <div class="om-modal-content" style="max-width: 560px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="assets/icons/logo.svg" alt="OM" style="width: 22px; height: 22px;">
+          <span style="font-weight: 700;">OM API Key & Neural Engine Access</span>
+        </div>
+        <button class="om-btn om-btn-ghost om-btn-sm modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Live OM Generated API Key -->
+        <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: var(--om-radius-sm); padding: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--om-cyan); letter-spacing: 0.04em;">
+              Active OM Action Key
+            </span>
+            <span class="status-pill" style="padding: 2px 8px; font-size: 0.7rem;">Active • Full Access</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="om-generated-key-field" class="om-input" style="font-family: var(--om-font-mono); font-size: 0.82rem; background: rgba(0,0,0,0.4);" readonly value="om_live_8f7b2a9e4c1d6830fa5e9b72">
+            <button class="om-btn om-btn-secondary om-btn-sm" id="btn-copy-om-key" title="Copy Key">📋 Copy</button>
+            <button class="om-btn om-btn-primary om-btn-sm" id="btn-generate-om-key" title="Generate New Key">⚡ Generate</button>
+          </div>
+          <p style="font-size: 0.74rem; color: var(--om-text-secondary); margin-top: 8px;">
+            This key authenticates all requests to OM's Cognitive API endpoints (<code>/api/chat</code>, <code>/api/tasks</code>, <code>/api/metrics</code>).
+          </p>
+        </div>
+
+        <!-- Optional External Provider Key (Gemini / OpenAI) -->
+        <div class="om-input-group" style="margin-top: 6px;">
+          <label for="custom-provider-key-input" style="display: flex; justify-content: space-between;">
+            <span>External Model API Key (Optional)</span>
+            <span style="font-size: 0.72rem; color: var(--om-cyan);">Google Gemini / OpenAI</span>
+          </label>
+          <input type="password" id="custom-provider-key-input" class="om-input" placeholder="Enter custom AI API Key (AIzaSy... or sk-...)" style="font-family: var(--om-font-mono); font-size: 0.85rem;">
+          <span style="font-size: 0.74rem; color: var(--om-text-muted);">
+            Leave blank to use OM's built-in Autonomous Action Engine (100% Free & No Setup).
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <span id="apikey-save-status" style="font-size: 0.75rem; color: #34d399; display: none;">✓ Settings Saved</span>
+          <div style="display: flex; gap: 10px; margin-left: auto;">
+            <button class="om-btn om-btn-secondary modal-close-trigger">Close</button>
+            <button class="om-btn om-btn-primary" id="btn-save-api-settings">Save & Connect ➔</button>
+          </div>
         </div>
       </div>
     </div>
