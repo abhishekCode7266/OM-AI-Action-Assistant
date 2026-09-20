@@ -132,6 +132,75 @@ class OMApp {
       });
     }
 
+    const testBtn = document.getElementById('btn-test-gemini-key');
+    if (testBtn) {
+      testBtn.addEventListener('click', async () => {
+        const input = document.getElementById('custom-provider-key-input');
+        const resultEl = document.getElementById('gemini-test-result');
+        const key = input ? input.value.trim() : '';
+
+        if (!key) {
+          if (resultEl) {
+            resultEl.style.display = 'block';
+            resultEl.style.color = '#f87171';
+            resultEl.textContent = '✕ Please paste a Google Gemini API Key first (starts with AIzaSy...).';
+          }
+          this.showToast('Please paste a Gemini key to test.', 'error');
+          return;
+        }
+
+        testBtn.disabled = true;
+        const originalText = testBtn.innerHTML;
+        testBtn.innerHTML = '⏳ Testing...';
+
+        if (resultEl) {
+          resultEl.style.display = 'block';
+          resultEl.style.color = '#38bdf8';
+          resultEl.textContent = 'Connecting to Google Gemini 1.5 Flash endpoint...';
+        }
+
+        try {
+          const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+          const res = await fetch(testUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: "Respond with the word OK." }]
+              }]
+            })
+          });
+
+          if (res.ok) {
+            localStorage.setItem('om_custom_provider_key', key);
+            if (resultEl) {
+              resultEl.style.color = '#34d399';
+              resultEl.innerHTML = '✓ Google Gemini 1.5 Flash Connected &amp; Verified!';
+            }
+            this.showToast('Google Gemini API Key is valid and active!', 'success');
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `HTTP status ${res.status}`;
+            if (resultEl) {
+              resultEl.style.color = '#f87171';
+              resultEl.innerHTML = `✕ Verification failed: ${errMsg}`;
+            }
+            this.showToast(`Verification failed: ${errMsg}`, 'error');
+          }
+        } catch (netErr) {
+          if (resultEl) {
+            resultEl.style.color = '#f87171';
+            resultEl.innerHTML = `✕ Connection error: ${netErr.message}`;
+          }
+          this.showToast(`Connection error: ${netErr.message}`, 'error');
+        } finally {
+          testBtn.disabled = false;
+          testBtn.innerHTML = originalText;
+        }
+      });
+    }
+  }
+
   switchView(viewName) {
     const sections = document.querySelectorAll('.view-section');
     const navButtons = document.querySelectorAll('.nav-item-btn');

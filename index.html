@@ -514,17 +514,36 @@
         </div>
 
         <!-- Optional External Provider Key (Google Gemini / OpenAI) -->
-        <div class="om-input-group" style="margin-top: 6px;">
+        <div class="om-input-group" style="margin-top: 10px;">
           <label for="custom-provider-key-input" style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 700; color: #fff;">Google Gemini API Key (Optional)</span>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 0.74rem; color: var(--om-cyan); text-decoration: underline;">
-              Get Free Key from Google AI Studio ↗
+            <span style="font-weight: 700; color: #fff;">Google Gemini API Key (100% Free)</span>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 0.76rem; color: var(--om-cyan); text-decoration: underline; font-weight: 600;">
+              ⚡ Get Free Key from Google AI Studio ↗
             </a>
           </label>
-          <input type="password" id="custom-provider-key-input" class="om-input" placeholder="AIzaSy... (Paste your Google Gemini API Key here)" style="font-family: var(--om-font-mono); font-size: 0.85rem;">
+          <div style="display: flex; gap: 8px;">
+            <input type="password" id="custom-provider-key-input" class="om-input" placeholder="AIzaSy... (Paste Google Gemini API Key here)" style="font-family: var(--om-font-mono); font-size: 0.85rem; flex: 1;">
+            <button class="om-btn om-btn-secondary om-btn-sm" id="btn-test-gemini-key" type="button" style="white-space: nowrap;">🧪 Test Key</button>
+          </div>
+          <span id="gemini-test-result" style="font-size: 0.76rem; display: none; margin-top: 4px;"></span>
           <span style="font-size: 0.74rem; color: var(--om-text-secondary); line-height: 1.4;">
             ⚡ Powered by Google Gemini 1.5 Flash. If left empty, OM's built-in Autonomous Action Engine works 100% free with zero configuration!
           </span>
+        </div>
+
+        <!-- 30-Second Quick Guide Box -->
+        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--om-radius-sm); padding: 12px; margin-top: 6px;">
+          <div style="font-weight: 700; font-size: 0.8rem; color: #a5b4fc; display: flex; align-items: center; gap: 6px;">
+            <span>⚡ How to get your Free Google Gemini API Key in 30 seconds:</span>
+          </div>
+          <ol style="font-size: 0.75rem; color: var(--om-text-secondary); margin: 6px 0 0 16px; line-height: 1.6;">
+            <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--om-cyan); text-decoration: underline;">Google AI Studio</a> (Free, no credit card required)</li>
+            <li>Click <strong>"Create API key"</strong> and copy the key (starts with <code>AIzaSy...</code>)</li>
+            <li>Paste it above and click <strong>"Save & Connect"</strong></li>
+          </ol>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 0.73rem; color: var(--om-text-muted);">
+            🌐 <strong>For Vercel URL:</strong> Go to <a href="https://vercel.com/abhishek-ef1f/om-ai/settings/environment-variables" target="_blank" style="color: #38bdf8;">Vercel Settings ➔ Environment Variables</a> and add <code>GEMINI_API_KEY</code> so all visitors get live Gemini AI automatically!
+          </div>
         </div>
 
         <!-- Action Buttons -->
