@@ -2,8 +2,19 @@
 
 > *"Think. Plan. Act. Achieve."*
 
-[![Status: Online](https://img.shields.io/badge/OM%20Engine-v2.4%20Online-06B6D4?style=flat-square)](http://localhost:8000)
-[![Cognitive Architecture](https://img.shields.io/badge/Architecture-Think%20%E2%9E%94%20Plan%20%E2%9E%94%20Act%20%E2%9E%94%20Achieve-6366F1?style=flat-square)](http://localhost:8000)
+### 🌐 Live Application Links
+
+| Platform | URL | Status |
+| :--- | :--- | :--- |
+| **GitHub Pages (Direct Web App)** | **[https://abhishekcode7266.github.io/OM-AI-Action-Assistant/](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)** | 🟢 **100% Live & Working** |
+| **Vercel Live Deployment** | **[https://om-mt2phtu88-abhishek-ef1f.vercel.app](https://om-mt2phtu88-abhishek-ef1f.vercel.app)** | 🟢 **Deployed on Vercel** |
+| **Vercel Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | ⚙️ **Settings & Deployments** |
+| **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 📂 **Latest Source Code** |
+
+> 💡 **Why did the Vercel link ask for login?** Vercel enables "Deployment Protection" by default on preview URLs for private accounts. To make the Vercel URL open publicly for everyone: In [Vercel Settings ➔ Deployment Protection](https://vercel.com/abhishek-ef1f/om-ai/settings/deployment-protection), set **Vercel Authentication** to **Disabled** and click **Save**!
+
+[![Status: Online](https://img.shields.io/badge/OM%20Engine-v2.4%20Online-06B6D4?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
+[![Cognitive Architecture](https://img.shields.io/badge/Architecture-Think%20%E2%9E%94%20Plan%20%E2%9E%94%20Act%20%E2%9E%94%20Achieve-6366F1?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2FOM-AI-Action-Assistant)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-abhishekCode7266%2FOM--AI--Action--Assistant-181717?style=flat-square&logo=github)](https://github.com/abhishekCode7266/OM-AI-Action-Assistant)
 [![Test Suite](https://img.shields.io/badge/Tests-100%25%20Passing-10B981?style=flat-square)](tests/test_server.py)
