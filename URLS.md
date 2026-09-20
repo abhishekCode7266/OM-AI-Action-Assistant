@@ -4,14 +4,40 @@
 
 ---
 
-## 🔗 Repository & Deployment Links
+## 🔗 Live Deployment Links
 
-| Resource | URL |
-| :--- | :--- |
-| **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) |
-| **Git Clone HTTPS** | `https://github.com/abhishekCode7266/OM-AI-Action-Assistant.git` |
-| **Git Clone SSH** | `git@github.com:abhishekCode7266/OM-AI-Action-Assistant.git` |
-| **1-Click Deploy to Vercel** | [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2FOM-AI-Action-Assistant) |
+| Platform | URL | Status |
+| :--- | :--- | :--- |
+| **GitHub Pages (Live Website)** | [https://abhishekcode7266.github.io/OM-AI-Action-Assistant/](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/) | 🟢 **100% Live & Working** |
+| **Vercel Project Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | 🟢 **Connected to GitHub** |
+| **Vercel Live Deployment URL** | [https://om-n167r2zd4-abhishek-ef1f.vercel.app](https://om-n167r2zd4-abhishek-ef1f.vercel.app) | 🟢 **Deployed (Success)** |
+| **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 🟢 **Latest Code Pushed** |
+
+---
+
+## 🔑 Google Gemini API Key & Native Engine
+
+OM supports two cognitive modes out-of-the-box:
+
+1. **Native Autonomous Engine (Default)**:
+   - Zero configuration needed.
+   - 100% Free and instant execution.
+   - Generates full Think-Plan-Act-Achieve roadmaps and task cards.
+
+2. **Google Gemini 1.5 Flash (Live LLM Mode)**:
+   - Get a free key: [Google AI Studio API Keys](https://aistudio.google.com/app/apikey)
+   - In OM Navbar, click **`🔑 API Key`** -> Paste your `AIzaSy...` key -> Click **Save & Connect**.
+   - OM directly calls Gemini 1.5 Flash to formulate rich reasoning and task decomposition!
+
+---
+
+## ⚙️ Vercel Public Access Setting (If "Login - Vercel" appears):
+
+If your Vercel URL shows a Vercel login screen to external visitors:
+1. Open your project on Vercel: [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai)
+2. Go to **Settings** -> **Deployment Protection**.
+3. Under **Vercel Authentication**, select **Disabled** and click **Save**.
+4. Now your Vercel URL is publicly accessible to the entire world!
 
 ---
 
@@ -23,25 +49,3 @@
 | `/api/chat` | `POST` | Cognitive AI Assistant dialogue & goal deconstruction |
 | `/api/tasks` | `GET` / `POST` | Task management across Think, Plan, Act, Achieve |
 | `/api/metrics` | `GET` | Action Velocity Index and Goal Completion stats |
-
----
-
-## 🚀 Quick Deployment Commands
-
-### Deploy to Vercel via CLI
-```bash
-# 1. Install Vercel CLI (if not already installed)
-npm i -g vercel
-
-# 2. Deploy to preview
-vercel
-
-# 3. Deploy to production
-vercel --prod
-```
-
-### Run Locally with Python Server
-```bash
-python server.py
-# Serves at http://localhost:8000
-```
