@@ -92,13 +92,10 @@ class TestOMServer(unittest.TestCase):
         resp = urllib.request.urlopen(f"{self.base_url}/")
         self.assertEqual(resp.status, 200)
         html = resp.read().decode("utf-8")
-        self.assertIn("Meet <span class=\"text-gradient\">OM</span>", html)
-        self.assertIn("Your AI Action Assistant", html)
-        self.assertIn("Turn your goals into actionable plans.", html)
-        self.assertIn("Start with OM", html)
-        self.assertIn("Create a Goal", html)
-        self.assertIn("Explore Demo", html)
+        self.assertIn("OM AI Assistant", html)
+        self.assertIn("<span class=\"text-gradient\">OM</span>", html)
         self.assertIn("Think. Plan. Act. Achieve.", html)
+        self.assertIn("How can <span class=\"text-gradient\">OM</span> help you today?", html)
 
 
 if __name__ == "__main__":

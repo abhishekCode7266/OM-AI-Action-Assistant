@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OM – AI Action Assistant | Think. Plan. Act. Achieve.</title>
-  <meta name="description" content="OM represents an intelligent, simple and universal AI assistant that helps users turn ideas into real actions.">
+  <title>OM AI Assistant | Think. Plan. Act. Achieve.</title>
+  <meta name="description" content="OM is a modern conversational AI assistant that turns ideas into actions across coding, data science, projects, research, writing, and learning.">
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,556 +17,311 @@
        Futuristic Loading Screen
        ========================================================================= -->
   <div id="om-loading-screen">
-    <div class="loader-logo-wrap">
-      <div class="loader-pulse-ring"></div>
+    <div class="loader-logo-wrap" style="width: 72px; height: 72px; margin: 0 auto 16px;">
       <img src="assets/icons/logo.svg" alt="OM Logo" style="width: 100%; height: 100%;">
     </div>
-    <div style="font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; color: #fff;">
-      OM <span style="font-weight: 400; color: var(--om-cyan);">Action Engine</span>
+    <div style="font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; color: #fff; text-align: center;">
+      OM <span style="font-weight: 400; color: var(--om-cyan);">AI Assistant</span>
     </div>
-    <div class="loader-telemetry">
-      <span class="status-dot"></span>
-      <span>INITIALIZING NEURAL ACTION GRAPH...</span>
-    </div>
-    <div style="margin-top: 14px; font-size: 0.75rem; color: var(--om-text-muted); font-family: var(--om-font-mono);">
+    <div style="text-align: center; color: var(--om-text-secondary); font-size: 0.85rem; font-family: var(--om-font-mono);">
       "Think. Plan. Act. Achieve."
     </div>
   </div>
 
   <!-- =========================================================================
-       Main Navbar
+       Main Application Layout (ChatGPT-Class Interface)
        ========================================================================= -->
-  <nav class="om-navbar">
-    <div class="brand-wrapper" id="navbar-brand-btn">
-      <img src="assets/icons/logo.svg" alt="OM Logo" class="brand-logo-img">
-      <div class="brand-text-block">
-        <div class="brand-title-row">
-          <span class="brand-name-main">OM</span>
-          <span class="brand-badge">AI Action Assistant</span>
+  <div class="om-app-wrapper">
+
+    <!-- =======================================================================
+         1. Left Sidebar
+         ======================================================================= -->
+    <aside class="om-sidebar" id="om-sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-top-header">
+        <div class="sidebar-brand-link" onclick="window.omApp.handleNewChat()">
+          <img src="assets/icons/logo.svg" alt="OM" style="width: 24px; height: 24px;">
+          <span class="sidebar-brand-name">OM <span style="font-size: 0.72rem; color: var(--om-cyan); font-weight: 600;">AI</span></span>
         </div>
-        <span class="brand-tagline-sub">Think. Plan. Act. Achieve.</span>
-      </div>
-    </div>
-
-    <!-- Central Navigation Links -->
-    <ul class="om-nav-links">
-      <li><button class="nav-item-btn active" data-view="overview">⚡ Overview</button></li>
-      <li><button class="nav-item-btn" data-view="assistant">🤖 AI Assistant</button></li>
-      <li><button class="nav-item-btn" data-view="planner">📋 Task Planner</button></li>
-      <li><button class="nav-item-btn" data-view="dashboard">📊 Progress Dashboard</button></li>
-      <li><button class="nav-item-btn" data-view="knowledge">📁 Knowledge Vault</button></li>
-      <li><button class="nav-item-btn" data-view="demo">🚀 Demo</button></li>
-    </ul>
-
-    <!-- Right Actions: Status & Auth -->
-    <div class="om-nav-actions">
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        <span>OM Core v2.4 Online</span>
-      </div>
-      <button class="om-btn om-btn-secondary om-btn-sm" id="nav-apikey-btn" style="border-color: rgba(6, 182, 212, 0.4); color: var(--om-cyan);">
-        <span>🔑 API Key</span>
-      </button>
-      <button class="om-btn om-btn-secondary om-btn-sm" id="nav-auth-btn">
-        <span>👤 Account</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- =========================================================================
-       Application Views Container
-       ========================================================================= -->
-  <main class="om-container">
-
-    <!-- 1. HOMEPAGE / HERO VIEW -->
-    <section id="view-overview" class="view-section active">
-      <div class="hero-wrapper">
-        <div class="hero-pill-badge">
-          <span>⚡ Next-Generation Cognitive Execution</span>
-        </div>
-
-        <h1 class="hero-title-main">
-          Meet <span class="text-gradient">OM</span>
-        </h1>
-        <div class="hero-subheadline">
-          Your AI Action Assistant
-        </div>
-        <p class="hero-value-prop">
-          Turn your goals into actionable plans.
-        </p>
-
-        <!-- CTA Buttons -->
-        <div class="hero-cta-group">
-          <button class="om-btn om-btn-primary om-btn-lg" id="hero-btn-start">
-            <span>✨ Start with OM</span>
-          </button>
-          <button class="om-btn om-btn-secondary om-btn-lg" id="hero-btn-goal">
-            <span>🎯 Create a Goal</span>
-          </button>
-          <button class="om-btn om-btn-secondary om-btn-lg" id="hero-btn-demo">
-            <span>🚀 Explore Demo</span>
-          </button>
-        </div>
-
-        <!-- 4-Stage Action Pipeline Preview -->
-        <div class="pipeline-grid">
-          <div class="glass-panel pipeline-card">
-            <span class="pipeline-step-badge">STAGE 01 // COGNITION</span>
-            <h3>💡 Think</h3>
-            <p>OM understands context, analyzes constraints, asks clarifying questions, and extracts core success criteria.</p>
-          </div>
-          <div class="glass-panel pipeline-card">
-            <span class="pipeline-step-badge">STAGE 02 // ARCHITECTURE</span>
-            <h3>📋 Plan</h3>
-            <p>OM structures phased milestones, maps critical path dependencies, and estimates realistic execution timelines.</p>
-          </div>
-          <div class="glass-panel pipeline-card">
-            <span class="pipeline-step-badge">STAGE 03 // EXECUTION</span>
-            <h3>⚡ Act</h3>
-            <p>OM drives subtask execution, writes blueprints, drafts code, solves problems, and delegates to the Task Planner.</p>
-          </div>
-          <div class="glass-panel pipeline-card">
-            <span class="pipeline-step-badge">STAGE 04 // SIGN-OFF</span>
-            <h3>🏆 Achieve</h3>
-            <p>OM autonomously verifies deliverables, tracks completion rates, and validates outcomes against your core goal.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. AI ASSISTANT VIEW -->
-    <section id="view-assistant" class="view-section">
-      <div class="assistant-layout">
-        
-        <!-- Left Sidebar: Cognitive Controls & Vault Context -->
-        <aside class="assistant-sidebar">
-          <div class="glass-panel agent-identity-card">
-            <div class="agent-avatar-ring">
-              <img src="assets/icons/logo.svg" alt="OM AI" class="agent-avatar-img">
-            </div>
-            <h3 style="font-size: 1.15rem; margin-bottom: 2px;">OM AI Assistant</h3>
-            <p style="font-size: 0.78rem; color: var(--om-cyan); font-family: var(--om-font-mono);">
-              Active Cognitive Agent
-            </p>
-            <p style="font-size: 0.8rem; color: var(--om-text-secondary); margin-top: 8px;">
-              "Think. Plan. Act. Achieve."
-            </p>
-          </div>
-
-          <div class="glass-panel" style="padding: 1.25rem;">
-            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--om-text-muted); margin-bottom: 10px;">
-              Cognitive Focus Mode
-            </div>
-            <div class="mode-selector">
-              <button class="mode-btn active" data-mode="action">
-                <span>🎯 Action Engine (Full)</span>
-                <span style="font-size: 0.75rem;">Default</span>
-              </button>
-              <button class="mode-btn" data-mode="research">
-                <span>🔍 Deep Research & Facts</span>
-              </button>
-              <button class="mode-btn" data-mode="reasoning">
-                <span>🧠 Analytical Problem Solver</span>
-              </button>
-              <button class="mode-btn" data-mode="writing">
-                <span>✍️ Content & Code Generation</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="glass-panel" style="padding: 1.25rem;">
-            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--om-text-muted); margin-bottom: 8px;">
-              Active Context
-            </div>
-            <div style="font-size: 0.82rem; color: var(--om-text-secondary); line-height: 1.5;">
-              • Multi-Turn Memory: <strong style="color: #34d399;">Active</strong><br>
-              • Ingested Vault Docs: <span id="vault-doc-count">1 Asset</span><br>
-              • Verification Engine: <strong style="color: var(--om-cyan);">Strict</strong>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Right Main Chat Window -->
-        <div class="glass-panel chat-window">
-          <div class="chat-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="status-dot"></span>
-              <span style="font-weight: 700; font-size: 0.95rem;">OM Cognitive Dialogue Channel</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="om-btn om-btn-ghost om-btn-sm" onclick="omAssistant.messages = []; omAssistant.init(); omApp.showToast('Chat refreshed', 'info');">
-                🔄 Clear Session
-              </button>
-            </div>
-          </div>
-
-          <!-- Interactive Stream of Messages -->
-          <div class="chat-messages-container" id="chat-messages-container">
-            <!-- Rendered by assistant.js -->
-          </div>
-
-          <!-- Bottom Prompt Chips & Input -->
-          <div class="chat-input-wrapper">
-            <div class="prompt-chips-row">
-              <button class="prompt-chip" data-prompt="Decompose: Launch an AI SaaS MVP in 14 days">🚀 Launch SaaS MVP</button>
-              <button class="prompt-chip" data-prompt="Research: Architectural patterns for autonomous multi-agent systems">🔍 Agentic Research</button>
-              <button class="prompt-chip" data-prompt="Solve: Step-by-step latency optimization for high-throughput Postgres">⚡ Database Optimization</button>
-              <button class="prompt-chip" data-prompt="Analyze the documents in my Knowledge Vault">📄 Analyze Documents</button>
-            </div>
-
-            <div class="input-bar">
-              <textarea id="chat-user-input" class="chat-input-field" rows="1" placeholder="Tell OM what you want to achieve... (Shift+Enter for new line)"></textarea>
-              <button class="om-btn om-btn-primary om-btn-sm" id="chat-send-btn" style="padding: 8px 16px;">
-                <span>Send</span>
-                <span>➔</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 3. TASK PLANNER VIEW (Think - Plan - Act - Achieve) -->
-    <section id="view-planner" class="view-section">
-      <div class="planner-header-row">
-        <div>
-          <h2 style="font-size: 2rem;">OM Task Planner</h2>
-          <p style="color: var(--om-text-secondary); font-size: 0.95rem;">
-            Interactive 4-Stage Execution Matrix: <strong style="color: #fff;">Think. Plan. Act. Achieve.</strong>
-          </p>
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button class="om-btn om-btn-primary" id="planner-add-task-btn">
-            <span>+ Add Action Item</span>
-          </button>
-        </div>
+        <button class="btn-sidebar-toggle-icon" id="btn-sidebar-toggle" title="Collapse sidebar">◀</button>
       </div>
 
-      <!-- 4 Columns Grid -->
-      <div class="planner-columns-grid">
-        
-        <!-- Column 1: THINK -->
-        <div class="planner-column" id="column-think">
-          <div class="column-header">
-            <div class="column-title-group">
-              <span class="col-indicator col-think"></span>
-              <span style="font-weight: 700; font-size: 0.95rem;">1. Think</span>
-            </div>
-            <span class="col-count-badge" id="count-think">0</span>
-          </div>
-          <div class="column-task-list" id="task-list-think"></div>
-        </div>
-
-        <!-- Column 2: PLAN -->
-        <div class="planner-column" id="column-plan">
-          <div class="column-header">
-            <div class="column-title-group">
-              <span class="col-indicator col-plan"></span>
-              <span style="font-weight: 700; font-size: 0.95rem;">2. Plan</span>
-            </div>
-            <span class="col-count-badge" id="count-plan">0</span>
-          </div>
-          <div class="column-task-list" id="task-list-plan"></div>
-        </div>
-
-        <!-- Column 3: ACT -->
-        <div class="planner-column" id="column-act">
-          <div class="column-header">
-            <div class="column-title-group">
-              <span class="col-indicator col-act"></span>
-              <span style="font-weight: 700; font-size: 0.95rem;">3. Act</span>
-            </div>
-            <span class="col-count-badge" id="count-act">0</span>
-          </div>
-          <div class="column-task-list" id="task-list-act"></div>
-        </div>
-
-        <!-- Column 4: ACHIEVE -->
-        <div class="planner-column" id="column-achieve">
-          <div class="column-header">
-            <div class="column-title-group">
-              <span class="col-indicator col-achieve"></span>
-              <span style="font-weight: 700; font-size: 0.95rem;">4. Achieve</span>
-            </div>
-            <span class="col-count-badge" id="count-achieve">0</span>
-          </div>
-          <div class="column-task-list" id="task-list-achieve"></div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 4. PROGRESS DASHBOARD VIEW -->
-    <section id="view-dashboard" class="view-section">
-      <div style="margin-bottom: 2rem;">
-        <h2 style="font-size: 2rem;">OM Progress Dashboard</h2>
-        <p style="color: var(--om-text-secondary); font-size: 0.95rem;">
-          Real-time metrics, action velocity, and verification telemetry.
-        </p>
-      </div>
-
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="glass-panel stat-card">
-          <div class="stat-val-group">
-            <h3 id="stat-completion-rate">0%</h3>
-            <p>Goal Completion Rate</p>
-          </div>
-          <div class="stat-icon-wrapper">🏆</div>
-        </div>
-        <div class="glass-panel stat-card">
-          <div class="stat-val-group">
-            <h3 id="stat-velocity-score">0 pts</h3>
-            <p>Action Velocity Index</p>
-          </div>
-          <div class="stat-icon-wrapper">⚡</div>
-        </div>
-        <div class="glass-panel stat-card">
-          <div class="stat-val-group">
-            <h3 id="stat-total-actions">0</h3>
-            <p>Total Pipeline Actions</p>
-          </div>
-          <div class="stat-icon-wrapper">📋</div>
-        </div>
-        <div class="glass-panel stat-card">
-          <div class="stat-val-group">
-            <h3 id="stat-active-executing">0</h3>
-            <p>Currently In "Act" Stage</p>
-          </div>
-          <div class="stat-icon-wrapper">🔥</div>
-        </div>
-      </div>
-
-      <!-- Split Grid: Burnup & Execution Stream -->
-      <div class="dashboard-split-grid">
-        <div class="glass-panel" style="padding: 1.75rem;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-            <h3 style="font-size: 1.15rem;">Action Velocity & Milestone Burnup</h3>
-            <span style="font-family: var(--om-font-mono); font-size: 0.75rem; color: var(--om-cyan);">
-              Real-time Pacing
-            </span>
-          </div>
-          <div id="dashboard-burnup-chart"></div>
-
-          <div style="margin-top: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--om-text-secondary);">
-              <span>Stage Distribution Ratio</span>
-              <span>Think / Plan / Act / Achieve</span>
-            </div>
-            <div id="pipeline-stage-progress-bar" style="display: flex; width: 100%; border-radius: 4px; overflow: hidden; background: rgba(255,255,255,0.05);"></div>
-          </div>
-        </div>
-
-        <div class="glass-panel" style="padding: 1.75rem;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 1.25rem;">Live Activity Audit</h3>
-          <div class="activity-stream" id="dashboard-activity-stream"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. KNOWLEDGE & DOCUMENT VAULT VIEW -->
-    <section id="view-knowledge" class="view-section">
-      <div style="margin-bottom: 2rem;">
-        <h2 style="font-size: 2rem;">OM Knowledge & Document Vault</h2>
-        <p style="color: var(--om-text-secondary); font-size: 0.95rem;">
-          Ingest notes, PRDs, requirements, and data files for OM to analyze, reason across, and verify.
-        </p>
-      </div>
-
-      <div class="knowledge-grid">
-        <!-- Ingestion Controls -->
-        <div class="glass-panel" style="padding: 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
-          <h3 style="font-size: 1.15rem;">Ingest Knowledge Asset</h3>
-          <p style="font-size: 0.85rem; color: var(--om-text-secondary); line-height: 1.5;">
-            OM reads your uploaded documents to answer questions, cite facts, and extract actionable roadmaps.
-          </p>
-
-          <input type="file" id="doc-file-input" style="display: none;" accept=".txt,.md,.json,.csv">
-          <div class="doc-upload-zone" id="doc-upload-zone">
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
-            <div style="font-size: 0.95rem; font-weight: 600;">Click to upload document</div>
-            <div style="font-size: 0.75rem; color: var(--om-text-muted); margin-top: 4px;">Supports .md, .txt, .json, .csv</div>
-          </div>
-
-          <div style="text-align: center; color: var(--om-text-muted); font-size: 0.8rem;">— OR —</div>
-
-          <button class="om-btn om-btn-secondary" id="paste-doc-btn">
-            <span>📝 Paste Text / Notes</span>
-          </button>
-        </div>
-
-        <!-- Ingested Documents List -->
-        <div class="glass-panel" style="padding: 1.75rem;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 1.25rem;">Ingested Context Assets</h3>
-          <div class="docs-list" id="knowledge-docs-list"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. DEMO PAGE VIEW -->
-    <section id="view-demo" class="view-section">
-      <div style="text-align: center; max-width: 760px; margin: 0 auto 2.5rem;">
-        <h2 style="font-size: 2.4rem; margin-bottom: 0.5rem;">Explore OM in Action</h2>
-        <p style="color: var(--om-text-secondary); font-size: 1.05rem;">
-          Choose a scenario to see how OM takes ambiguous, ambitious goals and executes them through the 
-          <strong style="color: #fff;">Think. Plan. Act. Achieve.</strong> pipeline.
-        </p>
-      </div>
-
-      <div class="demo-scenarios-grid" id="demo-scenarios-container">
-        <!-- Rendered by demo.js -->
-      </div>
-    </section>
-
-  </main>
-
-  <!-- =========================================================================
-       Modals: Goal Creation & Auth
-       ========================================================================= -->
-  <!-- Goal Creation Wizard Modal -->
-  <div class="om-modal-overlay" id="goal-modal">
-    <div class="om-modal-content">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <img src="assets/icons/logo.svg" alt="OM" style="width: 22px; height: 22px;">
-          <span style="font-weight: 700;">Create a Goal with OM</span>
-        </div>
-        <button class="om-btn om-btn-ghost om-btn-sm modal-close-trigger">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="om-input-group">
-          <label for="modal-goal-input">What do you want to achieve?</label>
-          <textarea id="modal-goal-input" class="om-input" rows="4" placeholder="e.g. Launch a high-velocity developer newsletter and grow to 1,000 subscribers in 30 days..."></textarea>
-        </div>
-        <div style="font-size: 0.8rem; color: var(--om-text-secondary); line-height: 1.4;">
-          ⚡ OM will immediately analyze your goal, verify constraints, and generate a 4-phase Think-Plan-Act-Achieve roadmap.
-        </div>
-        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-          <button class="om-btn om-btn-secondary modal-close-trigger">Cancel</button>
-          <button class="om-btn om-btn-primary" id="modal-submit-goal">Deconstruct with OM ➔</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Auth / Account Modal -->
-  <div class="om-modal-overlay" id="auth-modal">
-    <div class="om-modal-content">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <img src="assets/icons/logo.svg" alt="OM" style="width: 22px; height: 22px;">
-          <span style="font-weight: 700;">OM Identity & Access</span>
-        </div>
-        <button class="om-btn om-btn-ghost om-btn-sm modal-close-trigger">✕</button>
-      </div>
-      <div class="modal-body">
-        <div style="text-align: center; margin-bottom: 0.5rem;">
-          <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">Welcome to OM</div>
-          <div style="font-size: 0.8rem; color: var(--om-cyan); font-family: var(--om-font-mono);">Think. Plan. Act. Achieve.</div>
-        </div>
-        <div class="om-input-group">
-          <label for="auth-email-input">Work or Personal Email</label>
-          <input type="email" id="auth-email-input" class="om-input" value="rajnesh@om.ai">
-        </div>
-        <div class="om-input-group">
-          <label for="auth-password-input">Passkey / Master Key</label>
-          <input type="password" id="auth-password-input" class="om-input" value="••••••••••••">
-        </div>
-        <button class="om-btn om-btn-primary" id="modal-auth-submit" style="width: 100%; margin-top: 6px;">
-          Sign In to OM Action Engine
+      <!-- Controls: New Chat & Search -->
+      <div class="sidebar-controls">
+        <button class="btn-new-chat" title="Create a new conversation">
+          <span>+ New Chat</span>
+          <span style="font-size: 0.7rem; opacity: 0.7; font-family: var(--om-font-mono);">Ctrl+K</span>
         </button>
-        <div style="text-align: center; font-size: 0.75rem; color: var(--om-text-muted);">
-          Protected by OM Biometric & Passkey Protocols
+
+        <div class="sidebar-search-box">
+          <span class="sidebar-search-icon">🔍</span>
+          <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search conversations...">
         </div>
       </div>
-    </div>
+
+      <!-- Chronologically Grouped Chat History -->
+      <div class="sidebar-scroll-area" id="sidebar-history-container">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Sidebar Footer / Settings -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-pill">
+          <div class="user-avatar-sm">OM</div>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">Workspace</span>
+            <span style="font-size: 0.68rem; color: var(--om-cyan); font-family: var(--om-font-mono);">v2.4 Active</span>
+          </div>
+        </div>
+        <button class="header-icon-btn btn-open-settings" title="Settings & Memory">⚙️</button>
+      </div>
+    </aside>
+
+    <!-- =======================================================================
+         2. Main Workspace
+         ======================================================================= -->
+    <main class="om-main-workspace">
+
+      <!-- Top Header -->
+      <header class="om-chat-header">
+        <div class="header-left-group">
+          <button class="btn-mobile-drawer" id="btn-mobile-menu" title="Toggle Menu">☰</button>
+          <span class="chat-header-title" id="chat-header-title">New Chat</span>
+        </div>
+
+        <div class="header-right-group">
+          <!-- 8 Specialized Modes Selector -->
+          <div class="mode-dropdown-wrap">
+            <select class="mode-select-pill" id="chat-mode-selector" title="Select AI Specialization Mode">
+              <option value="general">💬 General Assistant</option>
+              <option value="coding">💻 Coding & Debugging</option>
+              <option value="data">📊 Data Analyst & CSV</option>
+              <option value="research">🔎 Deep Research</option>
+              <option value="writing">📝 Professional Writing</option>
+              <option value="project">🚀 Project Builder</option>
+              <option value="career">💼 Career & Interview</option>
+              <option value="study">🎓 Study & Tutoring</option>
+            </select>
+          </div>
+
+          <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown">📥 Export</button>
+          <button class="header-icon-btn" id="btn-clear-chat" title="Clear current messages">🗑️</button>
+          <button class="header-icon-btn btn-open-settings" title="Settings">⚙️</button>
+        </div>
+      </header>
+
+      <!-- Scrollable Chat Area -->
+      <div class="om-chat-scroll-area" id="om-chat-scroll-area">
+
+        <!-- Welcome Hero Screen (Shown when no messages) -->
+        <div class="om-welcome-screen" id="om-welcome-screen">
+          <div class="welcome-logo-box">
+            <img src="assets/icons/logo.svg" alt="OM Logo" style="width: 36px; height: 36px;">
+          </div>
+          <h1 class="welcome-heading">How can <span class="text-gradient">OM</span> help you today?</h1>
+          <p class="welcome-tagline">Think. Plan. Act. Achieve.</p>
+
+          <!-- 8 Prompt Quick Action Cards -->
+          <div class="welcome-cards-grid">
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('coding'); document.getElementById('chat-user-input').value='Create a complete Python GUI calculator with dark mode and error handling'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">💻</span>
+              <span class="prompt-card-title">Write Code</span>
+              <span class="prompt-card-desc">Build a Python GUI calculator with dark mode</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('data'); document.getElementById('chat-user-input').value='Explain how to perform exploratory data analysis and correlation matrix on a sales dataset using Pandas and Matplotlib'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">📊</span>
+              <span class="prompt-card-title">Analyze Data</span>
+              <span class="prompt-card-desc">Inspect CSV datasets, stats, and generate charts</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('project'); document.getElementById('chat-user-input').value='Architect an AI-powered career and mock interview preparation platform with React, Node.js, and PostgreSQL'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">🚀</span>
+              <span class="prompt-card-title">Build a Project</span>
+              <span class="prompt-card-desc">Deconstruct goal into tech stack, architecture & tasks</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('study'); document.getElementById('chat-user-input').value='Teach me how modern asynchronous execution and promises work in JavaScript using a clear real-world analogy'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">🎓</span>
+              <span class="prompt-card-title">Learn Something</span>
+              <span class="prompt-card-desc">Socratic explanations, analogies, and quizzes</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('career'); document.getElementById('chat-user-input').value='Prepare me for a Senior Full-Stack Developer interview with 3 complex STAR scenario questions'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">💼</span>
+              <span class="prompt-card-title">Career & Interview</span>
+              <span class="prompt-card-desc">Mock interview questions and resume optimization</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('research'); document.getElementById('chat-user-input').value='Compare PostgreSQL vs MongoDB: latency, transactional guarantees, and scalability for high-velocity apps'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">🔎</span>
+              <span class="prompt-card-title">Deep Research</span>
+              <span class="prompt-card-desc">Objective architectural and technical comparisons</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('writing'); document.getElementById('chat-user-input').value='Draft an executive product launch announcement and release notes for our v2.0 update'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">📝</span>
+              <span class="prompt-card-title">Professional Writing</span>
+              <span class="prompt-card-desc">Emails, proposals, PRDs, and documentation</span>
+            </div>
+
+            <div class="prompt-card" onclick="window.omApp.handleNewChat('general'); document.getElementById('chat-user-input').value='Formulate a 30-day execution roadmap to build and ship a high-velocity developer tool'; document.getElementById('btn-chat-send').click();">
+              <span class="prompt-card-icon">📋</span>
+              <span class="prompt-card-title">Create a Plan</span>
+              <span class="prompt-card-desc">Decompose goals into Think-Plan-Act-Achieve</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Conversation Messages -->
+        <div class="om-messages-stream" id="chat-messages-container">
+          <!-- Populated by app.js -->
+        </div>
+
+      </div>
+
+      <!-- Bottom Prompt Dock -->
+      <footer class="om-prompt-dock">
+        <div class="dock-content-wrapper">
+
+          <!-- Attachment Previews -->
+          <div class="attachment-preview-dock" id="attachment-preview-dock" style="display: none;"></div>
+
+          <!-- Live Voice Dictation Waveform Bar -->
+          <div class="voice-visualizer-bar" id="voice-visualizer-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="pulse-dot" style="background: #f43f5e;"></span>
+              <span id="voice-transcript-preview">Listening to your voice...</span>
+            </div>
+            <button class="remove-att-btn" onclick="window.omVoice.stopRecording()" title="Stop voice recording">✕ Stop</button>
+          </div>
+
+          <!-- Hidden File Inputs -->
+          <input type="file" id="hidden-file-input" style="display: none;" accept=".txt,.md,.csv,.json,.pdf,.docx,.js,.py,.html,.css,.sql">
+          <input type="file" id="hidden-image-input" style="display: none;" accept="image/*">
+
+          <!-- Floating Input Capsule -->
+          <div class="input-capsule">
+            <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
+            <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
+
+            <textarea id="chat-user-input" class="chat-textarea" rows="1" placeholder="Ask OM anything, write code, analyze a CSV, or plan a goal..."></textarea>
+
+            <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Dictate prompt)">🎙️</button>
+            <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
+          </div>
+
+          <div class="dock-disclaimer">
+            OM AI Assistant may make mistakes. Verify critical actions. Think. Plan. Act. Achieve.
+          </div>
+        </div>
+      </footer>
+
+    </main>
+
   </div>
 
-  <!-- API Key & Neural Engine Modal -->
-  <div class="om-modal-overlay" id="apikey-modal">
-    <div class="om-modal-content" style="max-width: 560px;">
+  <!-- =========================================================================
+       Settings & Memory Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="settings-modal">
+    <div class="om-modal-content">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <img src="assets/icons/logo.svg" alt="OM" style="width: 22px; height: 22px;">
-          <span style="font-weight: 700;">OM API Key & Neural Engine Access</span>
+          <img src="assets/icons/logo.svg" alt="OM" style="width: 20px; height: 20px;">
+          <span style="font-weight: 700;">OM Assistant Settings & Preferences</span>
         </div>
-        <button class="om-btn om-btn-ghost om-btn-sm modal-close-trigger">✕</button>
+        <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
       </div>
       <div class="modal-body">
-        <!-- Live OM Generated API Key -->
-        <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: var(--om-radius-sm); padding: 14px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--om-cyan); letter-spacing: 0.04em;">
-              Active OM Action Key
-            </span>
-            <span class="status-pill" style="padding: 2px 8px; font-size: 0.7rem;">Active • Full Access</span>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="text" id="om-generated-key-field" class="om-input" style="font-family: var(--om-font-mono); font-size: 0.82rem; background: rgba(0,0,0,0.4);" readonly value="om_live_8f7b2a9e4c1d6830fa5e9b72">
-            <button class="om-btn om-btn-secondary om-btn-sm" id="btn-copy-om-key" title="Copy Key">📋 Copy</button>
-            <button class="om-btn om-btn-primary om-btn-sm" id="btn-generate-om-key" title="Generate New Key">⚡ Generate</button>
-          </div>
-          <p style="font-size: 0.74rem; color: var(--om-text-secondary); margin-top: 8px;">
-            This key authenticates all requests to OM's Cognitive API endpoints (<code>/api/chat</code>, <code>/api/tasks</code>, <code>/api/metrics</code>).
-          </p>
-        </div>
-
-        <!-- Optional External Provider Key (Google Gemini / OpenAI) -->
-        <div class="om-input-group" style="margin-top: 10px;">
-          <label for="custom-provider-key-input" style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 700; color: #fff;">Google Gemini API Key (100% Free)</span>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 0.76rem; color: var(--om-cyan); text-decoration: underline; font-weight: 600;">
-              ⚡ Get Free Key from Google AI Studio ↗
-            </a>
+        
+        <!-- Google Gemini API Key -->
+        <div class="om-input-group">
+          <label for="settings-gemini-key-input" style="display: flex; justify-content: space-between;">
+            <span>Google Gemini API Key (100% Free)</span>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--om-cyan); text-decoration: underline; font-size: 0.75rem;">Get Key from AI Studio ↗</a>
           </label>
-          <div style="display: flex; gap: 8px;">
-            <input type="password" id="custom-provider-key-input" class="om-input" placeholder="AIzaSy... (Paste Google Gemini API Key here)" style="font-family: var(--om-font-mono); font-size: 0.85rem; flex: 1;">
-            <button class="om-btn om-btn-secondary om-btn-sm" id="btn-test-gemini-key" type="button" style="white-space: nowrap;">🧪 Test Key</button>
-          </div>
-          <span id="gemini-test-result" style="font-size: 0.76rem; display: none; margin-top: 4px;"></span>
-          <span style="font-size: 0.74rem; color: var(--om-text-secondary); line-height: 1.4;">
-            ⚡ Powered by Google Gemini 1.5 Flash. If left empty, OM's built-in Autonomous Action Engine works 100% free with zero configuration!
+          <input type="password" id="settings-gemini-key-input" class="om-input" placeholder="AIzaSy... (Leave blank for OM Autonomous Engine)">
+          <span style="font-size: 0.72rem; color: var(--om-text-muted);">
+            Powers Gemini 2.0 / 1.5 Flash models. If empty, OM's built-in Autonomous Engine works 100% free with zero configuration!
           </span>
         </div>
 
-        <!-- 30-Second Quick Guide Box -->
-        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--om-radius-sm); padding: 12px; margin-top: 6px;">
-          <div style="font-weight: 700; font-size: 0.8rem; color: #a5b4fc; display: flex; align-items: center; gap: 6px;">
-            <span>⚡ How to get your Free Google Gemini API Key in 30 seconds:</span>
+        <!-- Model Selection -->
+        <div class="om-input-group">
+          <label for="settings-model-select">Active Model Provider</label>
+          <select id="settings-model-select" class="om-input">
+            <option value="gemini-1.5-flash">Google Gemini 1.5 Flash (Fast & Multimodal)</option>
+            <option value="gemini-2.0-flash">Google Gemini 2.0 Flash (Next-Gen Intelligence)</option>
+            <option value="gemini-1.5-pro">Google Gemini 1.5 Pro (Deep Reasoning)</option>
+          </select>
+        </div>
+
+        <!-- System Prompt Custom Instructions -->
+        <div class="om-input-group">
+          <label for="settings-system-prompt">Custom Instructions / Persona</label>
+          <textarea id="settings-system-prompt" class="om-input" rows="2" placeholder="e.g. Always provide concise code with type hints..."></textarea>
+        </div>
+
+        <!-- Cross-Conversation Memory -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: var(--om-radius-sm); padding: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 700; font-size: 0.82rem; color: #fff;">🧠 Long-Term Memory (Across Chats)</span>
+            <input type="checkbox" id="settings-memory-enabled-chk" checked>
           </div>
-          <ol style="font-size: 0.75rem; color: var(--om-text-secondary); margin: 6px 0 0 16px; line-height: 1.6;">
-            <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--om-cyan); text-decoration: underline;">Google AI Studio</a> (Free, no credit card required)</li>
-            <li>Click <strong>"Create API key"</strong> and copy the key (starts with <code>AIzaSy...</code>)</li>
-            <li>Paste it above and click <strong>"Save & Connect"</strong></li>
-          </ol>
-          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 0.73rem; color: var(--om-text-muted);">
-            🌐 <strong>For Vercel URL:</strong> Go to <a href="https://vercel.com/abhishek-ef1f/om-ai/settings/environment-variables" target="_blank" style="color: #38bdf8;">Vercel Settings ➔ Environment Variables</a> and add <code>GEMINI_API_KEY</code> so all visitors get live Gemini AI automatically!
+          <p style="font-size: 0.74rem; color: var(--om-text-muted); margin-bottom: 10px;">
+            Remembers key facts and preferences across conversations. You have full control to view and delete items.
+          </p>
+          <div id="settings-memory-facts-list" style="max-height: 110px; overflow-y: auto; margin-bottom: 8px;"></div>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="settings-new-memory-input" class="om-input" placeholder="Add custom memory (e.g. Prefer TypeScript)" style="font-size: 0.78rem; flex: 1;">
+            <button class="om-btn om-btn-xs om-btn-secondary" id="btn-add-memory-fact">+ Add</button>
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-          <span id="apikey-save-status" style="font-size: 0.75rem; color: #34d399; display: none;">✓ Settings Saved</span>
-          <div style="display: flex; gap: 10px; margin-left: auto;">
-            <button class="om-btn om-btn-secondary modal-close-trigger">Close</button>
-            <button class="om-btn om-btn-primary" id="btn-save-api-settings">Save & Connect ➔</button>
-          </div>
+        <!-- Voice Auto-Speech Toggle -->
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+          <span>🔊 Automatically read assistant responses aloud</span>
+          <input type="checkbox" id="settings-auto-speech-chk">
         </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button class="om-btn om-btn-secondary modal-close-trigger">Cancel</button>
+          <button class="om-btn om-btn-primary" id="btn-save-settings">Save Preferences</button>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
+  <!-- =========================================================================
+       Code Sandbox Runner Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="code-runner-modal">
+    <div class="om-modal-content sandbox-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-weight: 700;">▶ OM Interactive Code Sandbox Preview</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
+      </div>
+      <iframe id="code-sandbox-iframe" sandbox="allow-scripts allow-modals"></iframe>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
   <div id="om-toast-container"></div>
 
   <!-- Scripts -->
-  <script src="assets/js/knowledge.js"></script>
+  <script src="assets/js/chatStore.js"></script>
+  <script src="assets/js/analytics.js"></script>
+  <script src="assets/js/files.js"></script>
+  <script src="assets/js/voice.js"></script>
+  <script src="assets/js/projects.js"></script>
   <script src="assets/js/planner.js"></script>
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/assistant.js"></script>
-  <script src="assets/js/demo.js"></script>
   <script src="assets/js/app.js"></script>
 
 </body>

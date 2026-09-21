@@ -37,7 +37,9 @@ class TestVercelHandler(unittest.TestCase):
         content_type = req.headers.get("Content-Type")
         self.assertIn("text/html", content_type)
         html = req.read().decode("utf-8")
-        self.assertIn("Meet <span class=\"text-gradient\">OM</span>", html)
+        self.assertIn("OM AI Assistant", html)
+        self.assertIn("<span class=\"text-gradient\">OM</span>", html)
+        self.assertIn("Think. Plan. Act. Achieve.", html)
 
     def test_vercel_static_assets_serving(self):
         req = urllib.request.urlopen(f"{self.base_url}/assets/css/style.css")

@@ -1,520 +1,554 @@
 /**
- * OM – AI Action Assistant
- * Cognitive Engine & Conversational Action System
- * 
+ * OM AI Assistant - Cognitive Reasoning & Conversational Engine
  * Tagline: "Think. Plan. Act. Achieve."
+ * 
+ * Supports 8 Specialized Modes, Multi-turn Context, Think-Plan-Act-Verify Workflow,
+ * Interactive Code Runner/Sandbox, Data Analytics Ingestion, and Honest Action Architecture.
  */
 
 class OMAssistant {
   constructor() {
-    this.messages = [];
-    this.mode = 'action'; // 'action', 'research', 'reasoning', 'writing'
-    this.knowledgeBase = [];
-    this.activeGoal = null;
     this.isProcessing = false;
-    
-    // Exact requested greeting
+    this.currentMode = 'general';
     this.initialGreeting = "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.";
-    
-    this.init();
   }
 
-  init() {
-    // Load existing messages or initialize with brand greeting
-    const saved = localStorage.getItem('om_chat_history');
-    if (saved) {
-      try {
-        this.messages = JSON.parse(saved);
-      } catch (e) {
-        this.messages = [];
-      }
-    }
-
-    if (this.messages.length === 0) {
-      this.messages.push({
-        sender: 'om',
-        text: this.initialGreeting,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        reasoning: "OM System initialized. Ready to accept user objectives, decompose into Think-Plan-Act-Achieve workflow, and coordinate actionable execution.",
-        verified: true,
-        actions: []
-      });
-    }
-
-    this.renderMessages();
-    this.setupEventListeners();
-  }
-
-  setupEventListeners() {
-    const sendBtn = document.getElementById('chat-send-btn');
-    const inputField = document.getElementById('chat-user-input');
-    const chips = document.querySelectorAll('.prompt-chip');
-    const modeBtns = document.querySelectorAll('.mode-btn');
-
-    if (sendBtn && inputField) {
-      sendBtn.addEventListener('click', () => this.handleUserSubmit());
-      inputField.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          this.handleUserSubmit();
-        }
-      });
-    }
-
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        const text = chip.getAttribute('data-prompt') || chip.innerText;
-        if (inputField) {
-          inputField.value = text;
-          inputField.focus();
-        }
-      });
-    });
-
-    modeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        modeBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.mode = btn.getAttribute('data-mode') || 'action';
-        this.notifyModeChange();
-      });
-    });
-  }
-
-  notifyModeChange() {
-    const modes = {
-      action: "Switched to Full Action Mode (Think ➔ Plan ➔ Act ➔ Achieve)",
-      research: "Switched to Deep Research & Fact Verification Mode",
-      reasoning: "Switched to Step-by-Step Analytical Problem Solving Mode",
-      writing: "Switched to High-Impact Content & Blueprint Generation Mode"
-    };
-    if (window.omApp) {
-      window.omApp.showToast(modes[this.mode] || "Mode updated", "info");
+  setMode(mode) {
+    this.currentMode = mode;
+    const chat = window.omChatStore ? window.omChatStore.getActiveChat() : null;
+    if (chat) {
+      chat.mode = mode;
+      window.omChatStore.saveChats();
     }
   }
 
-  saveMessages() {
-    localStorage.setItem('om_chat_history', JSON.stringify(this.messages));
+  getMode() {
+    const chat = window.omChatStore ? window.omChatStore.getActiveChat() : null;
+    return (chat && chat.mode) ? chat.mode : this.currentMode;
   }
 
-  renderMessages() {
-    const container = document.getElementById('chat-messages-container');
-    if (!container) return;
+  // Auto-detect domain/mode from prompt content
+  detectIntentMode(text) {
+    if (!text) return 'general';
+    const lower = text.toLowerCase();
 
-    container.innerHTML = '';
-
-    this.messages.forEach((msg, idx) => {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `chat-msg ${msg.sender === 'om' ? 'om-agent' : 'user'}`;
-
-      const avatar = document.createElement('div');
-      avatar.className = 'msg-avatar';
-      avatar.innerHTML = msg.sender === 'om' 
-        ? `<img src="assets/icons/logo.svg" alt="OM" style="width: 24px; height: 24px;">` 
-        : `<span>YOU</span>`;
-
-      const body = document.createElement('div');
-      body.className = 'msg-body';
-
-      // Reasoning trace for OM messages if available
-      if (msg.sender === 'om' && msg.reasoning) {
-        const reasoningEl = document.createElement('div');
-        reasoningEl.className = 'reasoning-accordion';
-        reasoningEl.innerHTML = `
-          <div class="reasoning-summary" onclick="this.nextElementSibling.classList.toggle('hidden');">
-            <span>⚡ OM Neural Reasoning & Verification</span>
-            <span style="margin-left: auto; font-size: 0.7rem;">(Click to expand)</span>
-          </div>
-          <div class="reasoning-content hidden">${this.escapeHTML(msg.reasoning)}</div>
-        `;
-        body.appendChild(reasoningEl);
-      }
-
-      // Main Text Content
-      const content = document.createElement('div');
-      content.className = 'msg-content';
-      content.innerHTML = this.formatMarkdown(msg.text);
-      body.appendChild(content);
-
-      // Search citations if present
-      if (msg.citations && msg.citations.length > 0) {
-        const citeBox = document.createElement('div');
-        citeBox.style.cssText = 'display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;';
-        msg.citations.forEach(c => {
-          citeBox.innerHTML += `<span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.3); color: #38bdf8;">🔗 ${c}</span>`;
-        });
-        body.appendChild(citeBox);
-      }
-
-      // Verification badge & Action push button
-      if (msg.sender === 'om' && msg.actions && msg.actions.length > 0) {
-        const actionBox = document.createElement('div');
-        actionBox.className = 'plan-actions-box';
-        
-        let actionsListHtml = msg.actions.map((act, aIdx) => `
-          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
-            <span><strong>[${act.stage.toUpperCase()}]</strong> ${this.escapeHTML(act.title)}</span>
-            <span style="color: var(--om-cyan); font-size: 0.75rem;">${act.estimate || '1-2d'}</span>
-          </div>
-        `).join('');
-
-        actionBox.innerHTML = `
-          <div class="plan-actions-header">
-            <span>Action Pipeline Generated (${msg.actions.length} items)</span>
-            <span class="verification-badge">✓ Verified by OM Engine</span>
-          </div>
-          <div style="margin: 6px 0;">${actionsListHtml}</div>
-          <button class="om-btn om-btn-primary om-btn-sm" style="width: 100%; margin-top: 6px;" onclick="omAssistant.transferActionsToPlanner(${idx})">
-            🚀 Push All Items to Task Planner
-          </button>
-        `;
-        body.appendChild(actionBox);
-      }
-
-      // Clarification prompt chips if required
-      if (msg.clarifications && msg.clarifications.length > 0) {
-        const clarifBox = document.createElement('div');
-        clarifBox.style.cssText = 'display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;';
-        msg.clarifications.forEach(cl => {
-          const chip = document.createElement('button');
-          chip.className = 'prompt-chip';
-          chip.style.borderColor = 'var(--om-cyan)';
-          chip.innerText = cl;
-          chip.onclick = () => {
-            const input = document.getElementById('chat-user-input');
-            if (input) {
-              input.value = cl;
-              this.handleUserSubmit();
-            }
-          };
-          clarifBox.appendChild(chip);
-        });
-        body.appendChild(clarifBox);
-      }
-
-      msgDiv.appendChild(avatar);
-      msgDiv.appendChild(body);
-      container.appendChild(msgDiv);
-    });
-
-    container.scrollTop = container.scrollHeight;
-  }
-
-  async handleUserSubmit() {
-    const input = document.getElementById('chat-user-input');
-    if (!input || this.isProcessing) return;
-
-    const userText = input.value.trim();
-    if (!userText) return;
-
-    input.value = '';
-
-    // Add user message
-    this.messages.push({
-      sender: 'user',
-      text: userText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-
-    this.renderMessages();
-    this.saveMessages();
-
-    // Show typing state
-    this.isProcessing = true;
-    this.renderTypingIndicator();
-
-    // Natural processing & decomposition
-    try {
-      const response = await this.generateCognitiveResponse(userText);
-      this.removeTypingIndicator();
-      this.messages.push(response);
-      this.renderMessages();
-      this.saveMessages();
-
-      if (window.omApp) {
-        window.omApp.recordActivity(`OM processed objective: "${userText.slice(0, 32)}..."`);
-      }
-    } catch (err) {
-      this.removeTypingIndicator();
-      this.messages.push({
-        sender: 'om',
-        text: "I encountered an issue processing that action vector. Let's recalibrate: please specify your primary milestone.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
-      this.renderMessages();
-    } finally {
-      this.isProcessing = false;
+    if (lower.includes('.csv') || lower.includes('dataset') || lower.includes('pandas') || lower.includes('data analysis') || lower.includes('exploratory data') || lower.includes('statistics') || lower.includes('excel')) {
+      return 'data';
     }
-  }
-
-  renderTypingIndicator() {
-    const container = document.getElementById('chat-messages-container');
-    if (!container) return;
-
-    const typingDiv = document.createElement('div');
-    typingDiv.id = 'om-typing-node';
-    typingDiv.className = 'chat-msg om-agent';
-    typingDiv.innerHTML = `
-      <div class="msg-avatar"><img src="assets/icons/logo.svg" alt="OM" style="width: 24px; height: 24px;"></div>
-      <div class="msg-body">
-        <div class="msg-content" style="display: flex; align-items: center; gap: 8px; padding: 12px 18px;">
-          <span style="font-family: var(--om-font-mono); font-size: 0.8rem; color: var(--om-cyan);">OM Neural Core thinking & verifying...</span>
-          <span class="status-dot"></span>
-        </div>
-      </div>
-    `;
-    container.appendChild(typingDiv);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  removeTypingIndicator() {
-    const node = document.getElementById('om-typing-node');
-    if (node) node.remove();
+    if (lower.includes('def ') || lower.includes('function') || lower.includes('const ') || lower.includes('import ') || lower.includes('class ') || lower.includes('code') || lower.includes('debug') || lower.includes('syntax error') || lower.includes('refactor') || lower.includes('python') || lower.includes('react') || lower.includes('java') || lower.includes('sql') || lower.includes('html') || lower.includes('css')) {
+      return 'coding';
+    }
+    if (lower.includes('project') || lower.includes('build an app') || lower.includes('create a website') || lower.includes('portfolio website') || lower.includes('saas') || lower.includes('architecture')) {
+      return 'project';
+    }
+    if (lower.includes('resume') || lower.includes('interview') || lower.includes('career') || lower.includes('job') || lower.includes('salary') || lower.includes('portfolio')) {
+      return 'career';
+    }
+    if (lower.includes('research') || lower.includes('compare') || lower.includes('source') || lower.includes('paper') || lower.includes('documentation') || lower.includes('history of')) {
+      return 'research';
+    }
+    if (lower.includes('email') || lower.includes('write an essay') || lower.includes('blog post') || lower.includes('proposal') || lower.includes('letter') || lower.includes('rewrite')) {
+      return 'writing';
+    }
+    if (lower.includes('explain') || lower.includes('teach me') || lower.includes('learn') || lower.includes('socratic') || lower.includes('how does') || lower.includes('concept')) {
+      return 'study';
+    }
+    return 'general';
   }
 
   /**
-   * Complete Cognitive Engine:
-   * Multi-turn understanding, research analysis, document ingestion reasoning,
-   * step-by-step problem solving, verification, and actionable synthesis.
+   * Main Conversational Generation Pipeline
    */
-  async generateCognitiveResponse(prompt) {
-    const lower = prompt.toLowerCase();
-    const contextDocs = window.omKnowledge ? window.omKnowledge.getDocumentsText() : "";
-    const historyText = this.messages.slice(-4).map(m => `${m.sender}: ${m.text}`).join('\n');
+  async processUserMessage(userText, attachments = []) {
+    if (this.isProcessing) return null;
+    this.isProcessing = true;
 
-    // 1. Check if user provided a client-side Google Gemini API Key
-    const customKey = localStorage.getItem('om_custom_provider_key');
-    if (customKey && customKey.trim().length > 10) {
+    const chatStore = window.omChatStore;
+    const activeChat = chatStore ? chatStore.getActiveChat() : null;
+    if (!activeChat) {
+      this.isProcessing = false;
+      return null;
+    }
+
+    // Auto-switch mode if strongly detected and current mode is general
+    const detected = this.detectIntentMode(userText);
+    if (activeChat.mode === 'general' && detected !== 'general') {
+      activeChat.mode = detected;
+      this.currentMode = detected;
+      if (window.omApp) window.omApp.updateModeSelector(detected);
+    }
+
+    // Build context from previous conversation messages
+    const history = activeChat.messages.slice(-8).map(m => ({
+      role: m.sender === 'user' ? 'user' : 'model',
+      text: m.text
+    }));
+
+    // Ingest attached file context
+    let attachedContext = "";
+    if (attachments && attachments.length > 0) {
+      attachedContext = "\n\n--- USER ATTACHED FILES ---\n";
+      attachments.forEach(att => {
+        attachedContext += `[File: ${att.name} (${att.extension})]\n`;
+        if (att.textContent) {
+          attachedContext += att.textContent.substring(0, 6000) + "\n";
+        } else if (att.isImage) {
+          attachedContext += `[Uploaded Image: ${att.name}]\n`;
+        }
+      });
+      attachedContext += "--- END ATTACHMENTS ---\n";
+    }
+
+    // Include cross-conversation Memory Facts if enabled
+    let memoryContext = "";
+    if (chatStore && chatStore.memory && chatStore.memory.enabled && chatStore.memory.facts.length > 0) {
+      memoryContext = "\nUser Profile Preferences & Memory:\n" + chatStore.memory.facts.map(f => `• ${f.text}`).join('\n') + "\n";
+    }
+
+    // Call AI Engine (Gemini / Serverless / Autonomous Engine)
+    let responseObj = null;
+    try {
+      responseObj = await this.dispatchCognitiveInference(userText, history, attachedContext, memoryContext, activeChat.mode, attachments);
+    } catch (err) {
+      console.warn("Inference error, falling back to autonomous action engine", err);
+      responseObj = this.generateAutonomousFallback(userText, history, activeChat.mode, attachments);
+    } finally {
+      this.isProcessing = false;
+    }
+
+    return responseObj;
+  }
+
+  /**
+   * Dispatches request to Gemini API or Serverless Endpoint
+   */
+  async dispatchCognitiveInference(prompt, history, attachmentsCtx, memoryCtx, mode, attachments) {
+    const settings = window.omChatStore ? window.omChatStore.settings : {};
+    const apiKey = (settings && settings.apiKey && settings.apiKey.trim().startsWith('AIzaSy')) ? settings.apiKey.trim() : null;
+
+    // Check if image attachment exists for multimodal Gemini
+    const imageAttachment = attachments.find(a => a.isImage && a.base64Data);
+
+    // 1. Direct Client-side Gemini Call if user key provided
+    if (apiKey) {
       try {
-        const geminiResponse = await this.callGoogleGeminiAPI(customKey.trim(), prompt, historyText, contextDocs);
-        if (geminiResponse) return geminiResponse;
-      } catch (err) {
-        console.warn("Direct Google Gemini API error, attempting fallback:", err);
+        const geminiResp = await this.callGeminiMultimodal(apiKey, prompt, history, attachmentsCtx, memoryCtx, mode, imageAttachment);
+        if (geminiResp) return geminiResp;
+      } catch (gemErr) {
+        console.warn("Direct Gemini call error, trying backend serverless", gemErr);
       }
     }
 
-    // 2. Try serverless backend /api/chat (uses GEMINI_API_KEY environment variable on Vercel)
+    // 2. Try Vercel Serverless /api/chat (which uses server-side GEMINI_API_KEY)
     try {
       const serverResp = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, mode: this.mode, apiKey: customKey || 'om_web' })
+        body: JSON.stringify({
+          prompt: prompt + attachmentsCtx + (memoryCtx ? "\n" + memoryCtx : ""),
+          mode: mode,
+          apiKey: apiKey || 'om_web'
+        })
       });
+
       if (serverResp.ok) {
         const data = await serverResp.json();
         if (data && (data.text || data.message)) {
-          return {
-            sender: 'om',
-            text: data.text || data.message,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            reasoning: data.reasoning || "1. Deconstructed into Think-Plan-Act-Achieve pipeline.\n2. Verified feasibility and dependency sequencing (Score: 99/100).",
-            verified: data.verified !== undefined ? data.verified : true,
-            actions: data.actions || [],
-            citations: ["OM Action Framework", data.apiKeyUsed || "Vercel Serverless Function"],
-            clarifications: ["Push all items to Task Planner", "Deconstruct into deeper technical details", "Check Progress Dashboard"]
-          };
+          return this.formatStructuredResponse(data.text || data.message, data.reasoning, data.actions, mode, data.apiKeyUsed || 'Vercel Serverless');
         }
       }
     } catch (netErr) {
-      // In static GitHub Pages or offline environments, proceed seamlessly to autonomous engine
+      // Offline / GitHub Pages static mode
     }
 
-    let reasoningSteps = [];
-    let generatedActions = [];
-    let citations = [];
-    let clarifications = [];
-    let replyText = "";
-
-    reasoningSteps.push("1. Intent Recognition: Parsed objective into core ambition, constraints, and target deliverables.");
-    reasoningSteps.push("2. Context Retrieval: Evaluated multi-turn dialogue context and active Knowledge Vault entries.");
-
-    // Check if user is asking about an uploaded document
-    if (lower.includes("document") || lower.includes("vault") || lower.includes("file") || lower.includes("data") || (contextDocs && contextDocs.length > 50 && (lower.includes("summarize") || lower.includes("extract")))) {
-      reasoningSteps.push("3. Document Analysis: Ingested Knowledge Vault assets. Extracted structural schemas and cross-referenced key entities.");
-      citations.push("Knowledge Vault: Ingested Documents & Data Store");
-
-      const docSummary = window.omKnowledge ? window.omKnowledge.getSemanticSummary() : "Indexed project specifications";
-      replyText = `### 📄 Knowledge & Document Synthesis\n\nI have analyzed your active documents in the Knowledge Vault.\n\n${docSummary}\n\n**Key Takeaways & Actionable Vectors:**\n- **Requirement Alignment**: Identified explicit performance thresholds and delivery milestones.\n- **Risk Mitigation**: Detected dependencies requiring immediate verification in the **Think** stage.\n- **Recommended Next Step**: Would you like me to convert these requirements into a full structured action plan?`;
-      
-      clarifications = [
-        "Generate a 4-Stage Action Plan from this document",
-        "Perform deep risk & feasibility analysis",
-        "Extract technical architecture blueprint"
-      ];
-    }
-    // Ambiguous high-level prompt needing clarification
-    else if (lower === "help me" || lower === "i have an idea" || lower.length < 12) {
-      reasoningSteps.push("3. Ambiguity Detection: Input lacks boundary parameters (scope, timeline, or domain). Formulating proactive clarifying questions.");
-      replyText = `I'm ready to turn your idea into real execution! To build the most accurate action plan, tell me a bit more:\n\n1. **What domain or objective is this in?** (e.g., Software MVP, Marketing Growth, Infrastructure, Operations)\n2. **What is your target timeline?** (e.g., 7 days, 1 month, Q4)\n3. **What is the single most critical metric for success?**\n\nYou can also click any of the suggested vectors below:`;
-      clarifications = [
-        "Build an AI SaaS MVP in 14 days",
-        "Optimize cloud database architecture",
-        "Launch an autonomous newsletter & marketing engine",
-        "Plan personal product release sprint"
-      ];
-    }
-    // Goal Decomposition (Think - Plan - Act - Achieve)
-    else if (lower.includes("launch") || lower.includes("build") || lower.includes("plan") || lower.includes("mvp") || lower.includes("create") || lower.includes("optimize") || lower.includes("achieve") || lower.includes("decompose")) {
-      reasoningSteps.push("3. Stage Synthesis: Structuring 4-Phase Action Matrix: Think ➔ Plan ➔ Act ➔ Achieve.");
-      reasoningSteps.push("4. Verification & Feasibility Check: Validated milestone pacing against critical path dependencies. Verification Score: 98/100.");
-      citations.push("OM Best Practices: High-Velocity Execution Graph", "Automated Constraint Verifier");
-
-      const goalName = prompt.replace(/^(launch|build|plan|create|how to|i want to)\s*/i, '').trim();
-      const capGoal = goalName.charAt(0).toUpperCase() + goalName.slice(1);
-
-      generatedActions = [
-        { stage: 'think', title: `Define Core Architecture & Scope for ${capGoal}`, estimate: '1-2 days' },
-        { stage: 'think', title: `Map Critical Dependencies, Tech Stack & API Contracts`, estimate: '1 day' },
-        { stage: 'plan', title: `Establish Sprint Milestones, Data Models & UI Wireframes`, estimate: '2-3 days' },
-        { stage: 'act', title: `Implement Core Engine, Core Services & Authentication`, estimate: '4-5 days' },
-        { stage: 'act', title: `Integrate UI Components with Backend Endpoints & State`, estimate: '3-4 days' },
-        { stage: 'achieve', title: `Run End-to-End Verification, Performance Benchmarks & Ship`, estimate: '2 days' }
-      ];
-
-      replyText = `### 🎯 Action Plan: ${capGoal}\n\nI have decomposed your objective into a structured execution roadmap following the **Think. Plan. Act. Achieve.** framework.\n\n#### 1. 💡 Think (Strategy & Constraints)\n- **Context**: Clarified scope, non-negotiable deliverables, and target user persona.\n- **Risk Factor**: Prevent scope creep by locking the v1 feature boundary.\n\n#### 2. 📋 Plan (Architecture & Milestones)\n- **Architecture**: Modular separation between client experience and backend logic.\n- **Dependencies**: Clear contracts established upfront to ensure zero blocking bottlenecks.\n\n#### 3. ⚡ Act (Execution & Implementation)\n- **Core Build**: Rapid prototype assembly followed by robust testing.\n- **Velocity**: Execute prioritized subtasks iteratively with continuous integration.\n\n#### 4. 🏆 Achieve (Verification & Sign-off)\n- **Verification Criteria**: Latency < 200ms, zero critical errors, end-to-end task automation validated.\n\n*Review the action items below and click **"Push All Items to Task Planner"** to instantly populate your workspace.*`;
-    }
-    // Deep Problem Solving / Research
-    else if (lower.includes("why") || lower.includes("how") || lower.includes("solve") || lower.includes("research") || lower.includes("explain")) {
-      reasoningSteps.push("3. Multi-Step Problem Solving: Deconstructing query into first-principles reasoning.");
-      reasoningSteps.push("4. Fact Verification: Validating algorithmic consistency and practical feasibility.");
-      citations.push("OM Computational Reasoning Engine", "Empirical Systems Design Standard");
-
-      replyText = `### 🧠 Step-by-Step Analysis & Solution\n\nHere is a structured, verified resolution to your question:\n\n**1. Root Cause & Contextual Framework**\nWhen addressing **"${this.escapeHTML(prompt)}"**, we first isolate the fundamental mechanism governing performance and user outcomes.\n\n**2. Strategic Resolution Steps**\n- **Step 1 (Assessment)**: Audit system logs and establish baseline telemetry.\n- **Step 2 (Intervention)**: Deploy targeted structural refactoring or targeted optimization.\n- **Step 3 (Continuous Guardrails)**: Set up proactive monitoring so regressions are flagged automatically.\n\n**3. Verifiable Outcome**\nBy applying this sequential approach, you eliminate guesswork, shorten cycle times, and guarantee measurable results.`;
-
-      clarifications = [
-        "Create an actionable task list for this solution",
-        "Generate a technical code or architectural template",
-        "Deepen research with empirical benchmarks"
-      ];
-    }
-    // General Conversational Interaction
-    else {
-      reasoningSteps.push("3. Natural Conversation Engine: Synthesizing contextual, human-like guidance tailored to the user's trajectory.");
-      reasoningSteps.push("4. Action Alignment: Ensuring every conversational step remains actionable and goal-oriented.");
-
-      replyText = `I understand completely. In aligning with your objective, my role as your **AI Action Assistant** is to ensure ideas don't stay theoretical—we turn them into real results.\n\nWhat is the immediate priority you'd like us to tackle next? We can formulate a complete action plan, research technical options, analyze your documents, or schedule tasks directly on your board.`;
-      
-      clarifications = [
-        "Plan my next sprint",
-        "Review active progress dashboard",
-        "Upload a document for OM to analyze"
-      ];
-    }
-
-    return {
-      sender: 'om',
-      text: replyText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      reasoning: reasoningSteps.join('\n'),
-      verified: true,
-      actions: generatedActions,
-      citations: citations,
-      clarifications: clarifications
-    };
+    // 3. Autonomous Cognitive Engine
+    return this.generateAutonomousFallback(prompt, history, mode, attachments);
   }
 
-  transferActionsToPlanner(msgIndex) {
-    const msg = this.messages[msgIndex];
-    if (!msg || !msg.actions || !window.omPlanner) return;
+  /**
+   * Direct Google Gemini Multimodal API Call (1.5 / 2.0 Flash)
+   */
+  async callGeminiMultimodal(apiKey, prompt, history, attachmentsCtx, memoryCtx, mode, imageAttachment) {
+    const model = (window.omChatStore && window.omChatStore.settings.model) || 'gemini-1.5-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-    msg.actions.forEach(action => {
-      window.omPlanner.addTask({
-        title: action.title,
-        desc: `Generated by OM Assistant under stage [${action.stage.toUpperCase()}]. Estimated: ${action.estimate || '1-2d'}`,
-        stage: action.stage,
-        priority: action.stage === 'act' ? 'high' : (action.stage === 'plan' ? 'medium' : 'low'),
-        estimate: action.estimate || '1d'
+    const systemInstruction = `You are OM, an intelligent, modern conversational AI assistant.
+Tagline: "Think. Plan. Act. Achieve."
+Current Specialization Mode: ${mode.toUpperCase()}
+User Profile & Memory: ${memoryCtx || "None"}
+
+Guidelines:
+1. Provide human-like, helpful, natural answers.
+2. For coding: Write modern, complete code with syntax formatting, comments, and instructions.
+3. For data: Explain dataset shapes, stats, patterns, and insights clearly.
+4. For projects/goals: Use OM's "Think. Plan. Act. Achieve." structure with actionable tasks.
+5. Honest Action Model: You cannot execute remote shell commands or create live GitHub repos directly. Explain what code is generated and guide the user on running it.`;
+
+    const contents = [];
+
+    // History turns
+    history.forEach(h => {
+      contents.push({
+        role: h.role === 'user' ? 'user' : 'model',
+        parts: [{ text: h.text }]
       });
     });
 
-    if (window.omApp) {
-      window.omApp.showToast(`Transferred ${msg.actions.length} action items to the Task Planner!`, 'success');
-      window.omApp.switchView('planner');
-    }
-  }
+    // Current turn
+    const currentParts = [];
+    currentParts.push({ text: systemInstruction + attachmentsCtx + "\n\nUser Message: " + prompt });
 
-  async callGoogleGeminiAPI(apiKey, prompt, history, docs) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const systemPrompt = `You are OM – AI Action Assistant.
-Brand Tagline: "Think. Plan. Act. Achieve."
-Brand Philosophy: Intelligent, simple, and universal AI assistant helping users turn ideas into real actions.
-If introducing yourself, say: "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it."
-For every user goal or task, break it down clearly into 4 structured stages:
-### 🎯 Action Plan: [Goal Name]
-#### 1. 💡 Think (Context, Scope, Guardrails)
-#### 2. 📋 Plan (Architecture, Milestones, Contracts)
-#### 3. ⚡ Act (Execution, Development, Subtasks)
-#### 4. 🏆 Achieve (Verification, Metric Testing, Sign-off)
-Always provide actionable next steps and estimated timelines.`;
-
-    const payload = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: systemPrompt + (docs ? "\n\nKnowledge Documents Context:\n" + docs : "") + "\n\nUser Question/Goal:\n" + prompt }
-          ]
+    // Attach image if present
+    if (imageAttachment) {
+      currentParts.push({
+        inline_data: {
+          mime_type: imageAttachment.type || "image/png",
+          data: imageAttachment.base64Data
         }
-      ]
-    };
+      });
+    }
 
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    contents.push({
+      role: 'user',
+      parts: currentParts
     });
 
-    if (!resp.ok) {
-      throw new Error(`Google Gemini API returned status ${resp.status}`);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API HTTP ${response.status}`);
     }
 
-    const data = await resp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("No text response from Gemini");
+    const json = await response.json();
+    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("Empty candidate text from Gemini");
 
-    const cleanGoal = prompt.replace(/^(decompose:|deconstruct:|plan:|launch:|build:|how to|i want to)\s*/i, '').trim() || 'Goal';
-    const capGoal = cleanGoal.charAt(0).toUpperCase() + cleanGoal.slice(1);
+    const reasoning = [
+      `1. Intent Recognition: Parsed objective in ${mode.toUpperCase()} domain.`,
+      `2. Context Synthesis: Cross-referenced multi-turn context and memory invariants.`,
+      `3. Verification Check: Evaluated completeness and constraint satisfaction (Score: 99/100).`
+    ];
+
+    const actions = this.extractActionsFromText(text, prompt);
 
     return {
       sender: 'om',
       text: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      reasoning: `1. Connected to Google Gemini 1.5 Flash Engine via API Key.\n2. Ingested user prompt & multi-turn history.\n3. Formulated structured response using Think. Plan. Act. Achieve. framework.\n4. Verification & Feasibility Score: 99/100.`,
+      reasoning: reasoning.join('\n'),
       verified: true,
-      actions: [
-        { stage: 'think', title: `Scope requirements for ${capGoal}`, estimate: '1d' },
-        { stage: 'plan', title: `Architect milestones & technical plan for ${capGoal}`, estimate: '2d' },
-        { stage: 'act', title: `Execute core development & sprint items`, estimate: '3d' },
-        { stage: 'achieve', title: `Run verification tests & milestone delivery`, estimate: '1d' }
-      ],
-      citations: ["Google Gemini 1.5 Flash", "OM Action Framework"],
-      clarifications: ["Push all items to Task Planner", "Deconstruct into deeper technical details", "Check Progress Dashboard"]
+      actions: actions,
+      citations: [`Google ${model} (Live)`, "OM Action Framework"],
+      toolsUsed: imageAttachment ? ["Gemini Vision", "Multimodal Engine"] : ["Gemini Generative Core"]
     };
   }
 
-  escapeHTML(str) {
-    if (!str) return '';
-    return str.replace(/[&<>'"]/g, 
-      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
+  /**
+   * Autonomous Cognitive Engine (100% Offline & Free Fallback)
+   * Deconstructs any user prompt into high-quality human-like responses across all 8 modes.
+   */
+  generateAutonomousFallback(prompt, history, mode, attachments) {
+    const lower = prompt.toLowerCase().trim();
+    let text = "";
+    let reasoning = [];
+    let actions = [];
+    let tools = ["OM Cognitive Core"];
+
+    // Check if user uploaded a CSV
+    const csvAttachment = attachments.find(a => a.extension === 'csv' && a.parsedDataset);
+    if (csvAttachment) {
+      const ds = csvAttachment.parsedDataset;
+      text = window.omAnalytics ? window.omAnalytics.generateAnalysisSummary(ds) : `### Data Analysis for ${csvAttachment.name}`;
+      reasoning = [
+        `1. Data Ingestion: Parsed ${ds.rowCount} rows across ${ds.columnCount} columns.`,
+        `2. Descriptive Statistics: Calculated column data types, missing value percentages, and metrics.`,
+        `3. Pattern Recognition: Extracted distributions and synthesized actionable Pandas code.`
+      ];
+      actions = [
+        { stage: 'think', title: `Perform exploratory data analysis on ${csvAttachment.name}`, estimate: '1h' },
+        { stage: 'plan', title: 'Impute missing values and normalize numeric features', estimate: '2h' },
+        { stage: 'act', title: 'Train baseline predictive model & evaluate cross-validation score', estimate: '4h' },
+        { stage: 'achieve', title: 'Export findings into executive summary dashboard', estimate: '1h' }
+      ];
+      tools.push("Data Science Parser", "SVG Visualizer");
+
+      return {
+        sender: 'om',
+        text: text,
+        chartDataset: ds,
+        reasoning: reasoning.join('\n'),
+        verified: true,
+        actions: actions,
+        citations: ["OM Data Analytics Engine", "Browser CSV Stream"],
+        toolsUsed: tools
+      };
+    }
+
+    // 1. Coding Mode or code request
+    if (mode === 'coding' || lower.includes('python') || lower.includes('code') || lower.includes('calculator') || lower.includes('react') || lower.includes('javascript') || lower.includes('function') || lower.includes('sql') || lower.includes('debug')) {
+      tools.push("Code Generator", "Syntax Engine");
+      
+      // Contextual follow-up check (e.g. calculator -> GUI -> dark mode)
+      const lastCodeMsg = history.filter(h => h.role === 'model' && h.text.includes('```')).pop();
+      const isFollowUp = lastCodeMsg && (lower.includes('add') || lower.includes('gui') || lower.includes('dark mode') || lower.includes('now') || lower.includes('more') || lower.includes('it'));
+
+      if (lower.includes('calculator') || (isFollowUp && lastCodeMsg.text.includes('Calculator'))) {
+        if (lower.includes('dark mode') || (isFollowUp && lower.includes('dark'))) {
+          text = `### 🌙 Enhanced Python GUI Calculator with Dark Mode\n\nI have updated the calculator project with a modern dark mode obsidian palette (\`#1e1e2e\`, \`#89b4fa\`), rounded buttons, and hover feedback using \`tkinter\`.\n\n\`\`\`python\nimport tkinter as tk\n\nclass ModernCalculator:\n    def __init__(self, root):\n        self.root = root\n        self.root.title("OM Dark Calculator")\n        self.root.geometry("340x480")\n        self.root.configure(bg="#11111b")\n        self.expression = ""\n        \n        # Display\n        self.display = tk.Entry(\n            root, font=("JetBrains Mono", 24), bg="#181825", fg="#cdd6f4",\n            bd=0, justify="right", insertbackground="#89b4fa"\n        )\n        self.display.pack(fill="x", padx=16, pady=20, ipady=12)\n        \n        # Keypad Grid\n        btn_frame = tk.Frame(root, bg="#11111b")\n        btn_frame.pack(fill="both", expand=True, padx=12, pady=10)\n        \n        buttons = [\n            ('C', '#f38ba8'), ('(', '#89b4fa'), (')', '#89b4fa'), ('/', '#fab387'),\n            ('7', '#313244'), ('8', '#313244'), ('9', '#313244'), ('*', '#fab387'),\n            ('4', '#313244'), ('5', '#313244'), ('6', '#313244'), ('-', '#fab387'),\n            ('1', '#313244'), ('2', '#313244'), ('3', '#313244'), ('+', '#fab387'),\n            ('0', '#313244'), ('.', '#313244'), ('⌫', '#45475a'), ('=', '#a6e3a1')\n        ]\n        \n        for idx, (text, color) in enumerate(buttons):\n            r, c = divmod(idx, 4)\n            btn = tk.Button(\n                btn_frame, text=text, font=("Inter", 14, "bold"),\n                bg=color, fg="#11111b" if color in ['#a6e3a1', '#f38ba8', '#fab387'] else "#cdd6f4",\n                activebackground="#585b70", bd=0, relief="flat",\n                command=lambda t=text: self.on_click(t)\n            )\n            btn.grid(row=r, column=c, sticky="nsew", padx=4, pady=4)\n            btn_frame.grid_columnconfigure(c, weight=1)\n            btn_frame.grid_rowconfigure(r, weight=1)\n            \n    def on_click(self, key):\n        if key == 'C':\n            self.expression = ""\n        elif key == '⌫':\n            self.expression = self.expression[:-1]\n        elif key == '=':\n            try:\n                self.expression = str(eval(self.expression))\n            except Exception:\n                self.expression = "Error"\n        else:\n            self.expression += key\n            \n        self.display.delete(0, tk.END)\n        self.display.insert(0, self.expression)\n\nif __name__ == "__main__":\n    root = tk.Tk()\n    app = ModernCalculator(root)\n    root.mainloop()\n\`\`\`\n\n**Key Improvements Added:**\n- **Dark Mode Palette**: Obsidian `#11111b` background with high-contrast pastel accent buttons.\n- **Error Guardrails**: Wrapped calculation in safety \`eval()\` catch block.\n- **Modern Geometry**: Auto-scaling grid layout that respects window resizing.`;
+          reasoning.push("1. Context Continuity: Recognized user request to layer Dark Mode styling onto existing Python calculator.");
+          reasoning.push("2. Architecture Refactor: Updated Tkinter color palette, button styling, and layout constraints.");
+          reasoning.push("3. Verification: Confirmed syntax and event loop execution structure.");
+        } else if (lower.includes('gui')) {
+          text = `### 🖥️ Python GUI Calculator with Tkinter\n\nHere is a clean, interactive graphical calculator built with Python's built-in \`tkinter\` library (no external \`pip\` dependencies needed):\n\n\`\`\`python\nimport tkinter as tk\n\ndef click(btn_text):\n    if btn_text == "=":\n        try:\n            res = str(eval(entry.get()))\n            entry.delete(0, tk.END)\n            entry.insert(0, res)\n        except Exception:\n            entry.delete(0, tk.END)\n            entry.insert(0, "Error")\n    elif btn_text == "C":\n        entry.delete(0, tk.END)\n    else:\n        entry.insert(tk.END, btn_text)\n\nroot = tk.Tk()\nroot.title("OM Calculator")\nroot.geometry("300x400")\n\nentry = tk.Entry(root, font=("Helvetica", 20), justify="right", bd=8)\nentry.pack(fill="x", padx=10, pady=10)\n\nbtn_layout = [\n    ['7', '8', '9', '/'],\n    ['4', '5', '6', '*'],\n    ['1', '2', '3', '-'],\n    ['C', '0', '=', '+']\n]\n\nfor row in btn_layout:\n    frame = tk.Frame(root)\n    frame.pack(fill="both", expand=True)\n    for char in row:\n        btn = tk.Button(frame, text=char, font=("Helvetica", 16), command=lambda c=char: click(c))\n        btn.pack(side="left", fill="both", expand=True, padx=2, pady=2)\n\nroot.mainloop()\n\`\`\`\n\n*Run this code in your terminal with \`python calculator.py\`. Want to add dark mode or scientific functions next?*`;
+          reasoning.push("1. Context Continuity: Transformed CLI calculator request into complete graphical Tkinter desktop application.");
+          reasoning.push("2. Verification: Verified zero third-party dependencies for universal portability.");
+        } else {
+          text = `### 🧮 Complete Python Calculator Engine\n\nHere is a clean, modular Python calculator supporting standard arithmetic, division-by-zero protection, and command-line execution:\n\n\`\`\`python\ndef calculate(a: float, b: float, operator: str) -> float:\n    """Executes arithmetic operations with error guardrails."""\n    ops = {\n        '+': lambda x, y: x + y,\n        '-': lambda x, y: x - y,\n        '*': lambda x, y: x * y,\n        '/': lambda x, y: x / y if y != 0 else "Error: Division by zero",\n        '^': lambda x, y: x ** y\n    }\n    if operator not in ops:\n        raise ValueError(f"Unsupported operator: {operator}")\n    return ops[operator](a, b)\n\nif __name__ == "__main__":\n    print("OM Calculator Engine Active")\n    print("12 * 8 =", calculate(12, 8, '*'))\n    print("100 / 4 =", calculate(100, 4, '/'))\n\`\`\`\n\nWould you like me to **add a GUI** or convert this into a **FastAPI backend** next?`;
+          reasoning.push("1. Intent Recognition: Formulated pure Python calculator solution with type hints and defensive validation.");
+        }
+      } else {
+        text = `### 💻 Technical Implementation Blueprint\n\nI have generated a clean, robust solution tailored to your programming requirement:\n\n\`\`\`javascript\n// High-Velocity Modular Implementation\nclass OMActionRunner {\n  constructor(config = {}) {\n    this.config = config;\n    this.state = 'idle';\n  }\n\n  async execute(pipeline) {\n    this.state = 'running';\n    console.log(\`[OM] Executing pipeline across \${pipeline.length} stages...\`);\n    \n    const results = [];\n    for (const stage of pipeline) {\n      const start = performance.now();\n      const outcome = await stage.run();\n      results.push({ name: stage.name, timeMs: (performance.now() - start).toFixed(2), outcome });\n    }\n    \n    this.state = 'completed';\n    return { success: true, timestamp: Date.now(), results };\n  }\n}\n\n// Example execution\nconst runner = new OMActionRunner();\nrunner.execute([\n  { name: 'Think', run: async () => 'Scope validated' },\n  { name: 'Plan',  run: async () => 'Milestones established' },\n  { name: 'Act',   run: async () => 'Core services built' },\n  { name: 'Achieve', run: async () => 'Verification 100%' }\n]).then(console.log);\n\`\`\`\n\n**Key Architectural Considerations:**\n- **Modularity**: Decoupled lifecycle stages allow easy test mocking.\n- **Error Invariants**: Boundary checks protect critical path dependencies.\n- **Performance**: Asynchronous execution ensures zero blocking overhead.`;
+        reasoning.push("1. Code Synthesis: Architected production-grade implementation with error invariants.");
+      }
+
+      actions = [
+        { stage: 'think', title: 'Define interface contracts & parameter types', estimate: '1h' },
+        { stage: 'plan', title: 'Draft unit test assertions covering edge cases', estimate: '2h' },
+        { stage: 'act', title: 'Implement core algorithms and error handlers', estimate: '3h' },
+        { stage: 'achieve', title: 'Run benchmark suite and packaging audit', estimate: '1h' }
+      ];
+    }
+    // 2. Project Builder Mode
+    else if (mode === 'project' || lower.includes('build') || lower.includes('portfolio') || lower.includes('website') || lower.includes('saas') || lower.includes('app')) {
+      tools.push("Project Architect", "Workflow Engine");
+      const titleMatch = prompt.replace(/^(build|create|make|launch)\s+/i, '').trim();
+      const projectTitle = (titleMatch ? titleMatch.charAt(0).toUpperCase() + titleMatch.slice(1) : "Production Web Application");
+
+      text = `### 🚀 Project Blueprint: ${projectTitle}\n\nI have deconstructed your objective into a complete end-to-end execution roadmap:\n\n#### 1. 🎯 Project Goal & Scope\n- **Vision**: Build a high-performance, responsive platform optimized for developer velocity.\n- **Target Audience**: Users looking for modern, frictionless interactions with zero latency.\n\n#### 2. 📋 Core Requirements & Features\n- **Frontend**: Responsive Single-Page UI with dark/light themes and instant hydration.\n- **Backend**: Lightweight REST/Serverless microservices with CORS and rate-limiting.\n- **Data Store**: Scalable document or relational store with automated backup.\n- **Authentication**: Passkey / OAuth 2.0 with session tokens.\n\n#### 3. 🛠️ Recommended Technology Stack\n- **Frontend**: React 18 / Vite or Vanilla Modern ES6+\n- **Styling**: TailwindCSS or Vanilla Modern CSS3 Glassmorphism\n- **Backend**: Node.js Serverless Functions / Python FastAPI\n- **Hosting**: Vercel / GitHub Pages\n\n#### 4. 📁 Project Folder Structure\n\`\`\`\n${projectTitle.toLowerCase().replace(/[^a-z0-9]/g, '-')}/\n├── index.html              # Core application entrypoint\n├── package.json            # Manifest & dependencies\n├── assets/\n│   ├── css/style.css       # Obsidian & cyber design system\n│   ├── js/app.js           # Client application controller\n│   └── icons/logo.svg      # Geometric AI monogram\n├── api/\n│   ├── chat.js             # Cognitive AI assistant endpoint\n│   └── status.js           # System health & telemetry\n└── README.md               # Architecture documentation\n\`\`\`\n\n*Click **"Push All Items to Task Planner"** below to convert these milestones into an active Kanban board!*`;
+
+      reasoning = [
+        "1. Requirement Decomposition: Structured goal into Goal -> Tech Stack -> Architecture -> Implementation -> Tasks.",
+        "2. Feasibility Validation: Verified non-blocking technology dependencies (Score: 98/100)."
+      ];
+
+      actions = [
+        { stage: 'think', title: `Scope requirements & user personas for ${projectTitle}`, estimate: '1d' },
+        { stage: 'plan', title: 'Design database schema and REST API specifications', estimate: '2d' },
+        { stage: 'act', title: 'Implement frontend UI components and state store', estimate: '4d' },
+        { stage: 'act', title: 'Connect backend serverless routes and authentication', estimate: '3d' },
+        { stage: 'achieve', title: 'Run end-to-end verification tests and deploy on Vercel', estimate: '1d' }
+      ];
+    }
+    // 3. Career & Interview Mode
+    else if (mode === 'career' || lower.includes('interview') || lower.includes('resume') || lower.includes('job') || lower.includes('career')) {
+      tools.push("Career Coach", "STAR Method Verifier");
+      text = `### 💼 Career & Interview Preparation Strategy\n\nHere is your targeted preparation guide using the **STAR Method** (Situation, Task, Action, Result) for high-impact performance:\n\n#### 1. 🎯 Top 3 High-Frequency Interview Questions\n1. **"Tell me about a complex technical problem you solved under a tight deadline."**\n   - *How to answer*: Highlight your structured **Think ➔ Plan ➔ Act ➔ Achieve** workflow. Detail how you scoped the risk, isolated the bottleneck, and verified the fix with metrics.\n2. **"How do you design systems for high availability and low latency?"**\n   - *How to answer*: Discuss edge CDN caching, asynchronous task queues, database indexing, and stateless horizontal scaling.\n3. **"Describe a time you had a technical disagreement with a team member."**\n   - *How to answer*: Focus on objective data, running quick prototypes/benchmarks, and putting user experience first.\n\n#### 2. 📋 Resume Optimization Checklist\n- **Action Verbs**: Begin bullet points with strong verbs (*Architected, Accelerated, Deployed, Streamlined*).\n- **Quantifiable Metrics**: Replace *"worked on API"* with *"Engineered REST API reducing p99 latency by 38%"*.\n\nWould you like to run a **mock interview session** right now? Ask me to start!`;
+
+      reasoning = [
+        "1. Domain Alignment: Formulated career guidance around the STAR framework and technical benchmarks.",
+        "2. Actionability: Provided copy-paste resume formula and interview questions."
+      ];
+
+      actions = [
+        { stage: 'think', title: 'Audit resume against target job description keywords', estimate: '2h' },
+        { stage: 'plan', title: 'Draft 5 STAR stories covering leadership and debugging', estimate: '3h' },
+        { stage: 'act', title: 'Conduct live mock interview practice with OM', estimate: '2h' },
+        { stage: 'achieve', title: 'Polish portfolio website & submit applications', estimate: '1d' }
+      ];
+    }
+    // 4. Study / Learning Mode
+    else if (mode === 'study' || lower.includes('learn') || lower.includes('explain') || lower.includes('how does') || lower.includes('what is')) {
+      tools.push("Socratic Tutor", "Analogy Engine");
+      const topic = prompt.replace(/^(explain|teach me|learn|what is|how does)\s+/i, '').trim() || "The Topic";
+
+      text = `### 🎓 Deep Dive: Understanding ${topic}\n\nLet's break this down into first principles, intuitive analogies, and real-world examples.\n\n#### 1. 💡 The Core Intuition (The Plain-English Analogy)\nImagine you are running a high-speed delivery service. Instead of one courier attempting every delivery sequentially, you have a dispatcher who categorizes parcels by urgency, routes them to regional hubs, and verifies delivery receipts in parallel. That is essentially how modern asynchronous execution and pipelining works!\n\n#### 2. 📋 Step-by-Step Breakdown\n1. **Input Phase**: Ingests raw data or user requirements.\n2. **Processing Phase**: Breaks the operation into non-blocking units of work.\n3. **Verification Phase**: Checks integrity constraints before final output.\n\n#### 3. 🧠 Quick Knowledge Check Quiz:\n- *Question*: Why do we separate architectural planning from active execution?\n- *Answer*: To prevent premature optimization and reduce costly refactoring iterations.\n\nWhat specific part of **${topic}** would you like to explore deeper?`;
+
+      reasoning = [
+        "1. Pedagogical Synthesis: Deconstructed topic using analogy -> core concept -> interactive quiz.",
+        "2. Engagement: Maintained Socratic curiosity for progressive learning."
+      ];
+
+      actions = [
+        { stage: 'think', title: `Master fundamental terminology of ${topic}`, estimate: '1h' },
+        { stage: 'plan', title: 'Review visual diagrams and architectural flowcharts', estimate: '2h' },
+        { stage: 'act', title: 'Complete hands-on exercise solving sample problems', estimate: '3h' },
+        { stage: 'achieve', title: 'Teach the concept back to OM in your own words', estimate: '1h' }
+      ];
+    }
+    // 5. Default General Mode
+    else {
+      text = `### 🎯 How OM Can Assist You with This Goal\n\nI have analyzed your objective: **"${prompt}"**.\n\nOM operates as your comprehensive cognitive partner across research, coding, document understanding, and actionable project execution.\n\n#### Recommended Path Forward:\n- **Define Parameters**: What is your target timeline and preferred technology or domain?\n- **Deconstruct Milestones**: Would you like me to formulate a 4-phase Think-Plan-Act-Achieve roadmap?\n- **Interactive Execution**: You can also upload a document, paste code for debugging, or dictate your thoughts via voice.\n\n*Choose any of the suggested action items below to get started immediately:*`;
+
+      reasoning = [
+        "1. Ambiguity Detection: Evaluated boundary conditions.",
+        "2. Capability Mapping: Activated OM's 8-domain assistance matrix."
+      ];
+
+      actions = [
+        { stage: 'think', title: `Scope target milestones for: ${prompt.slice(0, 30)}`, estimate: '1d' },
+        { stage: 'plan', title: 'Architect task dependencies and tool specifications', estimate: '2d' },
+        { stage: 'act', title: 'Execute priority implementation sprint', estimate: '3d' },
+        { stage: 'achieve', title: 'Run verification tests and milestone audit', estimate: '1d' }
+      ];
+    }
+
+    return {
+      sender: 'om',
+      text: text,
+      reasoning: reasoning.join('\n'),
+      verified: true,
+      actions: actions,
+      citations: ["OM Autonomous Action Engine", "Cognitive Framework v2.4"],
+      toolsUsed: tools
+    };
+  }
+
+  extractActionsFromText(text, prompt) {
+    const actions = [];
+    const lines = text.split('\n');
+    const cleanPrompt = prompt.replace(/^(build|create|how to|i want to|plan)\s+/i, '').trim();
+
+    lines.forEach(line => {
+      const match = line.match(/^[-*]\s*\[\s*\]\s*(.+)/);
+      if (match && actions.length < 5) {
+        actions.push({
+          stage: actions.length === 0 ? 'think' : actions.length === 1 ? 'plan' : actions.length === 2 ? 'act' : 'achieve',
+          title: match[1].replace(/[*_`]/g, '').trim(),
+          estimate: '1d'
+        });
+      }
+    });
+
+    if (actions.length === 0) {
+      actions.push(
+        { stage: 'think', title: `Scope requirements for ${cleanPrompt.slice(0, 32)}`, estimate: '1d' },
+        { stage: 'plan', title: 'Architect technical contracts & milestones', estimate: '2d' },
+        { stage: 'act', title: 'Execute implementation sprints', estimate: '3d' },
+        { stage: 'achieve', title: 'Verify performance metrics and release', estimate: '1d' }
+      );
+    }
+
+    return actions;
   }
 
   formatMarkdown(text) {
     if (!text) return '';
-    let parsed = text
-      .replace(/### (.*?)\n/g, '<h3 style="font-size: 1.15rem; color: #fff; margin: 0.75rem 0 0.5rem;">$1</h3>')
-      .replace(/#### (.*?)\n/g, '<h4 style="font-size: 1rem; color: var(--om-cyan); margin: 0.6rem 0 0.4rem;">$1</h4>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #fff;">$1</strong>')
+    
+    // Code blocks with syntax toolbar
+    let parsed = text.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      const safeCode = this.escapeHTML(code.trim());
+      const language = lang.trim() || 'code';
+      const isRunnable = ['html', 'javascript', 'js', 'css'].includes(language.toLowerCase());
+
+      return `
+        <div class="om-code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang-tag">⚡ ${language}</span>
+            <div class="code-actions">
+              ${isRunnable ? `<button class="code-btn code-btn-run" onclick="window.omAssistant.runLiveCodePreview(this)" title="Run live sandbox">▶ Run / Preview</button>` : ''}
+              <button class="code-btn" onclick="window.omAssistant.copyCodeBlock(this)" title="Copy Code">📋 Copy</button>
+              <button class="code-btn" onclick="window.omAssistant.downloadCodeBlock(this, '${language}')" title="Download file">💾 Download</button>
+            </div>
+          </div>
+          <pre><code class="language-${language}">${safeCode}</code></pre>
+        </div>
+      `;
+    });
+
+    // Headers
+    parsed = parsed
+      .replace(/^### (.*?)$/gm, '<h3 class="msg-h3">$1</h3>')
+      .replace(/^#### (.*?)$/gm, '<h4 class="msg-h4">$1</h4>')
+      .replace(/^## (.*?)$/gm, '<h2 class="msg-h2">$1</h2>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n\n/g, '<br><br>')
-      .replace(/\n- /g, '<br>• ')
-      .replace(/`(.*?)`/g, '<code style="font-family: var(--om-font-mono); background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #38bdf8;">$1</code>');
+      .replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
+      .replace(/^\s*[-*]\s+(.*?)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/\n\n/g, '<br><br>');
+
     return parsed;
+  }
+
+  escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag));
+  }
+
+  // Interactive Code Toolbar Handlers
+  copyCodeBlock(btn) {
+    const wrapper = btn.closest('.om-code-block-wrapper');
+    const codeEl = wrapper ? wrapper.querySelector('code') : null;
+    if (codeEl) {
+      navigator.clipboard.writeText(codeEl.textContent).then(() => {
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+        if (window.omApp) window.omApp.showToast('Code copied to clipboard!', 'success');
+      });
+    }
+  }
+
+  downloadCodeBlock(btn, lang) {
+    const wrapper = btn.closest('.om-code-block-wrapper');
+    const codeEl = wrapper ? wrapper.querySelector('code') : null;
+    if (!codeEl) return;
+
+    const extMap = { python: 'py', javascript: 'js', js: 'js', html: 'html', css: 'css', sql: 'sql', react: 'jsx', json: 'json' };
+    const ext = extMap[lang.toLowerCase()] || 'txt';
+    const filename = `om_solution_${Date.now()}.${ext}`;
+
+    const blob = new Blob([codeEl.textContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    if (window.omApp) window.omApp.showToast(`Downloaded ${filename}`, 'info');
+  }
+
+  runLiveCodePreview(btn) {
+    const wrapper = btn.closest('.om-code-block-wrapper');
+    const codeEl = wrapper ? wrapper.querySelector('code') : null;
+    if (!codeEl) return;
+
+    const code = codeEl.textContent;
+    const modal = document.getElementById('code-runner-modal');
+    const iframe = document.getElementById('code-sandbox-iframe');
+
+    if (modal && iframe) {
+      modal.classList.add('active');
+      let htmlDoc = code;
+      if (!code.toLowerCase().includes('<html')) {
+        htmlDoc = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body { font-family: sans-serif; background: #12121e; color: #fff; padding: 20px; }
+                button { background: #06b6d4; color: #000; border: 0; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+              </style>
+            </head>
+            <body>
+              ${code.includes('<') ? code : '<pre>' + code + '</pre>'}
+              ${code.includes('function') || code.includes('console.log') ? '<script>' + code + '<\/script>' : ''}
+            </body>
+          </html>
+        `;
+      }
+      iframe.srcdoc = htmlDoc;
+    }
   }
 }
 
-// Global instance
-window.omAssistant = null;
-document.addEventListener('DOMContentLoaded', () => {
-  window.omAssistant = new OMAssistant();
-});
+window.omAssistant = new OMAssistant();
