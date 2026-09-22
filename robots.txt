@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap for Search Engines (Google, Bing, Yahoo, DuckDuckGo)
+Sitemap: https://abhishekcode7266.github.io/OM-AI-Action-Assistant/sitemap.xml

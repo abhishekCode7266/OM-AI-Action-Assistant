@@ -380,6 +380,10 @@ h1, h2, h3, h4, h5 {
   position: relative;
 }
 
+.model-dropdown-wrap {
+  position: relative;
+}
+
 .mode-select-pill {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--om-border-subtle);
@@ -392,8 +396,15 @@ h1, h2, h3, h4, h5 {
   outline: none;
 }
 
-.mode-select-pill:focus {
+.model-select-pill {
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #fff;
+}
+
+.mode-select-pill:focus, .model-select-pill:focus {
   border-color: var(--om-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
 }
 
 .header-icon-btn {

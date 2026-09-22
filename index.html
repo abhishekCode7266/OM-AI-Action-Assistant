@@ -3,8 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OM AI Assistant | Think. Plan. Act. Achieve.</title>
-  <meta name="description" content="OM is a modern conversational AI assistant that turns ideas into actions across coding, data science, projects, research, writing, and learning.">
+  <title>OM AI Assistant – Next-Gen Google Gemini Alternative | Think. Plan. Act. Achieve.</title>
+  <meta name="description" content="OM AI Assistant is a high-velocity conversational AI collaborator and Google Gemini alternative. Powered by Gemini 2.0 Flash & 1.5 Pro, featuring 8 specialized modes, CSV analytics, code sandbox, and voice dictation.">
+  <meta name="keywords" content="Google Gemini, Gemini AI, Gemini alternative, OM AI Assistant, AI chatbot, ChatGPT alternative, coding assistant, data analytics AI, Gemini 2.0 Flash, Gemini Pro, developer AI, free AI assistant">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="OM AI Team">
+  <link rel="canonical" href="https://abhishekcode7266.github.io/OM-AI-Action-Assistant/">
+
+  <!-- OpenGraph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://abhishekcode7266.github.io/OM-AI-Action-Assistant/">
+  <meta property="og:title" content="OM AI Assistant – Next-Gen Google Gemini Alternative">
+  <meta property="og:description" content="High-velocity conversational AI collaborator powered by Gemini 2.0 Flash, featuring 8 specialized modes, CSV data science, code runner, and voice intelligence.">
+  <meta property="og:image" content="https://abhishekcode7266.github.io/OM-AI-Action-Assistant/assets/icons/logo.svg">
+  <meta property="og:site_name" content="OM AI Assistant">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://abhishekcode7266.github.io/OM-AI-Action-Assistant/">
+  <meta name="twitter:title" content="OM AI Assistant – Next-Gen Google Gemini Alternative">
+  <meta name="twitter:description" content="Conversational AI collaborator with Gemini 2.0 Flash, code sandbox, CSV analytics, and voice intelligence.">
+  <meta name="twitter:image" content="https://abhishekcode7266.github.io/OM-AI-Action-Assistant/assets/icons/logo.svg">
+
+  <!-- Schema.org JSON-LD Structured Data for Search Engine Top Ranking -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://abhishekcode7266.github.io/OM-AI-Action-Assistant/#webapp",
+        "name": "OM AI Assistant",
+        "url": "https://abhishekcode7266.github.io/OM-AI-Action-Assistant/",
+        "applicationCategory": "Artificial Intelligence Application",
+        "operatingSystem": "All modern browsers (Chrome, Edge, Safari, Firefox)",
+        "description": "Next-generation conversational AI assistant inspired by Google Gemini. Features 8 specialized operational modes, data analytics, code execution sandbox, and voice dictation.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0.00",
+          "priceCurrency": "USD",
+          "description": "Free Lifetime Access with Ultimate Developer Mode"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is OM AI Assistant?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "OM AI Assistant is an intelligent, versatile personal AI collaborator that turns ideas into real actions across coding, data science, project building, deep research, and study."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does OM AI Assistant compare to Google Gemini?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "OM provides native integration with Google Gemini 2.0 Flash and 1.5 Pro models, combined with an action framework (Think-Plan-Act-Achieve), built-in CSV analytics with SVG charts, and interactive code preview sandbox."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is OM AI Assistant free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, OM is 100% free with built-in Ultimate Developer Mode and zero payment requirements."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,11 +139,11 @@
 
       <!-- Sidebar Footer / Settings -->
       <div class="sidebar-footer">
-        <div class="sidebar-user-pill">
-          <div class="user-avatar-sm">OM</div>
+        <div class="sidebar-user-pill" id="sidebar-tier-badge" onclick="window.omApp.openSettingsModal()" style="cursor: pointer;" title="Developer Mode / Active Tier">
+          <div class="user-avatar-sm" id="user-avatar-badge" style="background: linear-gradient(135deg, #06b6d4, #6366f1); font-weight: 800;">⚡</div>
           <div style="display: flex; flex-direction: column;">
-            <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">Workspace</span>
-            <span style="font-size: 0.68rem; color: var(--om-cyan); font-family: var(--om-font-mono);">v2.4 Active</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #fff;" id="sidebar-user-plan-label">Ultimate Developer</span>
+            <span style="font-size: 0.65rem; color: var(--om-cyan); font-family: var(--om-font-mono);" id="sidebar-user-tier-label">Free Unlimited Access</span>
           </div>
         </div>
         <button class="header-icon-btn btn-open-settings" title="Settings & Memory">⚙️</button>
@@ -90,6 +163,16 @@
         </div>
 
         <div class="header-right-group">
+          <!-- AI Model Quick Switcher (Gemini 2.0 / 1.5 Pro / Autonomous) -->
+          <div class="mode-dropdown-wrap">
+            <select class="mode-select-pill" id="chat-model-quick-selector" title="Select Google Gemini / OM Model" style="border-color: rgba(6, 182, 212, 0.4);">
+              <option value="gemini-2.0-flash">⚡ Gemini 2.0 Flash</option>
+              <option value="gemini-1.5-pro">🧠 Gemini 1.5 Pro</option>
+              <option value="gemini-1.5-flash">🚀 Gemini 1.5 Flash</option>
+              <option value="om-autonomous">🤖 OM Offline Engine</option>
+            </select>
+          </div>
+
           <!-- 8 Specialized Modes Selector -->
           <div class="mode-dropdown-wrap">
             <select class="mode-select-pill" id="chat-mode-selector" title="Select AI Specialization Mode">
@@ -235,25 +318,49 @@
       </div>
       <div class="modal-body">
         
+        <!-- Access Tier & Developer Mode Card -->
+        <div class="tier-plans-card" style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.28); border-radius: var(--om-radius-sm); padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.3rem;">⚡</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.88rem; color: #fff;" id="modal-plan-title">Ultimate Developer Tier</div>
+                <div style="font-size: 0.72rem; color: var(--om-cyan);" id="modal-plan-status">Active • Lifetime Free Unlimited Access (Developer)</div>
+              </div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-primary" id="btn-activate-dev-mode" style="font-size: 0.72rem; padding: 4px 10px;">
+              ⚡ Developer Active
+            </button>
+          </div>
+          <div style="font-size: 0.73rem; color: var(--om-text-secondary); line-height: 1.45;">
+            You have permanent Developer Access with zero payment required: unrestricted Gemini 2.0 Flash, Gemini 1.5 Pro, high token limits, multimodal attachments, and priority processing.
+          </div>
+        </div>
+
         <!-- Google Gemini API Key -->
         <div class="om-input-group">
-          <label for="settings-gemini-key-input" style="display: flex; justify-content: space-between;">
+          <label for="settings-gemini-key-input" style="display: flex; justify-content: space-between; align-items: center;">
             <span>Google Gemini API Key (100% Free)</span>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--om-cyan); text-decoration: underline; font-size: 0.75rem;">Get Key from AI Studio ↗</a>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--om-cyan); text-decoration: underline; font-size: 0.75rem;">Get Free Key from Google AI Studio ↗</a>
           </label>
-          <input type="password" id="settings-gemini-key-input" class="om-input" placeholder="AIzaSy... (Leave blank for OM Autonomous Engine)">
+          <div style="display: flex; gap: 8px;">
+            <input type="password" id="settings-gemini-key-input" class="om-input" placeholder="AIzaSy... (Leave blank for OM Autonomous Engine)" style="flex: 1;">
+            <button class="om-btn om-btn-secondary om-btn-xs" id="btn-test-gemini-key" style="white-space: nowrap; font-size: 0.75rem;">⚡ Test Key</button>
+          </div>
+          <div id="gemini-key-status" style="font-size: 0.74rem; margin-top: 4px; display: none;"></div>
           <span style="font-size: 0.72rem; color: var(--om-text-muted);">
-            Powers Gemini 2.0 / 1.5 Flash models. If empty, OM's built-in Autonomous Engine works 100% free with zero configuration!
+            Powers Gemini 2.0 Flash & Gemini 1.5 Pro directly from Google AI. If empty, OM's built-in Autonomous Engine works 100% free with zero configuration!
           </span>
         </div>
 
         <!-- Model Selection -->
         <div class="om-input-group">
-          <label for="settings-model-select">Active Model Provider</label>
+          <label for="settings-model-select">Active AI Model</label>
           <select id="settings-model-select" class="om-input">
-            <option value="gemini-1.5-flash">Google Gemini 1.5 Flash (Fast & Multimodal)</option>
-            <option value="gemini-2.0-flash">Google Gemini 2.0 Flash (Next-Gen Intelligence)</option>
-            <option value="gemini-1.5-pro">Google Gemini 1.5 Pro (Deep Reasoning)</option>
+            <option value="gemini-2.0-flash">Google Gemini 2.0 Flash (Next-Gen Intelligence & Multimodal)</option>
+            <option value="gemini-1.5-pro">Google Gemini 1.5 Pro (Deep Reasoning & Complex Coding)</option>
+            <option value="gemini-1.5-flash">Google Gemini 1.5 Flash (Fast & Balanced)</option>
+            <option value="om-autonomous">OM Built-in Autonomous Action Engine (Offline)</option>
           </select>
         </div>
 

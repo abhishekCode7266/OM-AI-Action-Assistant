@@ -23,6 +23,7 @@ class OMApp {
     this.renderSidebar();
     this.renderChatMessages();
     this.updateHeaderInfo();
+    this.updateDeveloperTierBadge();
     this.hideLoadingScreen();
   }
 
@@ -124,6 +125,18 @@ class OMApp {
         }
         imageInput.value = '';
         this.renderAttachmentPreviews();
+      });
+    }
+
+    // Model Quick Selector Dropdown (Gemini 2.0 / 1.5 Pro / Autonomous)
+    const modelQuickSelect = document.getElementById('chat-model-quick-selector');
+    if (modelQuickSelect) {
+      modelQuickSelect.value = this.chatStore.settings.model || 'gemini-2.0-flash';
+      modelQuickSelect.addEventListener('change', (e) => {
+        const newModel = e.target.value;
+        this.chatStore.saveSettings({ model: newModel });
+        const label = modelQuickSelect.options[modelQuickSelect.selectedIndex]?.text || newModel;
+        this.showToast(`Switched active model to ${label}`, 'info');
       });
     }
 
@@ -644,6 +657,25 @@ class OMApp {
     }, 3000);
   }
 
+  updateDeveloperTierBadge() {
+    const isDev = this.chatStore.isDeveloper();
+    const plan = this.chatStore.getUserPlan();
+    const planLabel = document.getElementById('sidebar-user-plan-label');
+    const tierLabel = document.getElementById('sidebar-user-tier-label');
+    const avatarBadge = document.getElementById('user-avatar-badge');
+
+    if (planLabel) {
+      planLabel.textContent = isDev ? "Ultimate Developer" : (plan === 'gemini_pro' ? "Gemini Pro" : "Free Plan");
+    }
+    if (tierLabel) {
+      tierLabel.textContent = isDev ? "Free Unlimited Access" : (plan === 'gemini_pro' ? "Connected Key" : "Standard Speed");
+    }
+    if (avatarBadge) {
+      avatarBadge.textContent = isDev ? "⚡" : "OM";
+      avatarBadge.style.background = isDev ? "linear-gradient(135deg, #06b6d4, #6366f1)" : "var(--om-card-bg)";
+    }
+  }
+
   openSettingsModal() {
     const modal = document.getElementById('settings-modal');
     if (!modal) return;
@@ -653,11 +685,23 @@ class OMApp {
     const modelSelect = document.getElementById('settings-model-select');
     const promptInput = document.getElementById('settings-system-prompt');
     const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
+    const quickModelSelect = document.getElementById('chat-model-quick-selector');
+    const devBtn = document.getElementById('btn-activate-dev-mode');
+    const isDev = this.chatStore.isDeveloper();
 
     if (keyInput) keyInput.value = settings.apiKey || '';
-    if (modelSelect) modelSelect.value = settings.model || 'gemini-1.5-flash';
+    if (modelSelect) modelSelect.value = settings.model || 'gemini-2.0-flash';
+    if (quickModelSelect) quickModelSelect.value = settings.model || 'gemini-2.0-flash';
     if (promptInput) promptInput.value = settings.systemPrompt || '';
     if (autoSpeechCheck) autoSpeechCheck.checked = !!settings.autoSpeech;
+
+    if (devBtn) {
+      devBtn.textContent = isDev ? "⚡ Developer Active" : "Activate Developer Mode";
+      devBtn.className = isDev ? "om-btn om-btn-xs om-btn-primary" : "om-btn om-btn-xs om-btn-secondary";
+    }
+
+    const statusDiv = document.getElementById('gemini-key-status');
+    if (statusDiv) statusDiv.style.display = 'none';
 
     this.renderMemoryFactsList();
     modal.classList.add('active');
@@ -703,22 +747,91 @@ class OMApp {
         const promptInput = document.getElementById('settings-system-prompt');
         const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
         const memToggle = document.getElementById('settings-memory-enabled-chk');
+        const quickModelSelect = document.getElementById('chat-model-quick-selector');
+
+        const chosenModel = modelSelect ? modelSelect.value : 'gemini-2.0-flash';
+        const apiKeyVal = keyInput ? keyInput.value.trim() : '';
 
         this.chatStore.saveSettings({
-          apiKey: keyInput ? keyInput.value.trim() : '',
-          model: modelSelect ? modelSelect.value : 'gemini-1.5-flash',
+          apiKey: apiKeyVal,
+          model: chosenModel,
           systemPrompt: promptInput ? promptInput.value : '',
           autoSpeech: autoSpeechCheck ? autoSpeechCheck.checked : false
         });
 
-        if (memToggle) {
-          this.chatStore.toggleMemoryEnabled(memToggle.checked);
-        }
+        if (quickModelSelect) quickModelSelect.value = chosenModel;
+        if (memToggle) this.chatStore.toggleMemoryEnabled(memToggle.checked);
+
+        this.updateDeveloperTierBadge();
 
         const modal = document.getElementById('settings-modal');
         if (modal) modal.classList.remove('active');
 
         this.showToast('Settings saved successfully!', 'success');
+      });
+    }
+
+    // Activate Developer Mode Button
+    const devBtn = document.getElementById('btn-activate-dev-mode');
+    if (devBtn) {
+      devBtn.addEventListener('click', () => {
+        this.chatStore.activateDeveloperMode();
+        this.updateDeveloperTierBadge();
+        devBtn.textContent = "⚡ Developer Active";
+        devBtn.className = "om-btn om-btn-xs om-btn-primary";
+        this.showToast('⚡ Ultimate Developer Mode active! Free unlimited access enabled.', 'success');
+      });
+    }
+
+    // Test Gemini Key Button
+    const testKeyBtn = document.getElementById('btn-test-gemini-key');
+    const statusDiv = document.getElementById('gemini-key-status');
+    if (testKeyBtn) {
+      testKeyBtn.addEventListener('click', async () => {
+        const keyInput = document.getElementById('settings-gemini-key-input');
+        const key = keyInput ? keyInput.value.trim() : '';
+        if (!key) {
+          if (statusDiv) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = '#fab387';
+            statusDiv.textContent = 'ℹ️ No API key entered. OM will use the built-in Autonomous Engine 100% free.';
+          }
+          return;
+        }
+
+        testKeyBtn.disabled = true;
+        testKeyBtn.textContent = 'Testing...';
+        if (statusDiv) {
+          statusDiv.style.display = 'block';
+          statusDiv.style.color = 'var(--om-cyan)';
+          statusDiv.textContent = 'Connecting to Google Generative AI API...';
+        }
+
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+          if (res.ok) {
+            const data = await res.json();
+            const count = data.models ? data.models.length : 0;
+            if (statusDiv) {
+              statusDiv.style.color = '#a6e3a1';
+              statusDiv.textContent = `🟢 Connected! Found ${count} Google Gemini models (Gemini 2.0 Flash ready).`;
+            }
+            this.showToast('Google Gemini API Key is valid and active!', 'success');
+          } else {
+            if (statusDiv) {
+              statusDiv.style.color = '#f38ba8';
+              statusDiv.textContent = `🔴 Key Verification Error (HTTP ${res.status}): Please check key from AI Studio.`;
+            }
+          }
+        } catch (e) {
+          if (statusDiv) {
+            statusDiv.style.color = '#f38ba8';
+            statusDiv.textContent = `🔴 Network Error: ${e.message}`;
+          }
+        } finally {
+          testKeyBtn.disabled = false;
+          testKeyBtn.textContent = '⚡ Test Key';
+        }
       });
     }
 

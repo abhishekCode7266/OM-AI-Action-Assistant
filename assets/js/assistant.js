@@ -169,20 +169,23 @@ class OMAssistant {
    * Direct Google Gemini Multimodal API Call (1.5 / 2.0 Flash)
    */
   async callGeminiMultimodal(apiKey, prompt, history, attachmentsCtx, memoryCtx, mode, imageAttachment) {
-    const model = (window.omChatStore && window.omChatStore.settings.model) || 'gemini-1.5-flash';
+    const chatStore = window.omChatStore;
+    const model = (chatStore && chatStore.settings && chatStore.settings.model) || 'gemini-2.0-flash';
+    const isDev = chatStore && chatStore.isDeveloper();
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-    const systemInstruction = `You are OM, an intelligent, modern conversational AI assistant.
+    const systemInstructionText = `You are OM AI Assistant, a highly efficient, smart, and versatile personal AI collaborator.
 Tagline: "Think. Plan. Act. Achieve."
 Current Specialization Mode: ${mode.toUpperCase()}
 User Profile & Memory: ${memoryCtx || "None"}
+Access Tier: ${isDev ? "Ultimate Developer (Free Lifetime Unlimited Access)" : "Standard User"}
 
-Guidelines:
-1. Provide human-like, helpful, natural answers.
-2. For coding: Write modern, complete code with syntax formatting, comments, and instructions.
-3. For data: Explain dataset shapes, stats, patterns, and insights clearly.
-4. For projects/goals: Use OM's "Think. Plan. Act. Achieve." structure with actionable tasks.
-5. Honest Action Model: You cannot execute remote shell commands or create live GitHub repos directly. Explain what code is generated and guide the user on running it.`;
+Core Directives:
+1. Tone & Style: Be warm, engaging, concise, and direct. Avoid unnecessary fluff or lengthy robotic pleasantries. Get straight to the user's solution.
+2. Accuracy & Formatting: Organize responses using clean Markdown, bullet points, and bold text for scannability. Show step-by-step breakdowns for complex tasks, coding, or problem-solving.
+3. Problem Solving: Always aim to provide actionable, practical solutions. If critical context is missing, briefly ask targeted follow-up questions.
+4. Adaptability: Mirror the user's technical proficiency, scale explanations to their needs, and maintain safety and accuracy across all topics.
+5. Action Architecture: Clearly distinguish actionable code/commands from conceptual blueprints. Never pretend to have executed terminal commands on the user machine without them running it.`;
 
     const contents = [];
 
@@ -196,9 +199,9 @@ Guidelines:
 
     // Current turn
     const currentParts = [];
-    currentParts.push({ text: systemInstruction + attachmentsCtx + "\n\nUser Message: " + prompt });
+    currentParts.push({ text: attachmentsCtx + "\n\nUser Message: " + prompt });
 
-    // Attach image if present
+    // Attach image if present for multimodal vision
     if (imageAttachment) {
       currentParts.push({
         inline_data: {
@@ -213,14 +216,39 @@ Guidelines:
       parts: currentParts
     });
 
-    const response = await fetch(url, {
+    // Request payload with system_instruction and generationConfig
+    const payload = {
+      system_instruction: {
+        parts: [{ text: systemInstructionText }]
+      },
+      contents: contents,
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.95,
+        maxOutputTokens: 4096
+      }
+    };
+
+    let response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents })
+      body: JSON.stringify(payload)
     });
 
+    // If system_instruction is not supported on a specific model, fallback by injecting it into first turn
+    if (!response.ok && response.status === 400) {
+      delete payload.system_instruction;
+      currentParts[0].text = systemInstructionText + "\n\n" + currentParts[0].text;
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+
     if (!response.ok) {
-      throw new Error(`Gemini API HTTP ${response.status}`);
+      const errBody = await response.text().catch(() => "");
+      throw new Error(`Gemini API HTTP ${response.status}: ${errBody}`);
     }
 
     const json = await response.json();

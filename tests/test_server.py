@@ -97,6 +97,19 @@ class TestOMServer(unittest.TestCase):
         self.assertIn("Think. Plan. Act. Achieve.", html)
         self.assertIn("How can <span class=\"text-gradient\">OM</span> help you today?", html)
 
+    def test_seo_crawlers_serving(self):
+        resp_robots = urllib.request.urlopen(f"{self.base_url}/robots.txt")
+        self.assertEqual(resp_robots.status, 200)
+        robots_txt = resp_robots.read().decode("utf-8")
+        self.assertIn("User-agent: *", robots_txt)
+        self.assertIn("sitemap.xml", robots_txt)
+
+        resp_sitemap = urllib.request.urlopen(f"{self.base_url}/sitemap.xml")
+        self.assertEqual(resp_sitemap.status, 200)
+        sitemap_xml = resp_sitemap.read().decode("utf-8")
+        self.assertIn("<urlset", sitemap_xml)
+        self.assertIn("https://abhishekcode7266.github.io/OM-AI-Action-Assistant/", sitemap_xml)
+
 
 if __name__ == "__main__":
     unittest.main()

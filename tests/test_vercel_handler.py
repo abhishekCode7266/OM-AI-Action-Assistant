@@ -67,5 +67,15 @@ class TestVercelHandler(unittest.TestCase):
         self.assertTrue(len(data["actions"]) >= 4)
 
 
+    def test_vercel_seo_crawlers_serving(self):
+        req_robots = urllib.request.urlopen(f"{self.base_url}/robots.txt")
+        self.assertEqual(req_robots.status, 200)
+        self.assertIn("User-agent: *", req_robots.read().decode("utf-8"))
+
+        req_sitemap = urllib.request.urlopen(f"{self.base_url}/sitemap.xml")
+        self.assertEqual(req_sitemap.status, 200)
+        self.assertIn("<urlset", req_sitemap.read().decode("utf-8"))
+
+
 if __name__ == "__main__":
     unittest.main()

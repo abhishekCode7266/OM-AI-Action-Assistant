@@ -67,25 +67,39 @@ class OMChatStore {
   }
 
   loadSettings() {
+    const DEFAULT_PROMPT = `You are OM AI Assistant, a highly efficient, smart, and versatile personal AI collaborator.
+Core Directives:
+1. Tone & Style: Be warm, engaging, concise, and direct. Avoid unnecessary fluff or lengthy robotic pleasantries. Get straight to the user's solution.
+2. Accuracy & Formatting: Organize responses using clean Markdown, bullet points, and bold text for scannability. Show step-by-step breakdowns for complex tasks, coding, or problem-solving.
+3. Problem Solving: Always aim to provide actionable, practical solutions. If critical context is missing, briefly ask targeted follow-up questions.
+4. Adaptability: Mirror the user's technical proficiency, scale explanations to their needs, and maintain safety and accuracy across all topics.`;
+
     try {
       const data = localStorage.getItem(this.SETTINGS_KEY);
-      return data ? JSON.parse(data) : {
-        apiKey: localStorage.getItem('om_custom_provider_key') || '',
-        model: 'gemini-1.5-flash',
-        autoSpeech: false,
-        voiceRate: 1.0,
-        voicePitch: 1.0,
-        systemPrompt: "You are OM, an intelligent, modern conversational AI assistant. Tagline: 'Think. Plan. Act. Achieve.' You help users solve problems step-by-step, code, analyze data, and build real projects.",
+      const parsed = data ? JSON.parse(data) : {};
+      return {
+        apiKey: localStorage.getItem('om_custom_provider_key') || parsed.apiKey || '',
+        model: parsed.model || 'gemini-2.0-flash',
+        autoSpeech: parsed.autoSpeech !== undefined ? parsed.autoSpeech : false,
+        voiceRate: parsed.voiceRate || 1.0,
+        voicePitch: parsed.voicePitch || 1.0,
+        userPlan: localStorage.getItem('om_user_plan') || parsed.userPlan || 'ultimate_developer',
+        isDeveloper: localStorage.getItem('om_dev_mode') !== 'false',
+        developerTier: 'Ultimate Lifetime Access (Free)',
+        systemPrompt: parsed.systemPrompt || DEFAULT_PROMPT,
         theme: 'dark'
       };
     } catch (e) {
       return {
         apiKey: '',
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         autoSpeech: false,
         voiceRate: 1.0,
         voicePitch: 1.0,
-        systemPrompt: "You are OM, an intelligent, modern conversational AI assistant.",
+        userPlan: 'ultimate_developer',
+        isDeveloper: true,
+        developerTier: 'Ultimate Lifetime Access (Free)',
+        systemPrompt: DEFAULT_PROMPT,
         theme: 'dark'
       };
     }
@@ -97,6 +111,29 @@ class OMChatStore {
     if (newSettings.apiKey !== undefined) {
       localStorage.setItem('om_custom_provider_key', newSettings.apiKey);
     }
+    if (newSettings.userPlan !== undefined) {
+      localStorage.setItem('om_user_plan', newSettings.userPlan);
+    }
+    if (newSettings.isDeveloper !== undefined) {
+      localStorage.setItem('om_dev_mode', newSettings.isDeveloper ? 'true' : 'false');
+    }
+  }
+
+  isDeveloper() {
+    return this.settings.isDeveloper || this.settings.userPlan === 'ultimate_developer';
+  }
+
+  getUserPlan() {
+    return this.settings.userPlan || 'ultimate_developer';
+  }
+
+  activateDeveloperMode() {
+    this.saveSettings({
+      isDeveloper: true,
+      userPlan: 'ultimate_developer',
+      developerTier: 'Ultimate Lifetime Access (Free)'
+    });
+    return true;
   }
 
   createChat(title = "New Chat", mode = "general", projectId = null) {

@@ -136,6 +136,15 @@ class handler(BaseHTTPRequestHandler):
             index_file = os.path.join(BASE_DIR, "index.html")
             return self._send_file(index_file, "text/html; charset=utf-8")
 
+        # 1b. SEO Crawlers (robots.txt & sitemap.xml)
+        if raw_path == "/robots.txt":
+            robots_file = os.path.join(BASE_DIR, "robots.txt")
+            return self._send_file(robots_file, "text/plain; charset=utf-8")
+
+        if raw_path == "/sitemap.xml":
+            sitemap_file = os.path.join(BASE_DIR, "sitemap.xml")
+            return self._send_file(sitemap_file, "application/xml; charset=utf-8")
+
         # 2. Assets (CSS, JS, SVG, images)
         if raw_path.startswith("/assets/"):
             clean_rel = raw_path.lstrip("/").replace("/", os.sep)
@@ -148,10 +157,12 @@ class handler(BaseHTTPRequestHandler):
                 "brand": "OM",
                 "name": "OM – AI Action Assistant",
                 "tagline": "Think. Plan. Act. Achieve.",
-                "engine_version": "2.4.0",
+                "engine_version": "2.5.0",
+                "ai_models_supported": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash", "om-autonomous-engine"],
+                "developer_mode": "unlimited_free",
                 "environment": "Vercel Serverless Function",
                 "status": "online",
-                "philosophy": "Intelligent, simple, and universal AI assistant helping users turn ideas into real actions."
+                "philosophy": "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
             })
 
         # 4. Tasks API

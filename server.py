@@ -53,9 +53,11 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "brand": "OM",
                 "name": "OM – AI Action Assistant",
                 "tagline": "Think. Plan. Act. Achieve.",
-                "engine_version": "2.4.0",
+                "engine_version": "2.5.0",
+                "ai_models_supported": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash", "om-autonomous-engine"],
+                "developer_mode": "unlimited_free",
                 "status": "online",
-                "philosophy": "Intelligent, simple, and universal AI assistant helping users turn ideas into real actions."
+                "philosophy": "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
             })
 
         if path == "/api/tasks":
