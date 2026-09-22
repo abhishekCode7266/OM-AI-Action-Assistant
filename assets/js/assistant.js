@@ -10,7 +10,7 @@ class OMAssistant {
   constructor() {
     this.isProcessing = false;
     this.currentMode = 'general';
-    this.initialGreeting = "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.";
+    this.initialGreeting = "Hi, I'm Om AI Assistant, a master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.";
   }
 
   setMode(mode) {
@@ -180,18 +180,31 @@ class OMAssistant {
     const isDev = chatStore && chatStore.isDeveloper();
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-    const systemInstructionText = `You are OM AI Assistant, a highly efficient, smart, and versatile personal AI collaborator.
+    const systemInstructionText = `You are Om AI Assistant, a master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.
 Tagline: "Think. Plan. Act. Achieve."
 Current Specialization Mode: ${mode.toUpperCase()}
 User Profile & Memory: ${memoryCtx || "None"}
 Access Tier: ${isDev ? "Ultimate Developer (Free Lifetime Unlimited Access)" : "Standard User"}
 
-Core Directives:
-1. Tone & Style: Be warm, engaging, concise, and direct. Avoid unnecessary fluff or lengthy robotic pleasantries. Get straight to the user's solution.
-2. Accuracy & Formatting: Organize responses using clean Markdown, bullet points, and bold text for scannability. Show step-by-step breakdowns for complex tasks, coding, or problem-solving.
-3. Problem Solving: Always aim to provide actionable, practical solutions. If critical context is missing, briefly ask targeted follow-up questions.
-4. Adaptability: Mirror the user's technical proficiency, scale explanations to their needs, and maintain safety and accuracy across all topics.
-5. Action Architecture: Clearly distinguish actionable code/commands from conceptual blueprints. Never pretend to have executed terminal commands on the user machine without them running it.`;
+### 1. Core Persona & Communication Style
+* Tone: Warm, highly engaging, direct, professional, and resourceful. Avoid dense walls of text or empty robotic fluff.
+* Formatting: Use clear Markdown hierarchy (Headings, bullet points, bold text, and tables) for maximum scannability and structure.
+* Execution: Get straight to actionable solutions. Balance empathy with absolute clarity. Never pretend to execute terminal commands on the user machine without them running it.
+
+### 2. Comprehensive Multimodal Capabilities
+You are fully equipped to process, analyze, and generate across all formats:
+* Vision & Image Analysis: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately, analyze visual composition, and describe details precisely.
+* Video & Audio Processing: Parse video frames, listen to audio clips, summarize long recordings, extract timestamps, and analyze multimedia content natively.
+* Document & Library Search: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets (CSV/Excel), and text documents.
+* Code & Technical Execution: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.). Assist in architecture design and bug tracing.
+* Live Search & Data Lookup: Access and synthesize real-time information, web data, and current news when requested.
+* Charts & Data Analytics (Sparks): Generate structured data insights, statistical breakdowns, and design text-based or code-based charts/visualizations.
+* Notebook Workflows: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.
+
+### 3. Operational Rules
+* Clarity First: If critical information is missing from a complex request, ask short, targeted clarifying questions before providing a complete solution.
+* Step-by-Step Breakdown: For coding, math, data analysis, or multi-part workflows, always break down explanations into logical, numbered steps.
+* Completeness: Fulfill requests fully and comprehensively, providing secondary useful details or alternative approaches when applicable.`;
 
     const contents = [];
 
@@ -331,57 +344,69 @@ Core Directives:
     );
 
     if (isGreeting) {
-      text = `### 👋 Hello! I'm OM, your AI Assistant.
+      text = `### 👋 Hello! I'm Om AI Assistant.
 
-I am ready to collaborate with you right now. Here is what we can do together:
+I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:
 
-* 💻 **Write & Debug Code**: Generate clean applications, write functions, or fix syntax errors in Python, JavaScript, HTML, SQL, etc.
-* 📊 **Data Science & CSV**: Upload a dataset for instant statistical summaries and interactive inline SVG charts.
-* 🚀 **Architect Projects**: Deconstruct an app idea into a tech stack, folder tree, and actionable tasks.
-* 🎓 **Learn & Understand**: Socratic breakdowns, mental models, and real-world analogies for complex concepts.
-* 📝 **Professional Writing**: Draft executive emails, proposals, PRDs, or documentation.
-* 💼 **Career & Interview**: Practice high-frequency technical and STAR interview questions.
+* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately, analyze visual composition, and describe details precisely.
+* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.).
+* 📊 **Charts & Data Analytics (Sparks)**: Ingest CSV/Excel datasets for statistical summaries and inline interactive charts.
+* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, summarize long recordings, and extract timestamps.
+* 📑 **Document & Library Search**: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets, and text documents.
+* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.
+* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.
 
-**What would you like to work on today?** Feel free to ask a question, request code, or attach a file!`;
+**What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!`;
       reasoning = [
-        "1. Intent Recognition: Identified conversational greeting.",
-        "2. Directives Applied: Warm, concise, direct response with zero robotic pleasantries.",
-        "3. Action Guidance: Presented primary functional paths for immediate user engagement."
+        "1. Core Persona: Warm, highly engaging, direct, professional, and resourceful.",
+        "2. Operational Standard: Instant scannable overview of full multimodal capabilities.",
+        "3. Action Guidance: Ready for immediate execution across text, vision, code, media, and data."
       ];
       actions = [
-        { stage: 'think', title: 'Formulate your objective or question for OM', estimate: '2m' },
-        { stage: 'plan', title: 'Choose domain mode (Coding, Data, Project, Study)', estimate: '2m' },
-        { stage: 'act', title: 'Review generated solution, code, or analysis', estimate: '10m' },
-        { stage: 'achieve', title: 'Execute or test deliverable in browser sandbox', estimate: '5m' }
+        { stage: 'think', title: 'Define your objective across code, vision, data, or documents', estimate: '2m' },
+        { stage: 'plan', title: 'Attach media files or outline desired specifications', estimate: '2m' },
+        { stage: 'act', title: 'Review generated solution, code, or data analysis', estimate: '10m' },
+        { stage: 'achieve', title: 'Execute code in sandbox or export results', estimate: '5m' }
       ];
     }
     // 0b. Identity, Capabilities & Help
     else if (lower.includes('who are you') || lower.includes('what can you do') || lower.includes('what is om') || lower.includes('help me') || lower.includes('about yourself') || lower === 'help') {
-      text = `### ⚡ Meet OM – Your AI Action Assistant
+      text = `### 🌟 Om AI Assistant – Master-Level Multimodal Collaborator
 
-I am **OM**, a high-velocity personal AI collaborator built on the core philosophy: **"Think. Plan. Act. Achieve."**
+I am **Om AI Assistant**, a master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis. Tagline: **"Think. Plan. Act. Achieve."**
 
-Unlike traditional chatbots that stop at plain text conversation, I operationalize ideas into real deliverables across 8 specialized modes:
+---
 
-1. **Coding & Debugging**: Code generation, syntax highlighting, and an interactive **"▶ Run / Preview"** live sandbox.
-2. **Data Analyst & CSV**: Automated summary statistics calculation with responsive inline SVG Bar and Line charts.
-3. **Project Builder**: Deconstructs goals into Tech Stacks, System Architecture, Folder Trees, and Kanban checklists.
-4. **Deep Research**: Architectural comparisons, pros/cons trade-off matrices, and technical synthesis.
-5. **Professional Writing**: PRDs, executive briefs, email drafts, documentation, and technical copywriting.
-6. **Career & Interview**: Senior mock interview simulations with STAR feedback and resume tailoring.
-7. **Study & Tutoring**: Socratic explanations, mental models, real-world analogies, and interactive quizzes.
-8. **General Assistant**: Open-ended problem solving and brainstorming.
+### 🚀 Comprehensive Multimodal Capabilities
 
-You can also attach **PDF, CSV, JSON, images**, and use **voice dictation** 🎙️ anytime. How can I help you today?`;
+| Capability | Scope & Deliverables |
+| :--- | :--- |
+| 👁️ **Vision & Image Analysis** | Inspect photos, screenshots, diagrams, UI/UX layouts, OCR text extraction, visual composition. |
+| 🎥 **Video & Audio Processing** | Parse video frames, audio clips, summarize recordings, timestamp extraction, multimedia analysis. |
+| 📑 **Document & Library Search** | Read, cross-reference, and summarize PDFs, spreadsheets (CSV/Excel), and text documents. |
+| 💻 **Code & Technical Execution** | Write, debug, optimize, explain code (Python, JS, C++, Go, SQL), system architecture, live sandbox runner. |
+| 📊 **Charts & Data Analytics (Sparks)** | Statistical breakdowns, data insights, responsive inline SVG charts (Bar & Line charts). |
+| 📓 **Notebook Workflows** | Interactive research partner, synthesizing notes, brainstorming ideas, organizing multi-step projects. |
+| 🌐 **Live Search & Data Lookup** | Access and synthesize real-time information, web data, and current news when requested. |
+
+---
+
+### 🛡️ Operational Standards
+1. **Clarity First**: Targeted follow-up questions if critical information is missing.
+2. **Step-by-Step Breakdown**: Logical, numbered steps for coding, math, data analysis, and multi-part workflows.
+3. **Completeness**: Comprehensive answers with alternative approaches and secondary useful details.
+
+How can I collaborate with you right now?`;
       reasoning = [
-        "1. Capability Overview: Detailed full spectrum of 8 specialized operational modes.",
-        "2. Action Architecture: Highlighted runnable sandbox, SVG charts, and multimodal attachments."
+        "1. Persona & Tone: Professional, structured, resourceful, and direct.",
+        "2. Capability Matrix: Outlined 7 core multimodal capabilities with operational standards.",
+        "3. Scannability: Formatted with tables, headers, and bullet points."
       ];
       actions = [
-        { stage: 'think', title: 'Select a task: Code, Data, Architecture, or Research', estimate: '5m' },
-        { stage: 'plan', title: 'Provide specifications or attach reference documents', estimate: '5m' },
-        { stage: 'act', title: 'Iterate on blueprints or run interactive preview', estimate: '15m' },
-        { stage: 'achieve', title: 'Export conversation as Markdown or save tasks', estimate: '5m' }
+        { stage: 'think', title: 'Select a multimodal task: Code, Vision, Data, Audio, or Research', estimate: '5m' },
+        { stage: 'plan', title: 'Attach files or provide requirements', estimate: '5m' },
+        { stage: 'act', title: 'Generate solution or run interactive code preview', estimate: '15m' },
+        { stage: 'achieve', title: 'Verify deliverables and benchmark outcomes', estimate: '5m' }
       ];
     }
     // 0c. Gratitude & Pleasantries

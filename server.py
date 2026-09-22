@@ -53,9 +53,24 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "brand": "OM",
                 "name": "OM – AI Action Assistant",
                 "tagline": "Think. Plan. Act. Achieve.",
-                "engine_version": "2.5.0",
+                "persona": "Master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.",
+                "engine_version": "3.0.0",
                 "ai_models_supported": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash", "om-autonomous-engine"],
                 "developer_mode": "unlimited_free",
+                "multimodal_capabilities": [
+                    "Vision & Image Analysis",
+                    "Video & Audio Processing",
+                    "Document & Library Search",
+                    "Code & Technical Execution",
+                    "Live Search & Data Lookup",
+                    "Charts & Data Analytics (Sparks)",
+                    "Notebook Workflows"
+                ],
+                "operational_rules": [
+                    "Clarity First",
+                    "Step-by-Step Breakdown",
+                    "Completeness"
+                ],
                 "status": "online",
                 "philosophy": "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
             })
@@ -148,15 +163,16 @@ class OMRequestHandler(BaseHTTPRequestHandler):
             )
             if is_greeting:
                 text_response = (
-                    "### 👋 Hello! I'm OM, your AI Assistant.\n\n"
-                    "I am ready to collaborate with you right now. Here is what we can do together:\n\n"
-                    "* 💻 **Write & Debug Code**: Generate clean applications, write functions, or fix syntax errors in Python, JavaScript, HTML, SQL, etc.\n"
-                    "* 📊 **Data Science & CSV**: Upload a dataset for instant statistical summaries and interactive inline SVG charts.\n"
-                    "* 🚀 **Architect Projects**: Deconstruct an app idea into a tech stack, folder tree, and actionable tasks.\n"
-                    "* 🎓 **Learn & Understand**: Socratic breakdowns, mental models, and real-world analogies for complex concepts.\n"
-                    "* 📝 **Professional Writing**: Draft executive emails, proposals, PRDs, or documentation.\n"
-                    "* 💼 **Career & Interview**: Practice high-frequency technical and STAR interview questions.\n\n"
-                    "**What would you like to work on today?** Feel free to ask a question, request code, or attach a file!"
+                    "### 👋 Hello! I'm Om AI Assistant.\n\n"
+                    "I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:\n\n"
+                    "* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately and analyze visual composition.\n"
+                    "* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.).\n"
+                    "* 📊 **Charts & Data Analytics (Sparks)**: Ingest CSV/Excel datasets for statistical summaries and inline interactive charts.\n"
+                    "* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, summarize long recordings, and extract timestamps.\n"
+                    "* 📑 **Document & Library Search**: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets, and text documents.\n"
+                    "* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.\n"
+                    "* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.\n\n"
+                    "**What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!"
                 )
             else:
                 text_response = (
