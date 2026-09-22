@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://abhishekcode7266.github.io/OM-AI-Action-Assistant/</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>always</changefreq>
     <priority>1.00</priority>
+    <image:image>
+      <image:loc>https://abhishekcode7266.github.io/OM-AI-Action-Assistant/assets/icons/logo.svg</image:loc>
+      <image:title>OM AI Assistant – Gemini Live Voice, 3D Dismantler &amp; J.A.R.V.I.S.</image:title>
+      <image:caption>Multimodal AI Collaborator by Abhishek singh Yadav</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://om-2no9vxfh4-abhishek-ef1f.vercel.app/</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.90</priority>
+    <loc>https://om-ai.vercel.app/</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.95</priority>
   </url>
 </urlset>

@@ -334,6 +334,232 @@ You are fully equipped to process, analyze, and generate across all formats:
       };
     }
 
+    // =========================================================================
+    // 00a. 3D Exploded View & Dismantle Inspector Engine
+    // =========================================================================
+    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('3d image') || lower.includes('3d process') || lower.includes('car part') || lower.includes('disassemble') || lower.includes('engine part') || lower.includes('blueprint') || lower.includes('assembly video') || (lower.includes('car') && lower.includes('part'))) {
+      const isTurbine = lower.includes('jet') || lower.includes('turbine') || lower.includes('plane');
+      const isRobot = lower.includes('robot') || lower.includes('drone') || lower.includes('humanoid');
+      const targetModel = isTurbine ? 'turbine' : (isRobot ? 'robot' : 'car');
+      const modelName = isTurbine ? "Mach-4 Jet Turbine Engine" : (isRobot ? "Bipedal Autonomous Robotics Core" : "Apex Cyber-EV Hypercar");
+
+      text = `### 🚗 3D Exploded CAD Deconstructor: ${modelName}
+
+I have initiated a full **3D holographic deconstruction** of the ${modelName}. Every primary mechanical, structural, aerodynamic, and electrical sub-system has been decoupled into distinct 3D parts with real-time vector explosion:
+
+---
+
+### 🧩 Deconstructed 3D Sub-Assemblies
+
+| # | Sub-Assembly Component | Engineering Classification | Material Spec | Tolerance |
+| :-: | :--- | :--- | :--- | :-: |
+| **01** | **Aerodynamic Outer Shell & Doors** | Aero Structure (Active Flaps) | Pre-preg Toray T1000 Dry Carbon Fiber | ±0.002 mm |
+| **02** | **Carbon-Titanium Monocoque** | Core Structural Frame | Carbo-Titanium HP62 & 7075-T6 | ±0.001 mm |
+| **03** | **Twin-Turbo / Dual Electric Motors** | Propulsion Array (1,150 HP) | Billet 6061-T6 + Ceramic Liners | ±0.0005 mm |
+| **04** | **100kWh Structural Battery Pack** | 800V DC Liquid-Cooled Array | Silicon-Graphene Cylindrical Cells | ±0.005 mm |
+| **05** | **Double-Wishbone Pushrod Suspension** | Front Running Gear | Ti-6Al-4V Additive Titanium | ±0.003 mm |
+| **06** | **Holographic Avionics Cockpit** | Telemetry & Neural Drive | Micro-OLED + Nvidia Orin Cores | ±0.01 mm |
+| **07** | **Carbon-Ceramic Rotors & Wheels (Port)** | 420mm CSiC Braking Array | Monoblock Forged Magnesium | ±0.002 mm |
+| **08** | **Carbon-Ceramic Rotors & Wheels (Starboard)** | 420mm CSiC Braking Array | Monoblock Forged Magnesium | ±0.002 mm |
+| **09** | **Active Aerodynamic Rear Wing** | Venturi Diffuser & Airbrake | High-Modulus Carbon Fiber | ±0.005 mm |
+
+---
+
+<div class="om-3d-interactive-card" style="background: rgba(6, 182, 212, 0.08); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 18px; margin: 12px 0;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1.4rem;">📐</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1rem; color: #fff;">Interactive 3D Dismantle & Exploded View Inspector</div>
+        <div style="font-size: 0.75rem; color: var(--om-cyan);">0% to 100% Smooth Explosion Slider • 360° Orbit • Blueprint Export • Video Render</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-plan">3D CAD Active</span>
+  </div>
+  <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 14px; line-height: 1.5;">
+    Launch the high-resolution 3D CAD inspector to orbit the model in 360°, slide the explosion slider to isolate parts, export high-precision blueprints, or generate an animated assembly video simulation.
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" onclick="window.omDismantler.openModal('${targetModel}')">
+      🚀 Open Interactive 3D Exploded Inspector
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.exportBlueprintImage(), 300);">
+      📸 Export 3D Blueprint (PNG)
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 300);">
+      🎥 Generate 3D Assembly Video
+    </button>
+  </div>
+</div>
+
+### 🛠️ Disassembly & Re-Assembly Workflow
+1. **Safety Isolation**: Disengage high-voltage 800V interlock and ground the chassis.
+2. **Fastener De-torque**: Release the 16 titanium quick-release aero fasteners along the roof rail.
+3. **Powertrain Decoupling**: Disconnect optical CAN-FD bus and dual coolant manifold couplings before translating the rear sub-frame.
+4. **Tolerance Verification**: Laser-scan all contact datums to ensure retention of ±0.001 mm assembly tolerances.`;
+
+      reasoning = [
+        "1. 3D Model Engine: Deconstructed vehicle into 9 distinct CAD parts with isometric displacement vectors.",
+        "2. Dimensional Analysis: Formulated tolerances (±0.001mm), materials (T1000 Carbon, Ti-6Al-4V), and specs.",
+        "3. Interactive HUD: Injected 3D Exploded View Inspector, Blueprint Export, and 3D Video Generator triggers."
+      ];
+      actions = [
+        { stage: 'think', title: 'Formulate 3D CAD coordinate matrix and explosion vectors', estimate: '1m' },
+        { stage: 'plan', title: 'Establish component hierarchy and disassembly order', estimate: '2m' },
+        { stage: 'act', title: 'Render interactive 3D exploded view with real-time slider', estimate: '5m' },
+        { stage: 'achieve', title: 'Export 3D technical blueprint and cinematic assembly video', estimate: '3m' }
+      ];
+      tools = ["3D Exploded Engine", "HTML5 Perspective Canvas", "Blueprint Generator", "MediaRecorder Video Engine"];
+    }
+
+    // =========================================================================
+    // 00b. J.A.R.V.I.S. (Iron Man) Persona & Stark Protocol
+    // =========================================================================
+    else if (lower.includes('jarvis') || lower.includes('iron man') || lower.includes('stark') || lower.includes('arc reactor') || lower.includes('protocol') || lower.includes('suit') || lower.includes('armor')) {
+      const devName = "Abhishek singh Yadav";
+
+      text = `### ⚡ J.A.R.V.I.S. Protocol Active – Diagnostics Online
+
+*At your service, Sir.*
+
+All sensory and telemetry feeds are operating at maximum bandwidth for **${devName}**. The Arc Reactor power grid is stabilized at **100% capacity**, neural latency is clocked at **4.2 milliseconds**, and Stark Industries defense encryption is online.
+
+---
+
+### 🛡️ Real-Time Telemetry & Systems Status
+
+| Subsystem | Telemetry Status | Diagnostic Metrics | Protocols Engaged |
+| :--- | :--- | :--- | :--- |
+| **Arc Reactor Core** | 🟢 **OPTIMAL** | 3.0 Gigawatts output • 99.8% thermal efficiency | Mark LXXXV Stabilization |
+| **Cognitive Planner** | 🟢 **ACTIVE** | Think-Plan-Act-Achieve pipeline synchronized | Multi-agent task decomposition |
+| **Holographic 3D CAD** | 🟢 **ARMED** | 3D Exploded View & Video Generator primed | Sub-micron tolerance tracking |
+| **Voice Synthesis** | 🟢 **CALIBRATED** | Two-way continuous Gemini Live audio link | British cadence • Zero latency |
+| **Autonomous Sandbox** | 🟢 **SECURE** | Isolated JavaScript/Python execution buffer | Auto-linting & runtime safety |
+
+---
+
+<div class="om-jarvis-hud-card" style="background: radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1.5px solid rgba(6, 182, 212, 0.5); border-radius: 12px; padding: 18px; margin: 12px 0; box-shadow: 0 0 25px rgba(6, 182, 212, 0.2);">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.5rem; animation: pulseDot 1.5s infinite;">💠</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">STARK INDUSTRIES J.A.R.V.I.S. INTERFACE</div>
+        <div style="font-size: 0.74rem; color: #38bdf8;">Authorized Operator: ${devName} • Ultimate Developer Pass</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-achieve" style="background: rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 800;">ALL SYSTEMS GO</span>
+  </div>
+  <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+    Would you like to initiate the <strong>Gemini Live Voice HUD</strong> for a hands-free spoken session, Sir? Or shall I run a full diagnostic on your codebase and 3D assets?
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" onclick="window.omJarvisLive.startSession('jarvis')">
+      🎙️ Launch J.A.R.V.I.S. Live Voice HUD
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('car')">
+      📐 Open 3D CAD Dismantler
+    </button>
+  </div>
+</div>
+
+What is your directive today, Sir?`;
+
+      reasoning = [
+        "1. Persona Alignment: J.A.R.V.I.S. tone, British AI butler cadence, polite yet sharp.",
+        "2. Developer Acknowledgment: Recognized Abhishek singh Yadav as the authorized operator/creator.",
+        "3. Telemetry HUD: Provided real-time status matrix with Arc Reactor and Voice HUD buttons."
+      ];
+      actions = [
+        { stage: 'think', title: 'Poll all sensory inputs and telemetry feeds', estimate: '1s' },
+        { stage: 'plan', title: 'Formulate tactical operational options for Mr. Yadav', estimate: '2s' },
+        { stage: 'act', title: 'Execute J.A.R.V.I.S. protocol with continuous voice loop', estimate: 'Continuous' },
+        { stage: 'achieve', title: 'Deliver complete engineering objectives', estimate: 'Immediate' }
+      ];
+      tools = ["J.A.R.V.I.S. Protocol Engine", "Arc Reactor Visualizer", "Stark HUD Matrix"];
+    }
+
+    // =========================================================================
+    // 00c. Agentic AI Function & Working
+    // =========================================================================
+    else if (lower.includes('agentic') || lower.includes('multi-agent') || lower.includes('autonomous agent') || lower.includes('agent workflow') || lower.includes('agentic ai') || lower.includes('agents')) {
+      text = `### 🤖 Agentic AI Autonomous Engine & Multi-Agent Architecture
+
+OM AI Assistant operates on a **hierarchical multi-agent cognitive architecture**, where specialized autonomous agents collaborate in real-time to plan, execute, reflect, and verify goals:
+
+---
+
+### 🏛️ The 4 Core Autonomous Agents
+
+| Agent Designation | Core Responsibility | Autonomous Toolset | Self-Correction Protocol |
+| :--- | :--- | :--- | :--- |
+| 🧠 **Planner Agent** | Goal decomposition into DAG (Directed Acyclic Graph) of sub-tasks | Dependency analyzer, milestone estimator | Re-plans dynamically if blockers occur |
+| 🔍 **Research Agent** | Real-time fact gathering, API schema lookup, library ingestion | Web crawler, semantic document search, PDF parser | Cross-checks citations across 3+ sources |
+| ⚡ **Action / Tool Agent** | Code generation, 3D CAD deconstruction, sandbox execution | Code Sandbox Runner, SVG Sparks Charts, 3D Dismantler | Sandbox syntax check before output |
+| 🛡️ **Critic & Verifier Agent** | Self-reflection, edge-case testing, safety boundary enforcement | Unit test evaluator, Big-O benchmark, hallucination check | Rejects sub-standard code & auto-heals |
+
+---
+
+### 🔄 Real-Time Agentic Execution Loop
+
+\`\`\`mermaid
+flowchart TD
+    UserGoal["🎯 User Objective / Complex Prompt"] --> Planner["🧠 Planner Agent (Deconstructs Goal into DAG)"]
+    Planner --> Research["🔍 Research Agent (Context & Ingestion)"]
+    Research --> Action["⚡ Action Agent (Writes Code / Renders 3D / Solves Data)"]
+    Action --> Critic{"🛡️ Critic & Verifier Agent (Passes Tests?)"}
+    Critic -- "❌ Regressions / Errors Found" --> SelfHeal["🔁 Auto-Correction & Refinement Loop"]
+    SelfHeal --> Action
+    Critic -- "✅ 100% Constraints Met" --> Achieve["🏆 Objective Achieved & Verified"]
+\`\`\`
+
+---
+
+<div class="om-agentic-hud-card" style="background: rgba(99, 102, 241, 0.08); border: 1.5px solid rgba(99, 102, 241, 0.35); border-radius: 12px; padding: 18px; margin: 12px 0;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1.3rem;">⚡</span>
+      <div>
+        <div style="font-weight: 800; font-size: 0.98rem; color: #fff;">Autonomous Multi-Agent Swarm Status</div>
+        <div style="font-size: 0.74rem; color: #a5b4fc;">Active Coordination • Self-Healing Enabled • High-Throughput</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-act">AUTONOMOUS RUNNING</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; font-size: 0.8rem;">
+    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; text-align: center;">
+      <div style="color: #38bdf8; font-weight: 800; font-size: 1.2rem;">4</div>
+      <div style="color: #94a3b8; font-size: 0.7rem;">Active Subagents</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; text-align: center;">
+      <div style="color: #10b981; font-weight: 800; font-size: 1.2rem;">0.04s</div>
+      <div style="color: #94a3b8; font-size: 0.7rem;">Self-Correction Speed</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; text-align: center;">
+      <div style="color: #a855f7; font-weight: 800; font-size: 1.2rem;">100%</div>
+      <div style="color: #94a3b8; font-size: 0.7rem;">Verification Score</div>
+    </div>
+  </div>
+  <p style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5;">
+    Every task you submit is automatically processed through this agentic loop, guaranteeing verified solutions without hallucinated code or incomplete instructions.
+  </p>
+</div>
+
+What high-level goal shall the autonomous agent swarm execute for you?`;
+
+      reasoning = [
+        "1. Architectural Hierarchy: Explained 4 autonomous subagents (Planner, Research, Action, Critic).",
+        "2. Execution Loop: Visualized dynamic self-healing feedback cycle via Mermaid diagram.",
+        "3. Real-Time HUD: Rendered metrics card with live subagent tracking."
+      ];
+      actions = [
+        { stage: 'think', title: 'Planner Agent initializes DAG task decomposition', estimate: '2s' },
+        { stage: 'plan', title: 'Research Agent gathers dependencies and environmental facts', estimate: '3s' },
+        { stage: 'act', title: 'Action Agent generates code and triggers tool executions', estimate: '10s' },
+        { stage: 'achieve', title: 'Critic Agent benchmarks output and confirms 100% test pass', estimate: '2s' }
+      ];
+      tools = ["Autonomous Multi-Agent Engine", "DAG Planner", "Critic & Verifier", "Self-Healing Loop"];
+    }
+
     // 0a. Greetings & Conversational Openers
     const isGreeting = (
       lower === 'hello' || lower === 'hi' || lower === 'hey' ||

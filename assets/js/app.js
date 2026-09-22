@@ -1119,6 +1119,21 @@ Key Ideas & Notes:
     this.showToast(`🎉 Subscription Active! Upgraded to ${tierLabel}. Enjoy high-speed priority AI.`, 'success');
   }
 
+  /* =========================================================================
+     Gemini Live & 3D Dismantle Triggers
+     ========================================================================= */
+  openGeminiLiveModal(persona = 'jarvis') {
+    if (window.omJarvisLive) {
+      window.omJarvisLive.startSession(persona);
+    }
+  }
+
+  open3DDismantleModal(model = 'car') {
+    if (window.omDismantler) {
+      window.omDismantler.openModal(model);
+    }
+  }
+
   openSettingsModal() {
     const modal = document.getElementById('settings-modal');
     if (!modal) return;
