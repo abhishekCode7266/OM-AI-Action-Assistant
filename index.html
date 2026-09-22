@@ -119,16 +119,22 @@
         <button class="btn-sidebar-toggle-icon" id="btn-sidebar-toggle" title="Collapse sidebar">◀</button>
       </div>
 
+      <!-- Google Gemini Pill Switcher: Chat / Spark -->
+      <div class="gemini-pill-switcher">
+        <button class="gemini-tab-pill active" id="tab-pill-chat" onclick="window.omApp.switchAppTab('chat')">Chat</button>
+        <button class="gemini-tab-pill" id="tab-pill-spark" onclick="window.omApp.switchAppTab('spark')">Spark</button>
+      </div>
+
       <!-- Controls: New Chat & Search -->
       <div class="sidebar-controls">
-        <button class="btn-new-chat" title="Create a new conversation">
-          <span>+ New Chat</span>
+        <button class="btn-new-chat" id="btn-sidebar-new-chat" title="Create a new conversation">
+          <span>+ New chat</span>
           <span style="font-size: 0.7rem; opacity: 0.7; font-family: var(--om-font-mono);">Ctrl+K</span>
         </button>
 
         <div class="sidebar-search-box">
           <span class="sidebar-search-icon">🔍</span>
-          <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search conversations...">
+          <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search chats...">
         </div>
       </div>
 
@@ -137,16 +143,23 @@
         <!-- Rendered dynamically by app.js -->
       </div>
 
-      <!-- Sidebar Footer / Settings -->
+      <!-- User Profile Footer matching Google Gemini Screenshot -->
       <div class="sidebar-footer">
-        <div class="sidebar-user-pill" id="sidebar-tier-badge" onclick="window.omApp.openSettingsModal()" style="cursor: pointer;" title="Developer Mode / Active Tier">
-          <div class="user-avatar-sm" id="user-avatar-badge" style="background: linear-gradient(135deg, #06b6d4, #6366f1); font-weight: 800;">⚡</div>
-          <div style="display: flex; flex-direction: column;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #fff;" id="sidebar-user-plan-label">Ultimate Developer</span>
-            <span style="font-size: 0.65rem; color: var(--om-cyan); font-family: var(--om-font-mono);" id="sidebar-user-tier-label">Free Unlimited Access</span>
+        <div class="gemini-profile-card" id="btn-profile-popover-trigger" title="Account, Settings & Options">
+          <div class="profile-avatar-circle" id="sidebar-avatar-circle">
+            <span class="avatar-initials" id="sidebar-avatar-initials">AY</span>
           </div>
+          <div class="profile-meta-text">
+            <div class="profile-name-row">
+              <span class="profile-user-name" id="sidebar-profile-name">Abhishek singh Yadav</span>
+            </div>
+            <div class="profile-sub-row">
+              <span class="profile-tier-badge" id="sidebar-profile-badge">Pro</span>
+              <span class="profile-location" id="sidebar-profile-location">Gurugram, Haryana, India</span>
+            </div>
+          </div>
+          <div class="profile-chevron">⋮</div>
         </div>
-        <button class="header-icon-btn btn-open-settings" title="Settings & Memory">⚙️</button>
       </div>
     </aside>
 
@@ -414,6 +427,426 @@
         <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
       </div>
       <iframe id="code-sandbox-iframe" sandbox="allow-scripts allow-modals"></iframe>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Google Gemini 16-Item Popover Menu (Matching Screenshot)
+       ========================================================================= -->
+  <div class="gemini-popover-menu" id="gemini-popover-menu" style="display: none;">
+    <div class="popover-menu-item" onclick="window.omApp.openActivityModal()">
+      <span class="popover-icon">⏱️</span>
+      <span class="popover-label">Activity</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openPersonalIntelligenceModal()">
+      <span class="popover-icon">👤</span>
+      <span class="popover-label">Personal Intelligence</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openImportMemoryModal()">
+      <span class="popover-icon">📥</span>
+      <span class="popover-label">Import memory to Gemini</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openAvatarModal()">
+      <span class="popover-icon">🎭</span>
+      <span class="popover-label">Avatar</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openUsageLimitsModal()">
+      <span class="popover-icon">🔄</span>
+      <span class="popover-label">Usage limits</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openScheduledActionsModal()">
+      <span class="popover-icon">⏰</span>
+      <span class="popover-label">Scheduled actions</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openSkillsModal()">
+      <span class="popover-icon">🧰</span>
+      <span class="popover-label">Skills</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openGemsModal()">
+      <span class="popover-icon">💎</span>
+      <span class="popover-label">Gems</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openPublicLinksModal()">
+      <span class="popover-icon">🔗</span>
+      <span class="popover-label">Your public links</span>
+    </div>
+    <div class="popover-menu-item has-submenu" onclick="window.omApp.toggleThemeSubmenu(event)">
+      <span class="popover-icon">🔆</span>
+      <span class="popover-label">Theme</span>
+      <span class="popover-caret">▶</span>
+      <div class="popover-submenu" id="theme-submenu" style="display: none;">
+        <div class="submenu-item" onclick="window.omApp.setAppTheme('dark')">🌙 Dark</div>
+        <div class="submenu-item" onclick="window.omApp.setAppTheme('cyber')">⚡ Cyber Indigo</div>
+        <div class="submenu-item" onclick="window.omApp.setAppTheme('light')">☀️ Light</div>
+      </div>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openSparkSettingsModal()">
+      <span class="popover-icon">✨</span>
+      <span class="popover-label">Gemini Spark settings</span>
+    </div>
+    <div class="popover-menu-item highlight-item" onclick="window.omApp.openSubscriptionModal()">
+      <span class="popover-icon">💳</span>
+      <span class="popover-label">Manage subscription</span>
+    </div>
+    <div class="popover-menu-item highlight-item" onclick="window.omApp.openSubscriptionModal('ultra')">
+      <span class="popover-icon">✦</span>
+      <span class="popover-label">Upgrade to Google AI Ultra</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openNotebookModal()">
+      <span class="popover-icon">📓</span>
+      <span class="popover-label">Gemini Notebook</span>
+    </div>
+    <div class="popover-menu-item" onclick="window.omApp.openFeedbackModal()">
+      <span class="popover-icon">💬</span>
+      <span class="popover-label">Send feedback</span>
+    </div>
+    <div class="popover-menu-item has-submenu" onclick="window.omApp.toggleHelpSubmenu(event)">
+      <span class="popover-icon">❓</span>
+      <span class="popover-label">Help</span>
+      <span class="popover-caret">▶</span>
+      <div class="popover-submenu" id="help-submenu" style="display: none;">
+        <div class="submenu-item" onclick="window.omApp.openShortcutsModal()">⌨️ Keyboard Shortcuts</div>
+        <div class="submenu-item" onclick="window.omApp.openDocsModal()">📖 Documentation</div>
+      </div>
+    </div>
+    <div class="popover-divider"></div>
+    <div class="popover-menu-item auth-action-item" id="popover-auth-btn" onclick="window.omApp.handleAuthAction()">
+      <span class="popover-icon">🚪</span>
+      <span class="popover-label" id="popover-auth-label">Sign Out</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Subscription & Pricing Plans Modal (Free, Pro, Ultra + Developer Pass)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="subscription-plans-modal">
+    <div class="om-modal-content subscription-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">💳</span>
+          <span style="font-weight: 700; font-size: 1.15rem;">Subscriptions & Access Plans</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
+      </div>
+
+      <!-- Developer VIP Banner -->
+      <div class="developer-vip-badge-card" id="developer-vip-badge-card">
+        <div class="vip-badge-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="vip-sparkle">⚡</span>
+            <span style="font-weight: 800; font-size: 1rem; color: #fff;">Ultimate Developer Pass — Active</span>
+          </div>
+          <span class="vip-status-pill">Free Lifetime VIP ($0.00)</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px; line-height: 1.45;">
+          Assigned to <strong>Abhishek singh Yadav</strong>. You have 100% unlocked access to Google Gemini 2.0 Flash, 1.5 Pro, Vision, Audio/Video, Sparks Analytics, and Code Preview with zero fees or expiration.
+        </p>
+      </div>
+
+      <!-- Public Pricing Tiers Grid -->
+      <div class="pricing-tiers-grid">
+        <!-- Tier 1: Free -->
+        <div class="pricing-tier-card" id="tier-card-free">
+          <div class="tier-card-header">
+            <h3 class="tier-title">Public Free</h3>
+            <div class="tier-price">$0 <span class="tier-duration">/ month</span></div>
+            <p class="tier-desc">Core AI intelligence for casual tasks and exploration.</p>
+          </div>
+          <ul class="tier-features-list">
+            <li>✓ 15 messages / day</li>
+            <li>✓ Standard response speed</li>
+            <li>✓ Autonomous action engine</li>
+            <li>✓ Multi-chat sidebar & history</li>
+            <li>✓ Dark / Light theme options</li>
+          </ul>
+          <button class="tier-action-btn" id="btn-select-free" onclick="window.omApp.selectSubscriptionPlan('free')">Current Plan</button>
+        </div>
+
+        <!-- Tier 2: Pro -->
+        <div class="pricing-tier-card popular-tier" id="tier-card-pro">
+          <div class="popular-ribbon">Most Popular</div>
+          <div class="tier-card-header">
+            <h3 class="tier-title">Gemini Pro</h3>
+            <div class="tier-price">₹1,950 <span class="tier-duration">/ mo ($19.99)</span></div>
+            <p class="tier-desc">Uncapped speed & execution for power users and builders.</p>
+          </div>
+          <ul class="tier-features-list">
+            <li>✓ <strong>Unlimited</strong> Gemini 1.5 Flash queries</li>
+            <li>✓ Interactive Code Sandbox Runner</li>
+            <li>✓ Responsive SVG Sparks Charts</li>
+            <li>✓ Priority queue & high throughput</li>
+            <li>✓ Document & PDF Ingestion</li>
+          </ul>
+          <button class="tier-action-btn tier-action-primary" id="btn-select-pro" onclick="window.omApp.startCheckout('pro')">Upgrade to Pro</button>
+        </div>
+
+        <!-- Tier 3: Ultra -->
+        <div class="pricing-tier-card ultra-tier" id="tier-card-ultra">
+          <div class="tier-card-header">
+            <h3 class="tier-title">Google AI Ultra</h3>
+            <div class="tier-price">₹4,900 <span class="tier-duration">/ mo ($49.99)</span></div>
+            <p class="tier-desc">Master multimodal AI with Gemini 2.0 Flash & 1.5 Pro.</p>
+          </div>
+          <ul class="tier-features-list">
+            <li>✓ <strong>Everything in Pro +</strong></li>
+            <li>✓ Gemini 2.0 Flash & Gemini 1.5 Pro</li>
+            <li>✓ Multimodal Vision & Image Inspection</li>
+            <li>✓ Video & Audio Processing native</li>
+            <li>✓ Deep Research & Gemini Notebook</li>
+            <li>✓ Priority VIP Support</li>
+          </ul>
+          <button class="tier-action-btn tier-action-ultra" id="btn-select-ultra" onclick="window.omApp.startCheckout('ultra')">Upgrade to Ultra</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Interactive Checkout Modal (UPI / Card / NetBanking Simulation)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="checkout-modal">
+    <div class="om-modal-content checkout-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>🔒</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Secure Checkout</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
+      </div>
+
+      <div class="checkout-summary-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600;" id="checkout-plan-name">Gemini Pro Subscription</span>
+          <span style="font-weight: 700; color: var(--om-cyan);" id="checkout-plan-price">₹1,950 / mo</span>
+        </div>
+        <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">Billing cycle: Monthly • Cancel anytime</div>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <label style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Select Payment Method</label>
+        <div class="payment-methods-grid">
+          <label class="pay-method-card active">
+            <input type="radio" name="payment_method" value="upi" checked>
+            <span>📱 UPI (GPay / PhonePe / Paytm)</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="payment_method" value="card">
+            <span>💳 Credit / Debit Card</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="payment_method" value="netbanking">
+            <span>🏦 NetBanking</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="payment-fields-wrap" id="upi-fields" style="margin-top: 12px;">
+        <label style="font-size: 0.78rem; color: #cbd5e1;">UPI ID (Virtual Payment Address)</label>
+        <input type="text" class="om-input" id="checkout-upi-id" placeholder="yourname@okhdfcbank" value="abhishek@okhdfcbank" style="font-size: 0.85rem; margin-top: 4px;">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button class="om-btn om-btn-secondary modal-close-trigger">Cancel</button>
+        <button class="om-btn om-btn-primary" id="btn-confirm-payment" onclick="window.omApp.completeCheckout()">Confirm & Activate Plan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Authentication Modal (Sign In / Register)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="auth-modal">
+    <div class="om-modal-content auth-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>👤</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Account Authentication</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
+      </div>
+
+      <!-- Quick Developer 1-Click Access -->
+      <div class="auth-dev-quick-card">
+        <button class="auth-dev-button" onclick="window.omApp.authAsDeveloper()">
+          <span>⚡ One-Click Sign In as <strong>Abhishek singh Yadav</strong></span>
+          <span class="auth-vip-tag">Ultimate Developer (Lifetime Free)</span>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs-row">
+        <button class="auth-tab-btn active" id="btn-tab-signin" onclick="window.omApp.switchAuthTab('signin')">Sign In</button>
+        <button class="auth-tab-btn" id="btn-tab-register" onclick="window.omApp.switchAuthTab('register')">Register / New Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="auth-signin-form" onsubmit="window.omApp.submitSignIn(event)">
+        <div style="margin-top: 12px;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Email Address</label>
+          <input type="email" class="om-input" id="signin-email" placeholder="name@example.com" value="abhishek.yadav@om.ai" required style="margin-top: 4px;">
+        </div>
+        <div style="margin-top: 10px;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Password</label>
+          <input type="password" class="om-input" id="signin-password" placeholder="••••••••" value="password123" required style="margin-top: 4px;">
+        </div>
+        <button type="submit" class="om-btn om-btn-primary" style="width: 100%; margin-top: 16px; padding: 10px;">Sign In to OM</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="auth-register-form" style="display: none;" onsubmit="window.omApp.submitRegister(event)">
+        <div style="margin-top: 12px;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Full Name</label>
+          <input type="text" class="om-input" id="reg-name" placeholder="Your Full Name" required style="margin-top: 4px;">
+        </div>
+        <div style="margin-top: 10px;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Email Address</label>
+          <input type="email" class="om-input" id="reg-email" placeholder="name@example.com" required style="margin-top: 4px;">
+        </div>
+        <div style="margin-top: 10px;">
+          <label style="font-size: 0.8rem; color: #cbd5e1;">Create Password</label>
+          <input type="password" class="om-input" id="reg-password" placeholder="••••••••" required style="margin-top: 4px;">
+        </div>
+        <button type="submit" class="om-btn om-btn-primary" style="width: 100%; margin-top: 16px; padding: 10px;">Create Free Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Activity Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="activity-modal">
+    <div class="om-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>⏱️</span>
+          <span style="font-weight: 700;">Account Activity & Analytics</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div id="activity-content-body" style="font-size: 0.88rem; color: #cbd5e1; margin-top: 10px; line-height: 1.6;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;">
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--om-cyan);" id="activity-queries-count">48</div>
+            <div style="font-size: 0.72rem; color: #94a3b8;">Total Queries</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: #10b981;">100%</div>
+            <div style="font-size: 0.72rem; color: #94a3b8;">Action Success Rate</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: #8b5cf6;" id="activity-active-sessions">6</div>
+            <div style="font-size: 0.72rem; color: #94a3b8;">Active Threads</div>
+          </div>
+        </div>
+        <p>Your session history is safely synced with local storage and verified via the Think-Plan-Act-Achieve cognitive framework.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Personal Intelligence Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="personal-intelligence-modal">
+    <div class="om-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>👤</span>
+          <span style="font-weight: 700;">Personal Intelligence Profile</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; color: #cbd5e1; margin-top: 10px; line-height: 1.6;">
+        <p>OM synthesizes personal intelligence across conversations to customize code styles, architecture blueprints, and explanations:</p>
+        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; margin-top: 10px;">
+          <div><strong>User:</strong> Abhishek singh Yadav</div>
+          <div><strong>Location:</strong> Gurugram, Haryana, India</div>
+          <div><strong>Technical Focus:</strong> Full-Stack Engineering, Distributed Systems, Python, DSA, AI Agents</div>
+          <div><strong>Cognitive Workstyle:</strong> Think-Plan-Act-Achieve (Structured & Verified)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Usage Limits Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="usage-limits-modal">
+    <div class="om-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>🔄</span>
+          <span style="font-weight: 700;">Usage Limits & Quota</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; color: #cbd5e1; margin-top: 10px; line-height: 1.6;">
+        <div id="usage-limits-dynamic-content">
+          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: 700; color: var(--om-cyan); font-size: 0.95rem;">⚡ Ultimate Developer VIP Access</div>
+            <div style="font-size: 0.82rem; margin-top: 4px;">Unlimited Queries • No Rate Limits • Highest Priority Compute</div>
+          </div>
+          <p>You have zero quota restrictions across Google Gemini 2.0 Flash, 1.5 Pro, Vision Analysis, and the Code Runner Sandbox.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Gems Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="gems-modal">
+    <div class="om-modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>💎</span>
+          <span style="font-weight: 700;">Gems – Custom Personas & Instructions</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; color: #cbd5e1; margin-top: 10px; line-height: 1.6;">
+        <p>Select or customize specialized AI collaborator personas:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);" onclick="window.omAssistant.setMode('coding'); window.omApp.showToast('Activated Code Architect Gem', 'success');">
+            <div style="font-weight: 700; color: #06b6d4;">💻 Code Architect Gem</div>
+            <div style="font-size: 0.78rem; color: #94a3b8;">Python, JS, C++, Go, clean architecture</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);" onclick="window.omAssistant.setMode('data'); window.omApp.showToast('Activated Sparks Data Analyst Gem', 'success');">
+            <div style="font-weight: 700; color: #10b981;">📊 Sparks Analyst Gem</div>
+            <div style="font-size: 0.78rem; color: #94a3b8;">CSV, Pandas, statistical charts, metrics</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);" onclick="window.omAssistant.setMode('career'); window.omApp.showToast('Activated STAR Interviewer Gem', 'success');">
+            <div style="font-weight: 700; color: #f59e0b;">💼 STAR Interviewer Gem</div>
+            <div style="font-size: 0.78rem; color: #94a3b8;">Senior mock interviews, resume feedback</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);" onclick="window.omAssistant.setMode('research'); window.omApp.showToast('Activated Deep Research Gem', 'success');">
+            <div style="font-weight: 700; color: #8b5cf6;">🔎 Deep Research Gem</div>
+            <div style="font-size: 0.78rem; color: #94a3b8;">Trade-off matrices, architectural analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Gemini Notebook Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="notebook-modal">
+    <div class="om-modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>📓</span>
+          <span style="font-weight: 700;">Gemini Notebook & Research Canvas</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div style="margin-top: 10px;">
+        <textarea id="notebook-text-area" class="om-input" rows="8" placeholder="Draft notes, project specs, code snippets, or research synthesis here..." style="font-size: 0.88rem; width: 100%;"></textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <span style="font-size: 0.78rem; color: #94a3b8;">Saved locally across sessions</span>
+          <button class="om-btn om-btn-primary" onclick="window.omApp.saveNotebookContent()">Save to Notebook</button>
+        </div>
+      </div>
     </div>
   </div>
 

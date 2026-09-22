@@ -14,6 +14,7 @@ class OMChatStore {
     this.activeChatId = localStorage.getItem(this.ACTIVE_CHAT_KEY) || null;
     this.memory = this.loadMemory();
     this.settings = this.loadSettings();
+    this.currentUser = this.loadUser();
 
     // Ensure at least one active chat exists
     if (!this.activeChatId || !this.getChat(this.activeChatId)) {
@@ -27,14 +28,302 @@ class OMChatStore {
     }
   }
 
+  getSeedChats() {
+    const now = Date.now();
+    return [
+      {
+        id: 'chat-seed-1',
+        title: 'AI Interviewer and Developer Prompts',
+        mode: 'career',
+        pinned: true,
+        createdAt: now - 3600 * 1000 * 2,
+        updatedAt: now - 3600 * 1000 * 2,
+        messages: [
+          {
+            id: 'm-1',
+            sender: 'user',
+            text: 'I want to prepare for a Senior Full-Stack Developer interview. Can you provide 3 challenging STAR questions and ideal answers?',
+            timestamp: new Date(now - 3600 * 1000 * 2).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-2',
+            sender: 'om',
+            text: `### 🎯 Senior Full-Stack Developer Mock Interview: STAR Questions
+
+Here are three high-frequency behavioral and architectural questions with structured STAR answers:
+
+#### 1. System Scaling Under Peak Traffic
+* **Situation**: During a flash sale, our checkout API experienced sudden latency spikes from 120ms to 4.2s.
+* **Task**: Identify bottlenecks and scale service throughput without downtime.
+* **Action**: Introduced Redis caching for product inventory and deployed horizontal pod autoscalers (HPA) in Kubernetes.
+* **Result**: Latency stabilized at 85ms with 99.99% uptime through 50,000 req/sec.
+
+#### 2. Resolving Technical Debt vs Product Delivery
+* **Situation**: Legacy monolithic database queries blocked new dashboard feature releases.
+* **Task**: Balance engineering refactor with client sprint deadlines.
+* **Action**: Implemented read-replicas and async worker queues (BullMQ) to decouple heavy reports.
+* **Result**: Shipped the product sprint on schedule while improving query efficiency by 65%.
+
+#### 3. Cross-Functional Engineering Conflict
+* **Situation**: Frontend and Backend teams had misaligned GraphQL schema definitions 3 days before release.
+* **Task**: Align API contracts quickly without blocking QA.
+* **Action**: Facilitated a 45-minute contract review using OpenAPI/GraphQL SDL schema mocks.
+* **Result**: Zero regression defects and flawless deployment.`,
+            reasoning: "1. Structured interview response using STAR method.\n2. Addressed real-world distributed systems and team collaboration.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 2).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            actions: [
+              { stage: 'think', title: 'Review behavioral interview STAR framework', estimate: '30m' },
+              { stage: 'plan', title: 'Draft tailored personal project metrics', estimate: '1h' },
+              { stage: 'act', title: 'Conduct simulated mock voice interview', estimate: '45m' },
+              { stage: 'achieve', title: 'Complete interview readiness assessment', estimate: '15m' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-2',
+        title: 'EduBridge ke Unique Naam ke Ideas',
+        mode: 'general',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 5,
+        updatedAt: now - 3600 * 1000 * 5,
+        messages: [
+          {
+            id: 'm-3',
+            sender: 'user',
+            text: 'EduBridge jaise innovative education startup ke liye kuch catchy aur modern Hindi-English fusion naam batao.',
+            timestamp: new Date(now - 3600 * 1000 * 5).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-4',
+            sender: 'om',
+            text: `### 🚀 EduBridge Ke Liye Top Creative & Modern Brand Names
+
+Yahan education aur skill-building startups ke liye catchy, brandable naam hain:
+
+| Category | Brand Name | Meaning & Vibe |
+| :--- | :--- | :--- |
+| **Modern Fusion** | **VidyaSetu** | Knowledge bridge, trustworthy aur Indian connection |
+| **Tech-Driven** | **LearnNova** | High-velocity next-generation learning platform |
+| **Action-Oriented** | **GyaanPath** | Clear career roadmap aur skill development |
+| **Youth & Career** | **SkillSetu** | Industry-readiness aur direct placement bridge |
+| **Minimalist** | **Praxis Ed** | Hands-on practical knowledge aur projects |
+
+#### 💡 Recommendation:
+Agar corporate ya global audience target karni ho toh **SkillSetu** ya **VidyaSetu** sabse strong aur memorable hain!`,
+            reasoning: "1. Brand Analysis: Evaluated phonetic appeal, semantic relevance, and domain viability.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 5).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-3',
+        title: 'Python Library Management DSA Code',
+        mode: 'coding',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 12,
+        updatedAt: now - 3600 * 1000 * 12,
+        messages: [
+          {
+            id: 'm-5',
+            sender: 'user',
+            text: 'Write a Python Library Management System using Object-Oriented DSA with search, issue, and return features.',
+            timestamp: new Date(now - 3600 * 1000 * 12).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-6',
+            sender: 'om',
+            text: `### 📚 Python Library Management System (OOP & Hash Map DSA)
+
+Here is a clean, production-grade implementation using Python classes, dictionaries for O(1) lookup, and transaction logging:
+
+\`\`\`python
+class Book:
+    def __init__(self, book_id, title, author):
+        self.id = book_id
+        self.title = title
+        self.author = author
+        self.is_issued = False
+        self.issued_to = None
+
+class Library:
+    def __init__(self, name):
+        self.name = name
+        self.books = {} # O(1) Lookup by ID
+        self.issued_records = []
+
+    def add_book(self, book_id, title, author):
+        if book_id in self.books:
+            return False, "Book ID already exists."
+        self.books[book_id] = Book(book_id, title, author)
+        return True, f"'{title}' added successfully."
+
+    def issue_book(self, book_id, student_name):
+        book = self.books.get(book_id)
+        if not book:
+            return False, "Book not found."
+        if book.is_issued:
+            return False, f"Book is already issued to {book.issued_to}."
+        book.is_issued = True
+        book.issued_to = student_name
+        self.issued_records.append({"book_id": book_id, "student": student_name})
+        return True, f"Book '{book.title}' issued to {student_name}."
+
+    def return_book(self, book_id):
+        book = self.books.get(book_id)
+        if not book or not book.is_issued:
+            return False, "Book was not issued."
+        book.is_issued = False
+        prev_user = book.issued_to
+        book.issued_to = None
+        return True, f"Book '{book.title}' returned from {prev_user}."
+
+# Sample Execution
+lib = Library("National Digital Library")
+lib.add_book("B101", "Clean Code", "Robert C. Martin")
+lib.add_book("B102", "Introduction to Algorithms (CLRS)", "Cormen")
+print(lib.issue_book("B101", "Abhishek"))
+print(lib.return_book("B101"))
+\`\`\`
+
+#### Key Architecture Points:
+1. **Time Complexity**: O(1) lookup and return via hash-mapped dictionary.
+2. **Safety Checks**: Validates double-issuance and non-existent IDs.`,
+            reasoning: "1. Designed OOP data contracts.\n2. Implemented O(1) state transitions with robust error handling.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 12).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-4',
+        title: 'Troubleshooting GitHub Link 404 Error',
+        mode: 'coding',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 20,
+        updatedAt: now - 3600 * 1000 * 20,
+        messages: [
+          {
+            id: 'm-7',
+            sender: 'user',
+            text: 'Why does my GitHub Pages deployment show a 404 Not Found error?',
+            timestamp: new Date(now - 3600 * 1000 * 20).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-8',
+            sender: 'om',
+            text: `### 🔧 Troubleshooting GitHub Pages 404 Not Found
+
+A 404 error on GitHub Pages typically stems from three common causes:
+
+1. **Repository Case Sensitivity & Branch Setting**:
+   - Ensure your repository settings under **Settings ➔ Pages** have the Source set to **Deploy from a branch** with branch **\`main\`** (or \`gh-pages\`) and folder **\`/ (root)\`**.
+2. **Missing \`index.html\` at Root**:
+   - GitHub Pages requires an \`index.html\` file located directly in the root directory. If your file is inside a subfolder, it will return 404.
+3. **DNS / Propagation Delay**:
+   - Newly published Pages take approximately 1–3 minutes to generate SSL certificates and propagate globally.`,
+            reasoning: "1. Identified top 3 failure vectors for GitHub Pages deployment.\n2. Outlined clear remediation checklist.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 20).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-5',
+        title: 'Fixing Certificate Internship Date Error',
+        mode: 'career',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 28,
+        updatedAt: now - 3600 * 1000 * 28,
+        messages: [
+          {
+            id: 'm-9',
+            sender: 'user',
+            text: 'How should I request HR to correct the dates on my internship completion certificate?',
+            timestamp: new Date(now - 3600 * 1000 * 28).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-10',
+            sender: 'om',
+            text: `### ✉️ Formal Email Draft for Certificate Date Correction
+
+**Subject**: Request for Correction in Internship Certificate Dates – Abhishek singh Yadav
+
+**Dear HR Team,**
+
+I hope this email finds you well.
+
+I would like to sincerely thank you and the entire team for the enriching learning experience during my internship.
+
+Upon reviewing my recently issued Internship Certificate, I noticed a minor typographical error regarding my tenure dates. Could you kindly issue an updated certificate reflecting the correct duration? I have attached the original offer letter for verification.
+
+Thank you very much for your time and assistance.
+
+Warm regards,  
+**Abhishek singh Yadav**`,
+            reasoning: "1. Drafted professional corporate correspondence.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 28).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-6',
+        title: 'GitHub पोर्टफोलियो लिंक समस्या समाधान',
+        mode: 'coding',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 48,
+        updatedAt: now - 3600 * 1000 * 48,
+        messages: [
+          {
+            id: 'm-11',
+            sender: 'user',
+            text: 'GitHub portfolio link open karne par issue aa raha hai, isko solve karne ka checklist do.',
+            timestamp: new Date(now - 3600 * 1000 * 48).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-12',
+            sender: 'om',
+            text: `### 🚀 GitHub Portfolio Link Fix Checklist
+
+Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
+
+1. **Public Visibility**: Repository ko **Public** hona chahiye (**Settings ➔ Danger Zone ➔ Change Visibility**).
+2. **GitHub Pages Enabled**: **Settings ➔ Pages** mein jaakar Source ko **Deploy from a branch** aur branch ko **main** set karein.
+3. **Repository URL Structure**: Format: \`https://<username>.github.io/<repo-name>/\`
+4. **Console Errors**: F12 dabakar check karein ki koi file path galat toh nahi.`,
+            reasoning: "1. Hindi-English resolution checklist for GitHub deployment.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 48).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      }
+    ];
+  }
+
   loadChats() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const parsed = data ? JSON.parse(data) : [];
+      if (!parsed || parsed.length === 0 || (parsed.length === 1 && parsed[0].title === 'New Chat' && parsed[0].messages.length === 0)) {
+        const seed = this.getSeedChats();
+        this.saveChatsDirect(seed);
+        return seed;
+      }
+      return parsed;
     } catch (e) {
       console.warn("Failed to parse chats from localStorage, initializing fresh store", e);
-      return [];
+      const seed = this.getSeedChats();
+      return seed;
     }
+  }
+
+  saveChatsDirect(chats) {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(chats));
+    } catch (e) {}
   }
 
   saveChats() {
@@ -119,21 +408,182 @@ Core Directives:
     }
   }
 
+  loadUser() {
+    try {
+      const data = localStorage.getItem('om_auth_user_v2');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+
+    // Default to Abhishek singh Yadav (Ultimate Developer)
+    return {
+      id: 'usr-dev-1',
+      name: 'Abhishek singh Yadav',
+      email: 'abhishek.yadav@om.ai',
+      avatar: 'assets/icons/logo.svg',
+      role: 'developer',
+      tier: 'Ultimate Developer',
+      tierBadge: 'Pro',
+      plan: 'ultimate_developer',
+      location: 'Gurugram, Haryana, India',
+      isDeveloper: true,
+      subscription: {
+        name: 'Ultimate Developer Pass',
+        status: 'Active (Lifetime Free)',
+        price: '$0.00 / Free Forever',
+        expires: 'Never (Lifetime VIP)',
+        tierId: 'ultimate'
+      }
+    };
+  }
+
+  saveUser(user) {
+    this.currentUser = user;
+    try {
+      localStorage.setItem('om_auth_user_v2', JSON.stringify(user));
+    } catch (e) {}
+  }
+
+  signIn(email, password, asDev = false) {
+    const isDev = asDev || (email && (email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev')));
+    if (isDev) {
+      const devUser = {
+        id: 'usr-dev-1',
+        name: 'Abhishek singh Yadav',
+        email: email || 'abhishek.yadav@om.ai',
+        avatar: 'assets/icons/logo.svg',
+        role: 'developer',
+        tier: 'Ultimate Developer',
+        tierBadge: 'Pro',
+        plan: 'ultimate_developer',
+        location: 'Gurugram, Haryana, India',
+        isDeveloper: true,
+        subscription: {
+          name: 'Ultimate Developer Pass',
+          status: 'Active (Lifetime Free)',
+          price: '$0.00 / Free Forever',
+          expires: 'Never (Lifetime VIP)',
+          tierId: 'ultimate'
+        }
+      };
+      this.saveUser(devUser);
+      this.saveSettings({ userPlan: 'ultimate_developer', isDeveloper: true });
+      return devUser;
+    }
+
+    const publicUser = {
+      id: 'usr-' + Date.now(),
+      name: (email && email.includes('@')) ? email.split('@')[0] : 'OM User',
+      email: email || 'user@example.com',
+      avatar: 'assets/icons/logo.svg',
+      role: 'user',
+      tier: 'Free Plan',
+      tierBadge: 'Free',
+      plan: 'free',
+      location: 'India',
+      isDeveloper: false,
+      subscription: {
+        name: 'Free Plan',
+        status: 'Active',
+        price: '$0.00 / mo',
+        expires: 'Auto-renews',
+        tierId: 'free'
+      }
+    };
+    this.saveUser(publicUser);
+    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    return publicUser;
+  }
+
+  register(name, email, password) {
+    const newUser = {
+      id: 'usr-' + Date.now(),
+      name: name || 'OM User',
+      email: email || 'user@example.com',
+      avatar: 'assets/icons/logo.svg',
+      role: 'user',
+      tier: 'Free Plan',
+      tierBadge: 'Free',
+      plan: 'free',
+      location: 'India',
+      isDeveloper: false,
+      subscription: {
+        name: 'Free Plan',
+        status: 'Active',
+        price: '$0.00 / mo',
+        expires: 'Auto-renews',
+        tierId: 'free'
+      }
+    };
+    this.saveUser(newUser);
+    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    return newUser;
+  }
+
+  signOut() {
+    const guestUser = {
+      id: 'guest',
+      name: 'Guest User',
+      email: 'guest@om.ai',
+      avatar: 'assets/icons/logo.svg',
+      role: 'guest',
+      tier: 'Public Free',
+      tierBadge: 'Guest',
+      plan: 'free',
+      location: 'Public Access',
+      isDeveloper: false,
+      subscription: {
+        name: 'Public Free Plan',
+        status: 'Unsubscribed',
+        price: '$0.00 / mo',
+        expires: 'None',
+        tierId: 'free'
+      }
+    };
+    this.saveUser(guestUser);
+    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    return guestUser;
+  }
+
+  upgradePlan(tierId) {
+    const tierMap = {
+      free: { name: 'Free Plan', price: '$0.00 / mo', tierBadge: 'Free' },
+      pro: { name: 'Pro Plan', price: '₹1,950 / mo ($19.99)', tierBadge: 'Pro' },
+      ultra: { name: 'Ultra Plan', price: '₹4,900 / mo ($49.99)', tierBadge: 'Ultra' },
+      ultimate: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'Pro' }
+    };
+
+    const target = tierMap[tierId] || tierMap.pro;
+    const isDev = (tierId === 'ultimate' || tierId === 'ultimate_developer');
+
+    this.currentUser.plan = tierId;
+    this.currentUser.tier = target.name;
+    this.currentUser.tierBadge = target.tierBadge;
+    this.currentUser.isDeveloper = isDev;
+    this.currentUser.subscription = {
+      name: target.name,
+      status: 'Active',
+      price: target.price,
+      expires: isDev ? 'Never (Lifetime VIP)' : 'Monthly Auto-Renewal',
+      tierId: tierId
+    };
+
+    this.saveUser(this.currentUser);
+    this.saveSettings({ userPlan: tierId, isDeveloper: isDev });
+    return this.currentUser;
+  }
+
   isDeveloper() {
+    if (this.currentUser) return this.currentUser.isDeveloper;
     return this.settings.isDeveloper || this.settings.userPlan === 'ultimate_developer';
   }
 
   getUserPlan() {
+    if (this.currentUser) return this.currentUser.plan;
     return this.settings.userPlan || 'ultimate_developer';
   }
 
   activateDeveloperMode() {
-    this.saveSettings({
-      isDeveloper: true,
-      userPlan: 'ultimate_developer',
-      developerTier: 'Ultimate Lifetime Access (Free)'
-    });
-    return true;
+    return this.upgradePlan('ultimate');
   }
 
   createChat(title = "New Chat", mode = "general", projectId = null) {

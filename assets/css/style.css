@@ -1220,3 +1220,564 @@ h1, h2, h3, h4, h5 {
     padding: 0.5rem 1rem 0.75rem;
   }
 }
+
+/* ==========================================================================
+   Google Gemini UI Extensions: Pill Switcher, Profile & Popover Menu
+   ========================================================================== */
+
+/* Top Pill Switcher (Chat vs Spark) */
+.gemini-pill-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gemini-tab-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 0;
+  background: transparent;
+  color: var(--om-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--om-transition);
+}
+
+.gemini-tab-pill:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.gemini-tab-pill.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.spark-pill .spark-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+/* Sidebar Profile Card Footer */
+.gemini-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  position: relative;
+}
+
+.profile-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-initials {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.profile-info-stack,
+.profile-meta-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.profile-chevron {
+  font-size: 1.15rem;
+  color: var(--om-text-muted);
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-user-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-tier-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: #030712;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.profile-location {
+  font-size: 0.72rem;
+  color: var(--om-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.profile-popover-trigger {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--om-text-secondary);
+  border-radius: var(--om-radius-sm);
+  cursor: pointer;
+  transition: var(--om-transition);
+  flex-shrink: 0;
+}
+
+.profile-popover-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* 16-Item Gemini Popover Menu */
+.gemini-popover-menu {
+  position: absolute;
+  bottom: 68px;
+  left: 12px;
+  width: 275px;
+  max-height: 480px;
+  overflow-y: auto;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.15);
+  padding: 8px 6px;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  animation: fadeIn 0.16s ease-out;
+}
+
+.gemini-popover-menu.show {
+  display: flex;
+}
+
+.gemini-popover-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.gemini-popover-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.popover-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.83rem;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  user-select: none;
+  position: relative;
+}
+
+.popover-menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.popover-menu-item.upgrade-highlight {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.popover-menu-item.upgrade-highlight:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.25));
+  color: #6ee7b7;
+}
+
+.popover-icon {
+  font-size: 0.95rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.popover-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popover-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: rgba(6, 182, 212, 0.2);
+  color: #22d3ee;
+}
+
+.popover-caret {
+  font-size: 0.65rem;
+  color: var(--om-text-muted);
+}
+
+.popover-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 6px;
+}
+
+.popover-submenu {
+  display: flex;
+  flex-direction: column;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-top: 6px;
+  padding: 4px;
+}
+
+.submenu-item {
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submenu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.auth-action-item {
+  color: #f87171;
+}
+.auth-action-item:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   Subscriptions & Public Pricing Plans Modal
+   ========================================================================== */
+.subscription-modal-content {
+  max-width: 860px;
+}
+
+.developer-vip-badge-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.12));
+  border: 1.5px solid rgba(16, 185, 129, 0.5);
+  border-radius: var(--om-radius-md);
+  padding: 16px 20px;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+.vip-badge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vip-sparkle {
+  font-size: 1.25rem;
+}
+
+.vip-status-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: #10b981;
+  color: #030712;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pricing-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .pricing-tiers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pricing-tier-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--om-radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pricing-tier-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.pricing-tier-card.popular-tier {
+  border-color: var(--om-cyan);
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
+.pricing-tier-card.ultra-tier {
+  border-color: #8b5cf6;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.popular-ribbon {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  background: linear-gradient(135deg, var(--om-cyan), var(--om-indigo));
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tier-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tier-price {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 8px 0 4px;
+}
+
+.tier-duration {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--om-text-muted);
+}
+
+.tier-desc {
+  font-size: 0.8rem;
+  color: var(--om-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.tier-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 20px;
+  flex: 1;
+}
+
+.tier-features-list li {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.tier-action-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--om-radius-sm);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  transition: var(--om-transition);
+}
+
+.tier-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tier-action-primary {
+  background: linear-gradient(135deg, var(--om-cyan), var(--om-indigo));
+  border: 0;
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+}
+
+.tier-action-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+}
+
+.tier-action-ultra {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border: 0;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+.tier-action-ultra:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+/* ==========================================================================
+   Checkout Modal & Payment Methods
+   ========================================================================== */
+.checkout-modal-content {
+  max-width: 520px;
+}
+
+.checkout-summary-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--om-border-subtle);
+  border-radius: var(--om-radius-sm);
+  padding: 14px 16px;
+  margin-top: 10px;
+}
+
+.payment-methods-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pay-method-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--om-radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  transition: var(--om-transition);
+}
+
+.pay-method-card:hover, .pay-method-card.active {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: var(--om-cyan);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Authentication Modal (Developer & Public)
+   ========================================================================== */
+.auth-modal-content {
+  max-width: 480px;
+}
+
+.auth-dev-quick-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: var(--om-radius-sm);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.auth-dev-button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.86rem;
+}
+
+.auth-vip-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.auth-tabs-row {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--om-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--om-transition);
+}
+
+.auth-tab-btn.active {
+  color: #fff;
+  border-bottom-color: var(--om-cyan);
+}
