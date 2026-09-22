@@ -249,6 +249,14 @@ class OMApp {
 
     if (!text && attachments.length === 0) return;
 
+    // Check 3-Month Free Trial expiration for non-developer public users
+    const trial = this.chatStore.getTrialInfo();
+    if (!trial.isDeveloper && trial.isTrial && trial.isExpired) {
+      this.showToast('⚠️ Your 3-Month Free Trial has expired. Please select a subscription plan to continue.', 'error');
+      this.openSubscriptionModal();
+      return;
+    }
+
     // Clear input field immediately
     input.value = '';
     input.style.height = 'auto';
@@ -732,16 +740,26 @@ class OMApp {
       avatarInitialsEl.textContent = initials;
     }
 
+    const trial = this.chatStore.getTrialInfo();
+
     if (tierBadgeEl) {
       if (isDev) {
-        tierBadgeEl.textContent = 'Pro';
-        tierBadgeEl.title = 'Ultimate Developer Free Lifetime Access';
+        tierBadgeEl.textContent = 'VIP';
+        tierBadgeEl.className = 'sidebar-tier-badge vip';
+        tierBadgeEl.title = 'Ultimate Developer Free Lifetime Access ($0.00 Unlimited)';
       } else if (plan === 'ultra') {
         tierBadgeEl.textContent = 'Ultra';
+        tierBadgeEl.className = 'sidebar-tier-badge';
       } else if (plan === 'pro') {
         tierBadgeEl.textContent = 'Pro';
+        tierBadgeEl.className = 'sidebar-tier-badge';
+      } else if (trial.isTrial) {
+        tierBadgeEl.textContent = trial.isExpired ? 'Expired' : 'Trial';
+        tierBadgeEl.className = `sidebar-tier-badge ${trial.isExpired ? 'expired' : 'trial'}`;
+        tierBadgeEl.title = trial.label;
       } else {
-        tierBadgeEl.textContent = 'Free';
+        tierBadgeEl.textContent = 'Guest';
+        tierBadgeEl.className = 'sidebar-tier-badge';
       }
     }
 
@@ -754,14 +772,32 @@ class OMApp {
     }
 
     if (planLabel) {
-      planLabel.textContent = isDev ? "Ultimate Developer" : (plan === 'ultra' ? "Google AI Ultra" : (plan === 'pro' ? "Gemini Pro" : "Free Plan"));
+      if (isDev) {
+        planLabel.textContent = "👑 Ultimate Developer (Free Lifetime VIP)";
+      } else if (plan === 'ultra') {
+        planLabel.textContent = "Google AI Ultra";
+      } else if (plan === 'pro') {
+        planLabel.textContent = "Gemini Pro";
+      } else if (trial.isTrial) {
+        planLabel.textContent = trial.label;
+      } else {
+        planLabel.textContent = "Public Guest (Start 3-Month Trial)";
+      }
     }
     if (tierLabel) {
-      tierLabel.textContent = isDev ? "Free Unlimited Access" : (plan === 'pro' || plan === 'ultra' ? "Active Subscription" : "Standard Speed");
+      if (isDev) {
+        tierLabel.textContent = "Free Unlimited Access ($0.00 Forever)";
+      } else if (plan === 'ultra' || plan === 'pro') {
+        tierLabel.textContent = "Active Paid Subscription";
+      } else if (trial.isTrial) {
+        tierLabel.textContent = trial.isExpired ? "Trial Expired (Please Upgrade)" : `3-Month Free Trial (${trial.daysRemaining}d left)`;
+      } else {
+        tierLabel.textContent = "Start 3-Month Free Trial";
+      }
     }
     if (avatarBadge) {
-      avatarBadge.textContent = isDev ? "⚡" : "OM";
-      avatarBadge.style.background = isDev ? "linear-gradient(135deg, #06b6d4, #6366f1)" : "var(--om-card-bg)";
+      avatarBadge.textContent = isDev ? "👑" : (trial.isTrial ? "🎁" : "OM");
+      avatarBadge.style.background = isDev ? "linear-gradient(135deg, #10b981, #06b6d4)" : (trial.isTrial ? "linear-gradient(135deg, #f59e0b, #ec4899)" : "var(--om-card-bg)");
     }
   }
 
@@ -937,6 +973,26 @@ class OMApp {
     if (!modal) return;
     this.updateDeveloperTierBadge();
 
+    const isDev = this.chatStore.isDeveloper();
+    const trial = this.chatStore.getTrialInfo();
+    const btnTrial = document.getElementById('btn-select-trial');
+
+    if (btnTrial) {
+      if (isDev) {
+        btnTrial.textContent = "Included in Developer VIP (Free)";
+        btnTrial.disabled = true;
+        btnTrial.style.opacity = '0.7';
+      } else if (trial.isTrial) {
+        btnTrial.textContent = trial.isExpired ? "Trial Expired (Upgrade to Pro)" : `Trial Active (${trial.daysRemaining}d left)`;
+        btnTrial.disabled = trial.isExpired;
+        btnTrial.style.opacity = trial.isExpired ? '0.6' : '1';
+      } else {
+        btnTrial.textContent = "Start 3-Month Free Trial";
+        btnTrial.disabled = false;
+        btnTrial.style.opacity = '1';
+      }
+    }
+
     // Reset highlights
     document.querySelectorAll('.pricing-tier-card').forEach(c => c.style.outline = 'none');
     if (focusTier === 'ultra') {
@@ -946,6 +1002,57 @@ class OMApp {
         ultraCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
+    modal.classList.add('active');
+  }
+
+  openUsageLimitsModal() {
+    this.closeProfilePopover();
+    const modal = document.getElementById('usage-limits-modal');
+    const content = document.getElementById('usage-limits-dynamic-content');
+    if (!modal) return;
+
+    const isDev = this.chatStore.isDeveloper();
+    const trial = this.chatStore.getTrialInfo();
+
+    if (content) {
+      if (isDev) {
+        content.innerHTML = `
+          <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid rgba(16, 185, 129, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: 800; color: #10b981; font-size: 0.95rem;">👑 Ultimate Developer VIP Access (Active)</div>
+            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Assigned to: <strong>Abhishek singh Yadav</strong> • Lifetime $0.00 Exemption</div>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
+            <li>✓ <strong style="color: #fff;">Queries & Tokens:</strong> UNLIMITED (Infinite compute)</li>
+            <li>✓ <strong style="color: #fff;">Rate Limits:</strong> NONE (Zero throttling)</li>
+            <li>✓ <strong style="color: #fff;">Full Toolset:</strong> Gemini 2.0 Flash, 1.5 Pro, Vision, Audio/Video, 3D CAD Dismantler, Swarm</li>
+            <li>✓ <strong style="color: #fff;">Cost & Expiry:</strong> $0.00 / NEVER (Free Forever)</li>
+          </ul>
+          <p style="font-size: 0.8rem; color: #64748b;">You hold lead architect superuser status across all OM AI subsystems.</p>
+        `;
+      } else if (trial.isTrial) {
+        content.innerHTML = `
+          <div style="background: rgba(245, 158, 11, 0.12); border: 1.5px solid rgba(245, 158, 11, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: 800; color: #fbbf24; font-size: 0.95rem;">🎁 3-Month Free Trial (${trial.isExpired ? 'Expired' : trial.daysRemaining + ' Days Remaining'})</div>
+            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Introductory 90-day trial for public users</div>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
+            <li>✓ <strong style="color: #fff;">Trial Duration:</strong> 90 Days Total (${trial.daysRemaining} days remaining)</li>
+            <li>✓ <strong style="color: #fff;">Included:</strong> Gemini 2.0 Flash, 3D CAD Exploded View, Dual Voice (J.A.R.V.I.S. & F.R.I.D.A.Y.)</li>
+            <li>✓ <strong style="color: #fff;">Status:</strong> ${trial.isExpired ? '<span style="color:#ef4444; font-weight:bold;">EXPIRED (Please Upgrade)</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVE</span>'}</li>
+          </ul>
+          <button class="om-btn om-btn-primary" style="width: 100%; margin-top: 8px;" onclick="window.omApp.openSubscriptionModal()">Upgrade to Pro / Ultra</button>
+        `;
+      } else {
+        content.innerHTML = `
+          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: 700; color: var(--om-cyan); font-size: 0.95rem;">⚡ Active Paid Subscription</div>
+            <div style="font-size: 0.82rem; margin-top: 4px;">High-speed priority compute enabled</div>
+          </div>
+          <p>You have full access to high-speed compute and features across OM AI Assistant.</p>
+        `;
+      }
+    }
+
     modal.classList.add('active');
   }
 
@@ -1076,13 +1183,13 @@ Key Ideas & Notes:
      Subscription Checkout & Payment Flow
      ========================================================================= */
   selectSubscriptionPlan(tierId) {
-    if (tierId === 'free') {
+    if (tierId === 'trial_3month' || tierId === 'trial' || tierId === 'free') {
       if (this.chatStore.isDeveloper()) {
-        this.showToast('You already have Lifetime Free Developer VIP Access ($0.00)', 'info');
+        this.showToast('👑 You already have Lifetime Free Developer VIP Access ($0.00 Unlimited)', 'info');
       } else {
-        this.chatStore.upgradePlan('free');
+        this.chatStore.upgradePlan('trial_3month');
         this.updateDeveloperTierBadge();
-        this.showToast('Switched to Public Free Plan', 'info');
+        this.showToast('🎉 3-Month Free Trial Active! Enjoy 90 days of complete multimodal access.', 'success');
       }
       const modal = document.getElementById('subscription-plans-modal');
       if (modal) modal.classList.remove('active');

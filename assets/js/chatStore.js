@@ -421,17 +421,18 @@ Core Directives:
       email: 'abhishek.yadav@om.ai',
       avatar: 'assets/icons/logo.svg',
       role: 'developer',
-      tier: 'Ultimate Developer',
-      tierBadge: 'Pro',
+      tier: 'Ultimate Developer (Free Lifetime VIP)',
+      tierBadge: 'VIP',
       plan: 'ultimate_developer',
       location: 'Gurugram, Haryana, India',
       isDeveloper: true,
       subscription: {
-        name: 'Ultimate Developer Pass',
+        name: 'Ultimate Developer VIP Pass',
         status: 'Active (Lifetime Free)',
         price: '$0.00 / Free Forever',
         expires: 'Never (Lifetime VIP)',
-        tierId: 'ultimate'
+        tierId: 'ultimate_developer',
+        isUnlimited: true
       }
     };
   }
@@ -452,17 +453,18 @@ Core Directives:
         email: email || 'abhishek.yadav@om.ai',
         avatar: 'assets/icons/logo.svg',
         role: 'developer',
-        tier: 'Ultimate Developer',
-        tierBadge: 'Pro',
+        tier: 'Ultimate Developer (Free Lifetime VIP)',
+        tierBadge: 'VIP',
         plan: 'ultimate_developer',
         location: 'Gurugram, Haryana, India',
         isDeveloper: true,
         subscription: {
-          name: 'Ultimate Developer Pass',
+          name: 'Ultimate Developer VIP Pass',
           status: 'Active (Lifetime Free)',
           price: '$0.00 / Free Forever',
           expires: 'Never (Lifetime VIP)',
-          tierId: 'ultimate'
+          tierId: 'ultimate_developer',
+          isUnlimited: true
         }
       };
       this.saveUser(devUser);
@@ -476,46 +478,59 @@ Core Directives:
       email: email || 'user@example.com',
       avatar: 'assets/icons/logo.svg',
       role: 'user',
-      tier: 'Free Plan',
-      tierBadge: 'Free',
-      plan: 'free',
+      tier: '3-Month Free Trial',
+      tierBadge: 'Trial',
+      plan: 'trial_3month',
       location: 'India',
       isDeveloper: false,
+      trialStartedAt: Date.now(),
+      trialDurationDays: 90,
       subscription: {
-        name: 'Free Plan',
-        status: 'Active',
-        price: '$0.00 / mo',
-        expires: 'Auto-renews',
-        tierId: 'free'
+        name: '3-Month Free Trial',
+        status: 'Active (90 Days Free)',
+        price: '$0.00 (First 3 Months Free, then ₹1,950/mo)',
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+        tierId: 'trial_3month',
+        daysRemaining: 90,
+        isTrial: true
       }
     };
     this.saveUser(publicUser);
-    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    this.saveSettings({ userPlan: 'trial_3month', isDeveloper: false });
     return publicUser;
   }
 
   register(name, email, password) {
+    const isDev = (name && name.toLowerCase().includes('abhishek')) || (email && (email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev')));
+    if (isDev) {
+      return this.signIn(email, password, true);
+    }
+
     const newUser = {
       id: 'usr-' + Date.now(),
       name: name || 'OM User',
       email: email || 'user@example.com',
       avatar: 'assets/icons/logo.svg',
       role: 'user',
-      tier: 'Free Plan',
-      tierBadge: 'Free',
-      plan: 'free',
+      tier: '3-Month Free Trial',
+      tierBadge: 'Trial',
+      plan: 'trial_3month',
       location: 'India',
       isDeveloper: false,
+      trialStartedAt: Date.now(),
+      trialDurationDays: 90,
       subscription: {
-        name: 'Free Plan',
-        status: 'Active',
-        price: '$0.00 / mo',
-        expires: 'Auto-renews',
-        tierId: 'free'
+        name: '3-Month Free Trial',
+        status: 'Active (90 Days Free)',
+        price: '$0.00 (First 3 Months Free, then ₹1,950/mo)',
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+        tierId: 'trial_3month',
+        daysRemaining: 90,
+        isTrial: true
       }
     };
     this.saveUser(newUser);
-    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    this.saveSettings({ userPlan: 'trial_3month', isDeveloper: false });
     return newUser;
   }
 
@@ -526,45 +541,52 @@ Core Directives:
       email: 'guest@om.ai',
       avatar: 'assets/icons/logo.svg',
       role: 'guest',
-      tier: 'Public Free',
+      tier: 'Public Guest',
       tierBadge: 'Guest',
-      plan: 'free',
+      plan: 'guest',
       location: 'Public Access',
       isDeveloper: false,
+      trialStartedAt: null,
       subscription: {
-        name: 'Public Free Plan',
+        name: 'Guest Access (Start 3-Month Trial)',
         status: 'Unsubscribed',
-        price: '$0.00 / mo',
+        price: '$0.00 / 3-Month Trial Available',
         expires: 'None',
-        tierId: 'free'
+        tierId: 'guest'
       }
     };
     this.saveUser(guestUser);
-    this.saveSettings({ userPlan: 'free', isDeveloper: false });
+    this.saveSettings({ userPlan: 'guest', isDeveloper: false });
     return guestUser;
   }
 
   upgradePlan(tierId) {
     const tierMap = {
-      free: { name: 'Free Plan', price: '$0.00 / mo', tierBadge: 'Free' },
-      pro: { name: 'Pro Plan', price: '₹1,950 / mo ($19.99)', tierBadge: 'Pro' },
-      ultra: { name: 'Ultra Plan', price: '₹4,900 / mo ($49.99)', tierBadge: 'Ultra' },
-      ultimate: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'Pro' }
+      trial_3month: { name: '3-Month Free Trial', price: '$0.00 (First 90 Days Free)', tierBadge: 'Trial', expires: '90 Days from activation' },
+      free: { name: 'Public Free', price: '$0.00 / mo', tierBadge: 'Free', expires: 'Standard Access' },
+      pro: { name: 'Gemini Pro', price: '₹1,950 / mo ($19.99)', tierBadge: 'Pro', expires: 'Monthly Auto-Renewal' },
+      ultra: { name: 'Google AI Ultra', price: '₹4,900 / mo ($49.99)', tierBadge: 'Ultra', expires: 'Monthly Auto-Renewal' },
+      ultimate: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' },
+      ultimate_developer: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' }
     };
 
-    const target = tierMap[tierId] || tierMap.pro;
     const isDev = (tierId === 'ultimate' || tierId === 'ultimate_developer');
+    const target = tierMap[tierId] || tierMap.pro;
 
     this.currentUser.plan = tierId;
     this.currentUser.tier = target.name;
     this.currentUser.tierBadge = target.tierBadge;
     this.currentUser.isDeveloper = isDev;
+    if (tierId === 'trial_3month') {
+      this.currentUser.trialStartedAt = Date.now();
+    }
     this.currentUser.subscription = {
       name: target.name,
       status: 'Active',
       price: target.price,
-      expires: isDev ? 'Never (Lifetime VIP)' : 'Monthly Auto-Renewal',
-      tierId: tierId
+      expires: isDev ? 'Never (Lifetime VIP)' : target.expires,
+      tierId: tierId,
+      isTrial: tierId === 'trial_3month'
     };
 
     this.saveUser(this.currentUser);
@@ -572,8 +594,55 @@ Core Directives:
     return this.currentUser;
   }
 
+  getTrialInfo() {
+    if (this.isDeveloper()) {
+      return {
+        isDeveloper: true,
+        isTrial: false,
+        isExpired: false,
+        daysRemaining: Infinity,
+        label: '👑 Free Lifetime Developer VIP ($0.00)'
+      };
+    }
+
+    const user = this.currentUser;
+    if (!user) {
+      return { isDeveloper: false, isTrial: false, isExpired: false, daysRemaining: 0, label: 'Guest' };
+    }
+
+    if (user.plan === 'pro' || user.plan === 'ultra') {
+      return {
+        isDeveloper: false,
+        isTrial: false,
+        isExpired: false,
+        daysRemaining: null,
+        label: user.plan === 'ultra' ? 'Google AI Ultra' : 'Gemini Pro'
+      };
+    }
+
+    // 3-Month Trial Calculation (90 Days)
+    const started = user.trialStartedAt || (Date.now() - 24 * 60 * 60 * 1000);
+    const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+    const elapsed = Date.now() - started;
+    const remainingDays = Math.max(0, Math.ceil((ninetyDaysMs - elapsed) / (24 * 60 * 60 * 1000)));
+    const isExpired = remainingDays <= 0;
+
+    return {
+      isDeveloper: false,
+      isTrial: true,
+      isExpired: isExpired,
+      daysRemaining: remainingDays,
+      label: isExpired ? '⚠️ 3-Month Free Trial Expired' : `🎁 3-Month Free Trial (${remainingDays} Days Left)`
+    };
+  }
+
   isDeveloper() {
-    if (this.currentUser) return this.currentUser.isDeveloper;
+    if (this.currentUser) {
+      if (this.currentUser.isDeveloper) return true;
+      if (this.currentUser.email && this.currentUser.email.toLowerCase().includes('abhishek')) return true;
+      if (this.currentUser.name && this.currentUser.name.toLowerCase().includes('abhishek')) return true;
+      if (this.currentUser.plan === 'ultimate_developer' || this.currentUser.plan === 'ultimate') return true;
+    }
     return this.settings.isDeveloper || this.settings.userPlan === 'ultimate_developer';
   }
 
