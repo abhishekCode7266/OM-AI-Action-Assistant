@@ -8,10 +8,10 @@
 
 | Platform | URL | Status |
 | :--- | :--- | :--- |
-| **GitHub Pages (Live Website)** | [https://abhishekcode7266.github.io/OM-AI-Action-Assistant/](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/) | 🟢 **100% Live & Working** |
-| **Vercel Project Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | 🟢 **Connected to GitHub** |
-| **Vercel Live Deployment URL** | [https://om-mvlan9m0l-abhishek-ef1f.vercel.app](https://om-mvlan9m0l-abhishek-ef1f.vercel.app) | 🟢 **Deployed (Success)** |
-| **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 🟢 **Latest Code Pushed** |
+| **GitHub Pages (Live Public Website)** | [https://abhishekcode7266.github.io/OM-AI-Action-Assistant/](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/) | 🟢 **100% Live & Working (No Login Required)** |
+| **Vercel Project Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | 🟢 **Connected to GitHub (Auto-Builds on Push)** |
+| **Vercel Live Preview** | [https://om-20jslqulw-abhishek-ef1f.vercel.app](https://om-20jslqulw-abhishek-ef1f.vercel.app) | 🟢 **Deployed (Success)** |
+| **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 📂 **Branch `main` (Commit `aad97c0`)** |
 
 ---
 
