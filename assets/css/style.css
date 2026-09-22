@@ -2036,3 +2036,89 @@ h1, h2, h3, h4, h5 {
   border-color: var(--om-cyan);
 }
 
+/* =========================================================================
+   Universal Multilingual & Voice Gender Switching
+   ========================================================================= */
+#global-lang-selector {
+  border-color: rgba(6, 182, 212, 0.35);
+  background: rgba(15, 23, 42, 0.85);
+  font-size: 0.78rem;
+  max-width: 155px;
+}
+
+#btn-toggle-voice-gender {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+#btn-toggle-voice-gender:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#btn-toggle-voice-gender.female {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: rgba(236, 72, 153, 0.4);
+  color: #f472b6;
+}
+
+/* =========================================================================
+   F.R.I.D.A.Y. Tactical Theme
+   ========================================================================= */
+.live-persona-pill.friday-theme {
+  border-color: rgba(236, 72, 153, 0.5) !important;
+  background: rgba(236, 72, 153, 0.1) !important;
+}
+
+.transcript-speaker-tag.friday-tag {
+  color: #f472b6;
+  border-color: rgba(236, 72, 153, 0.4);
+  background: rgba(236, 72, 153, 0.12);
+}
+
+/* =========================================================================
+   Holographic Neural Thought Canvas Modal
+   ========================================================================= */
+.neural-canvas-modal-content {
+  border-radius: var(--om-radius-lg);
+  box-shadow: 0 0 50px rgba(14, 165, 233, 0.25);
+  position: relative;
+}
+
+/* =========================================================================
+   Cyber Terminal CRT Shell Simulator
+   ========================================================================= */
+.cyber-terminal-modal-content {
+  border-radius: var(--om-radius-md);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+  position: relative;
+}
+
+.cyber-terminal-screen {
+  background-color: #020617;
+  background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 3px, 3px 100%;
+}
+
+.cyber-terminal-screen::-webkit-scrollbar {
+  width: 6px;
+}
+.cyber-terminal-screen::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 4px;
+}
+.cyber-terminal-screen::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+
+@media (max-width: 1024px) {
+  .header-btn-text {
+    display: none;
+  }
+  #global-lang-selector {
+    max-width: 110px;
+  }
+}
+
+

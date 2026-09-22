@@ -191,6 +191,38 @@
         </div>
 
         <div class="header-right-group">
+          <!-- Global World Language Selector (20+ Languages) -->
+          <div class="mode-dropdown-wrap">
+            <select class="mode-select-pill" id="global-lang-selector" title="Global World Language (Speech & Text)" onchange="window.omVoice && window.omVoice.setLanguage(this.value)">
+              <option value="en-US">🇺🇸 English (US)</option>
+              <option value="hi-IN">🇮🇳 हिन्दी (Hindi)</option>
+              <option value="en-GB">🇬🇧 English (UK)</option>
+              <option value="en-IN">🇮🇳 English (India)</option>
+              <option value="es-ES">🇪🇸 Español</option>
+              <option value="fr-FR">🇫🇷 Français</option>
+              <option value="de-DE">🇩🇪 Deutsch</option>
+              <option value="ja-JP">🇯🇵 日本語</option>
+              <option value="zh-CN">🇨🇳 中文</option>
+              <option value="ar-SA">🇸🇦 العربية</option>
+              <option value="ru-RU">🇷🇺 Русский</option>
+              <option value="pt-BR">🇧🇷 Português</option>
+              <option value="bn-IN">🇮🇳 বাংলা</option>
+              <option value="ta-IN">🇮🇳 தமிழ்</option>
+              <option value="te-IN">🇮🇳 తెలుగు</option>
+              <option value="mr-IN">🇮🇳 मराठी</option>
+              <option value="ko-KR">🇰🇷 한국어</option>
+              <option value="it-IT">🇮🇹 Italiano</option>
+              <option value="nl-NL">🇳🇱 Nederlands</option>
+              <option value="tr-TR">🇹🇷 Türkçe</option>
+            </select>
+          </div>
+
+          <!-- Dual Voice Gender Toggle (Male / Female) -->
+          <button class="om-btn om-btn-ghost om-btn-sm" id="btn-toggle-voice-gender" onclick="if(window.app) window.app.toggleVoiceGender()" title="Switch Voice: Male (J.A.R.V.I.S.) / Female (F.R.I.D.A.Y.)" style="padding: 6px 10px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.12);">
+            <span id="header-gender-icon">👨</span>
+            <span id="header-gender-label">Male</span>
+          </button>
+
           <!-- AI Model Quick Switcher (Gemini 2.0 / 1.5 Pro / Autonomous) -->
           <div class="mode-dropdown-wrap">
             <select class="mode-select-pill" id="chat-model-quick-selector" title="Select Google Gemini / OM Model" style="border-color: rgba(6, 182, 212, 0.4);">
@@ -222,6 +254,14 @@
           <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-3d-dismantle" onclick="window.omDismantler.openModal('car')" title="3D CAD Dismantle & Exploded View" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
             <span>📐</span>
             <span>3D Parts</span>
+          </button>
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-neural-canvas" onclick="if(window.app) window.app.openNeuralCanvas()" title="Holographic Neural Thought Canvas" style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 0.8rem;">
+            <span>🧠</span>
+            <span class="header-btn-text">Thought Map</span>
+          </button>
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-cyber-terminal" onclick="if(window.app) window.app.openCyberTerminal()" title="Cyber Terminal CLI Simulator" style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 0.8rem;">
+            <span>💻</span>
+            <span class="header-btn-text">Terminal</span>
           </button>
 
           <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown">📥 Export</button>
@@ -886,9 +926,37 @@
           <span class="live-dot-pulse"></span>
           <span id="live-persona-badge" class="live-persona-pill"><span style="color: #38bdf8;">⚡ J.A.R.V.I.S. PROTOCOL</span> • <span style="color: #10b981;">STARK HUD ONLINE</span></span>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button class="om-btn om-btn-xs om-btn-secondary" id="btn-toggle-live-persona" onclick="window.omJarvisLive.togglePersona()">Switch to Gemini Voice</button>
-          <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1;">✕</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Universal Language Dropdown inside Live Voice -->
+          <select id="live-voice-lang-select" class="mode-select-pill" onchange="window.omVoice && window.omVoice.setLanguage(this.value)" style="font-size: 0.74rem; padding: 3px 8px; border-color: rgba(6, 182, 212, 0.4);">
+            <option value="en-US">🇺🇸 English (US)</option>
+            <option value="hi-IN">🇮🇳 हिन्दी (Hindi)</option>
+            <option value="en-GB">🇬🇧 English (UK)</option>
+            <option value="en-IN">🇮🇳 English (India)</option>
+            <option value="es-ES">🇪🇸 Español</option>
+            <option value="fr-FR">🇫🇷 Français</option>
+            <option value="de-DE">🇩🇪 Deutsch</option>
+            <option value="ja-JP">🇯🇵 日本語</option>
+            <option value="zh-CN">🇨🇳 中文</option>
+            <option value="ar-SA">🇸🇦 العربية</option>
+            <option value="ru-RU">🇷🇺 Русский</option>
+            <option value="pt-BR">🇧🇷 Português</option>
+            <option value="bn-IN">🇮🇳 বাংলা</option>
+            <option value="ta-IN">🇮🇳 தமிழ்</option>
+            <option value="te-IN">🇮🇳 తెలుగు</option>
+            <option value="mr-IN">🇮🇳 मराठी</option>
+            <option value="ko-KR">🇰🇷 한국어</option>
+            <option value="it-IT">🇮🇹 Italiano</option>
+          </select>
+
+          <!-- Persona Selector Pills (J.A.R.V.I.S., F.R.I.D.A.Y., Gemini) -->
+          <div class="live-persona-tabs" style="display: flex; gap: 4px; background: rgba(15,23,42,0.6); padding: 2px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <button class="om-btn om-btn-xs" id="btn-persona-jarvis" onclick="window.omJarvisLive.setPersona('jarvis')" style="font-size: 0.72rem; padding: 2px 7px;">👨 J.A.R.V.I.S.</button>
+            <button class="om-btn om-btn-xs" id="btn-persona-friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.72rem; padding: 2px 7px; background: rgba(236, 72, 153, 0.2); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6;">👩 F.R.I.D.A.Y.</button>
+            <button class="om-btn om-btn-xs om-btn-ghost" id="btn-persona-gemini" onclick="window.omJarvisLive.setPersona('gemini')" style="font-size: 0.72rem; padding: 2px 7px;">🌐 Gemini</button>
+          </div>
+
+          <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;">✕</button>
         </div>
       </div>
 
@@ -1009,6 +1077,91 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       Holographic Neural Thought Canvas Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="neural-thought-modal">
+    <div class="om-modal-content neural-canvas-modal-content" style="max-width: 1080px; width: 95vw; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; background: #060913; border: 1.5px solid rgba(14, 165, 233, 0.4);">
+      <div class="modal-header" style="padding: 14px 20px; border-bottom: 1px solid rgba(14, 165, 233, 0.2); background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">🧠</span>
+          <div>
+            <span style="font-weight: 800; font-size: 1.05rem; color: #fff;">Holographic Neural Thought Canvas</span>
+            <span style="font-size: 0.72rem; color: #38bdf8; display: block;">Interactive Cognitive Graph • Real-Time Mind Mapping & Telemetry</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select id="neural-preset-select" class="mode-select-pill" onchange="window.omNeuralCanvas && window.omNeuralCanvas.loadPreset(this.value)" style="font-size: 0.76rem;">
+            <option value="quantum_ai">⚡ Quantum AI Core Architecture</option>
+            <option value="car_dismantle">🚗 3D Supercar Dismantle Graph</option>
+          </select>
+          <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omNeuralCanvas && window.omNeuralCanvas.addCustomNode()" title="Add Custom Thought Node">+ Add Node</button>
+          <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omNeuralCanvas && window.omNeuralCanvas.resetView()" title="Reset Canvas View">⟲ Reset</button>
+          <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omNeuralCanvas && window.omNeuralCanvas.exportPNG()" title="Export Canvas as High-Res PNG">📸 Export PNG</button>
+          <button class="chat-action-btn modal-close-trigger" onclick="document.getElementById('neural-thought-modal').classList.remove('active')" style="font-size: 1.2rem; margin-left: 8px;">✕</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex: 1; position: relative; overflow: hidden;">
+        <!-- Canvas Viewport -->
+        <div style="flex: 1; position: relative; height: 100%;">
+          <canvas id="neural-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div style="position: absolute; bottom: 12px; left: 16px; font-size: 0.72rem; color: #64748b; background: rgba(15,23,42,0.7); padding: 4px 10px; border-radius: 6px; pointer-events: none; border: 1px solid rgba(255,255,255,0.05);">
+            🖱️ Drag nodes to reposition • Drag backdrop to pan • Scroll to zoom
+          </div>
+        </div>
+
+        <!-- Node Inspector Sidebar -->
+        <div style="width: 280px; background: rgba(15, 23, 42, 0.95); border-left: 1px solid rgba(14, 165, 233, 0.2); padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">Node Inspector</div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div id="neural-node-title" style="font-weight: 800; font-size: 0.95rem; color: #fff;">OM Core Orchestrator</div>
+            <span id="neural-node-status" class="px-2 py-0.5 rounded text-xs font-mono tracking-wider bg-cyan-950 text-cyan-400 border border-cyan-500/30">ACTIVE</span>
+          </div>
+          <div id="neural-node-subtext" style="font-size: 0.75rem; color: #94a3b8; font-family: monospace;">Multimodal Cognitive Kernel</div>
+          <div id="neural-node-desc" style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            Primary central intelligence controlling all reasoning loops, multimodal translation, and agentic workflows.
+          </div>
+          <div style="margin-top: auto;">
+            <input type="text" id="neural-prompt-input" class="om-input" placeholder="Generate graph from prompt..." style="font-size: 0.78rem; width: 100%; margin-bottom: 8px;">
+            <button class="om-btn om-btn-primary" style="width: 100%; font-size: 0.8rem;" onclick="const val = document.getElementById('neural-prompt-input').value; if(val && window.omNeuralCanvas) { window.omNeuralCanvas.generateFromPrompt(val); }">⚡ Generate Graph</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Cyber Terminal CLI Simulator Modal
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="cyber-terminal-modal">
+    <div class="om-modal-content cyber-terminal-modal-content" style="max-width: 860px; width: 92vw; height: 620px; display: flex; flex-direction: column; padding: 0; overflow: hidden; background: #020617; border: 1.5px solid #10b981; box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);">
+      <div class="terminal-titlebar" style="padding: 10px 16px; background: #0f172a; border-bottom: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></span>
+          <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span>
+          <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></span>
+          <span style="font-family: monospace; font-size: 0.8rem; color: #a7f3d0; margin-left: 6px; font-weight: 700;">om-ai@quantum-kernel: ~ (CRT Phosphor Shell v4.2)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.7rem; color: #10b981; font-family: monospace;">VIP ROOT [ONLINE]</span>
+          <button class="chat-action-btn modal-close-trigger" onclick="document.getElementById('cyber-terminal-modal').classList.remove('active')" style="color: #cbd5e1; font-size: 1.1rem; margin-left: 6px;">✕</button>
+        </div>
+      </div>
+
+      <!-- Terminal Output Scroll Window -->
+      <div id="cyber-terminal-container" class="cyber-terminal-screen" style="flex: 1; padding: 16px; overflow-y: auto; background: #020617; position: relative;">
+        <div id="cyber-terminal-output" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      </div>
+
+      <!-- Terminal Input Line -->
+      <div style="padding: 10px 16px; background: #0a0f1d; border-top: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
+        <span style="font-family: monospace; font-size: 0.82rem; color: #10b981; font-weight: bold;">om-ai@quantum:~$</span>
+        <input type="text" id="cyber-terminal-input" placeholder="Type 'help', 'status', 'voice female', 'lang hi', 'dismantle car'..." autocomplete="off" spellcheck="false" style="flex: 1; background: transparent; border: none; outline: none; color: #e2e8f0; font-family: monospace; font-size: 0.82rem;">
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div id="om-toast-container"></div>
 
@@ -1019,6 +1172,8 @@
   <script src="assets/js/voice.js"></script>
   <script src="assets/js/jarvisLive.js"></script>
   <script src="assets/js/dismantler3d.js"></script>
+  <script src="assets/js/neuralCanvas.js"></script>
+  <script src="assets/js/cyberTerminal.js"></script>
   <script src="assets/js/projects.js"></script>
   <script src="assets/js/planner.js"></script>
   <script src="assets/js/dashboard.js"></script>

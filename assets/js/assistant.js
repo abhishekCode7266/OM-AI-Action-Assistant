@@ -479,6 +479,183 @@ What is your directive today, Sir?`;
     }
 
     // =========================================================================
+    // 00b2. F.R.I.D.A.Y. (Iron Man) Tactical AI Persona (Female Voice)
+    // =========================================================================
+    else if (lower.includes('friday') || lower.includes('f.r.i.d.a.y') || lower.includes('female voice') || (lower.includes('female') && lower.includes('jarvis'))) {
+      const devName = "Abhishek singh Yadav";
+
+      text = `### 💎 F.R.I.D.A.Y. Tactical Defense & Multimodal Assistant Active
+
+*Good day, Boss! F.R.I.D.A.Y. here and ready to roll.*
+
+Sensory arrays and real-time telemetry are operating at peak efficiency for **${devName}**. Mark LXXXV tactical combat systems, code compilers, and 3D CAD mesh generators are synchronized to your voice commands.
+
+---
+
+### 🛰️ Tactical Telemetry Matrix
+
+| System Module | Telemetry Status | Diagnostic Metrics | Sub-Routine Status |
+| :--- | :--- | :--- | :--- |
+| **Tactical Voice Link** | 🟢 **OPTIMAL** | Female voice synthesis • 20+ Languages | Active in Hindi & English |
+| **Neural Thought Canvas** | 🟢 **SYNCHRONIZED** | Dynamic multi-node DAG mind map | Ready for complex ideation |
+| **Cyber Terminal CLI** | 🟢 **ONLINE** | CRT phosphor shell & diagnostics | Direct hardware sandbox |
+| **3D CAD Deconstructor** | 🟢 **ARMED** | Volumetric exploded vector engine | 9 sub-assemblies isolated |
+| **VIP Architect Pass** | 🟢 **AUTHENTICATED** | Lifetime $0.00 Free VIP Unlimited | Superuser authority granted |
+
+---
+
+<div class="om-jarvis-hud-card" style="background: radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1.5px solid rgba(236, 72, 153, 0.5); border-radius: 12px; padding: 18px; margin: 12px 0; box-shadow: 0 0 25px rgba(236, 72, 153, 0.2);">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.5rem; animation: pulseDot 1.5s infinite;">💎</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">STARK TACTICAL F.R.I.D.A.Y. INTERFACE</div>
+        <div style="font-size: 0.74rem; color: #f472b6;">Boss: ${devName} • Tactical Female Voice AI</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-achieve" style="background: rgba(236, 72, 153, 0.25); color: #f472b6; font-weight: 800;">TACTICAL ONLINE</span>
+  </div>
+  <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+    Want to talk hands-free with my tactical female voice, Boss? Or shall we inspect your 3D models and deploy code to production?
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession('friday');">
+      🎙️ Launch F.R.I.D.A.Y. Voice HUD
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openNeuralCanvas('Tactical Strategy');">
+      🧠 Open Neural Thought Canvas
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openCyberTerminal();">
+      💻 Open Cyber Terminal
+    </button>
+  </div>
+</div>
+
+What are your orders, Boss?`;
+
+      reasoning = [
+        "1. Persona Alignment: F.R.I.D.A.Y. tone, sharp, energetic Irish/tactical AI from Iron Man movies.",
+        "2. Developer Acknowledgment: Addressed Abhishek singh Yadav as 'Boss' with full VIP permissions.",
+        "3. Interactive HUD: Rendered female tactical theme card with direct voice launch buttons."
+      ];
+      actions = [
+        { stage: 'think', title: 'Initialize tactical telemetry and speech synthesis', estimate: '1s' },
+        { stage: 'plan', title: 'Synthesize optimal combat and engineering pipelines for Boss', estimate: '2s' },
+        { stage: 'act', title: 'Engage F.R.I.D.A.Y. voice telemetry loop', estimate: 'Continuous' },
+        { stage: 'achieve', title: 'Execute full architectural directives', estimate: 'Immediate' }
+      ];
+      tools = ["F.R.I.D.A.Y. Tactical Engine", "Arc Reactor Visualizer", "Female Voice Synthesizer"];
+    }
+
+    // =========================================================================
+    // 00b3. Holographic Neural Thought Canvas Engine
+    // =========================================================================
+    else if (lower.includes('neural canvas') || lower.includes('thought canvas') || lower.includes('mind map') || lower.includes('mindmap') || lower.includes('thought map') || lower.includes('concept map')) {
+      const query = prompt.replace(/(neural canvas|thought canvas|mind map|mindmap|thought map|concept map)/gi, '').trim() || 'Multimodal AI System Architecture';
+
+      text = `### 🧠 Holographic Neural Thought Canvas: ${query}
+
+I have mapped your inquiry into an **interactive multidimensional DAG thought graph**. This node-based mind map dynamically connects objectives, sub-tasks, telemetry feeds, and verification gates with animated quantum energy pulses:
+
+---
+
+### 🗺️ Thought Graph Topology
+
+| Node ID | Node Designation | Category | Topological Status | Dependency Links |
+| :---: | :--- | :--- | :--- | :--- |
+| **N1** | **Primary Mission Directive** | Core Orchestrator | 🟢 Active | Dispatches to N2, N3 |
+| **N2** | **Tactical Architecture & Schema** | Strategy & Data | 🟢 Complete | Feeds into N4 |
+| **N3** | **Swarm Execution Pipeline** | Parallel Subagents | 🟡 In Progress | Feeds into N4 |
+| **N4** | **Regression QA & Verification** | Security Matrix | ⚪ Pending | Feeds into N5 |
+| **N5** | **Global Edge Deployment** | Vercel & GitHub Pages | 🟢 Ready | Final Delivery |
+
+---
+
+<div class="om-neural-canvas-card" style="background: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1.5px solid rgba(14, 165, 233, 0.5); border-radius: 12px; padding: 18px; margin: 12px 0; box-shadow: 0 0 25px rgba(14, 165, 233, 0.2);">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.5rem;">🌌</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">HOLOGRAPHIC NEURAL THOUGHT CANVAS</div>
+        <div style="font-size: 0.74rem; color: #38bdf8;">Interactive 2D/3D Node Graph • Drag & Zoom • PNG Export</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-plan" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; font-weight: 800;">INTERACTIVE GRAPH</span>
+  </div>
+  <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+    Click below to launch the full-screen interactive canvas. You can drag nodes, zoom with mousewheel, inspect telemetry data, add custom branches, and export high-resolution blueprints.
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" onclick="if(window.app) window.app.openNeuralCanvas('${query.replace(/'/g, "\\'")}');">
+      🚀 Open Interactive Thought Canvas
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.app) { window.app.openNeuralCanvas('car_dismantle'); }">
+      🚗 View 3D Car Disassembly Nodes
+    </button>
+  </div>
+</div>`;
+
+      reasoning = [
+        "1. Spatial Ideation: Formulated 5-node directed acyclic graph for the user query.",
+        "2. Interactive Canvas Integration: Embedded direct launcher for the Holographic Neural Thought Canvas."
+      ];
+      actions = [
+        { stage: 'think', title: 'Decompose query into cognitive nodes and links', estimate: '1s' },
+        { stage: 'plan', title: 'Construct particle stream and node coordinates', estimate: '2s' },
+        { stage: 'act', title: 'Render interactive canvas modal', estimate: 'Immediate' },
+        { stage: 'achieve', title: 'Export high-res blueprint or synchronize to memory', estimate: '2s' }
+      ];
+      tools = ["Holographic Thought Canvas", "DAG Graph Engine", "Particle Streamer"];
+    }
+
+    // =========================================================================
+    // 00b4. Cyber Terminal CLI Simulator Engine
+    // =========================================================================
+    else if (lower.includes('cyber terminal') || lower.includes('terminal') || lower.includes('cli simulator') || lower.includes('command prompt') || lower.includes('shell')) {
+      text = `### 💻 Cyber Terminal CLI Simulator & Diagnostics Console
+
+OM AI Assistant includes an interactive **retro-futuristic CRT command-line console** engineered for advanced developers and power users:
+
+---
+
+### 🕹️ Terminal Features & Telemetry Directives
+
+* 🟢 **CRT Phosphor Screen**: Retro scanlines, high-contrast cyan/emerald glow, and command history buffer.
+* ⚡ **Live Directives**: Execute \`status\`, \`whoami\`, \`voice male/female\`, \`lang [code]\`, \`dismantle [object]\`, \`matrix\`, and \`agent [task]\`.
+* 🛡️ **Root Access for Abhishek singh Yadav**: Full VIP administrative authority enabled by default.
+
+---
+
+<div class="om-cyber-terminal-card" style="background: #020617; border: 1.5px solid #10b981; border-radius: 12px; padding: 18px; margin: 12px 0; box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); font-family: monospace;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="color: #10b981; font-weight: bold;">● ● ●</span>
+      <span style="color: #a7f3d0; font-size: 0.9rem; font-weight: bold;">om-ai@quantum:~$ terminal_cli</span>
+    </div>
+    <span class="stage-tag" style="background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 0.75rem;">ONLINE</span>
+  </div>
+  <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 14px; font-family: sans-serif;">
+    Launch the interactive cyber terminal modal to execute diagnostic commands, stream real-time matrix telemetry, and control AI sub-routines via CLI.
+  </p>
+  <div style="display: flex; gap: 10px;">
+    <button class="om-btn om-btn-primary" style="background: #10b981; color: #020617; font-weight: bold;" onclick="if(window.app) window.app.openCyberTerminal();">
+      📟 Launch Cyber Terminal Shell
+    </button>
+  </div>
+</div>`;
+
+      reasoning = [
+        "1. Developer Utility: Provided access to interactive CRT Cyber Terminal CLI.",
+        "2. Directives Guide: Detailed terminal commands (status, dismantle, voice, lang, matrix, agent)."
+      ];
+      actions = [
+        { stage: 'act', title: 'Open Cyber Terminal CRT shell modal', estimate: 'Immediate' },
+        { stage: 'achieve', title: 'Execute command-line directives and diagnostic sweeps', estimate: '1s' }
+      ];
+      tools = ["Cyber Terminal Engine", "CRT Phosphor Renderer", "Command Parser"];
+    }
+
+    // =========================================================================
     // 00c. Agentic AI Function & Working
     // =========================================================================
     else if (lower.includes('agentic') || lower.includes('multi-agent') || lower.includes('autonomous agent') || lower.includes('agent workflow') || lower.includes('agentic ai') || lower.includes('agents')) {
@@ -560,40 +737,104 @@ What high-level goal shall the autonomous agent swarm execute for you?`;
       tools = ["Autonomous Multi-Agent Engine", "DAG Planner", "Critic & Verifier", "Self-Healing Loop"];
     }
 
-    // 0a. Greetings & Conversational Openers
+    // 0a. Greetings & Conversational Openers (Multilingual & Hindi Detection)
+    const hasDevanagari = /[\u0900-\u097F]/.test(prompt);
+    const isHindiGreeting = (
+      hasDevanagari ||
+      lower.includes('namaste') || lower.includes('kaise ho') || lower.includes('kya haal') ||
+      lower.includes('madad karo') || lower.includes('batao') || lower.includes('karo') ||
+      (lower.includes('hindi') && (lower.includes('bolo') || lower.includes('baat') || lower.includes('speak')))
+    );
+
     const isGreeting = (
+      isHindiGreeting ||
       lower === 'hello' || lower === 'hi' || lower === 'hey' ||
       lower.startsWith('hello ') || lower.startsWith('hi ') || lower.startsWith('hey ') ||
       lower.includes('good morning') || lower.includes('good afternoon') || lower.includes('good evening') ||
-      lower.includes('namaste') || lower.includes('how are you') || lower.includes("what's up") || lower === 'sup' ||
-      lower === 'hola' || lower === 'greetings'
+      lower.includes('how are you') || lower.includes("what's up") || lower === 'sup' ||
+      lower === 'hola' || lower === 'bonjour' || lower === 'greetings'
     );
 
     if (isGreeting) {
-      text = `### 👋 Hello! I'm Om AI Assistant.
+      if (isHindiGreeting) {
+        text = `### 🙏 नमस्ते! मैं हूँ Om AI Assistant (ओम एआई असिस्टेंट)
+
+मैं आपका **मास्टर-लेवल, मल्टीमॉडल पर्सनल एआई सहयोगी** हूँ। मैं टेक्स्ट, 3D विज़न, कोडिंग, ऑडियो, वीडियो और डेटा एनालिसिस के सभी काम करने में पूरी तरह सक्षम हूँ।
+
+---
+
+### 🌐 मुख्य क्षमताएँ (Core Capabilities)
+
+* 🗣️ **विश्व की 20+ भाषाएँ**: हिन्दी, अंग्रेज़ी (US/UK/India), स्पैनिश, फ़्रेंच, जर्मन, जापानी, चीनी आदि में बातचीत और आवाज़।
+* 🎙️ **मेल और फ़ीमेल आवाज़ें**:
+  - 👨 **J.A.R.V.I.S. (जार्विस)**: आयरन मैन का प्रसिद्ध ब्रिटिश एआई बटलर।
+  - 👩 **F.R.I.D.A.Y. (फ्राइडे)**: टोनी स्टार्क की तेज तर्रार टैक्टिकल महिला एआई।
+* 🚗 **3D कार और पार्ट्स डिसमेंटल**: किसी भी 3D मॉडल को खोलकर 360° में देखना और असेंबली वीडियो बनाना।
+* 🧠 **न्यूरल थॉट कैनवस**: जटिल विचारों और प्रोजेक्ट्स का इंटरैक्टिव माइंड मैप।
+* 💻 **साइबर टर्मिनल**: डेवलपर्स के लिए डायरेक्ट सीएलआई (CRT Terminal Shell)।
+
+---
+
+<div class="om-multilingual-card" style="background: radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 12px; padding: 18px; margin: 12px 0;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1.5rem;">🇮🇳</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1rem; color: #fff;">हिन्दी वॉयस और टू-वे कन्वर्सेशन सक्रिय है</div>
+        <div style="font-size: 0.74rem; color: #fbbf24;">Abhishek singh Yadav जी के लिए $0.00 आजीवन वीआईपी एक्सेस</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-achieve" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: 800;">हिन्दी एक्टिव</span>
+  </div>
+  <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
+    आप माइक बटन दबाकर या लाइव वॉयस हुड खोलकर सीधे हिन्दी में बोल सकते हैं। जार्विस या फ्राइडे आपको शुद्ध हिन्दी और अंग्रेज़ी में जवाब देंगे।
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" onclick="if(window.omJarvisLive) { window.omVoice.setLanguage('hi-IN'); window.omJarvisLive.startSession(); }">
+      🎙️ हिन्दी में बात करें (Live Voice)
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openNeuralCanvas('हिन्दी प्रोजेक्ट प्लानिंग');">
+      🧠 न्यूरल थॉट कैनवस खोलें
+    </button>
+  </div>
+</div>
+
+आज आप क्या नया बनाना या जानना चाहते हैं?`;
+        reasoning = [
+          "1. Language Detection: Detected Hindi input / query.",
+          "2. Natural Bilingual Response: Provided warm Hindi explanation with full feature overview.",
+          "3. Voice Localization: Configured hi-IN voice link trigger."
+        ];
+        actions = [
+          { stage: 'think', title: 'हिन्दी भाषा प्राथमिकताओं को सिंक्रनाइज़ करना', estimate: '1s' },
+          { stage: 'plan', title: 'उपयोगकर्ता के उद्देश्य के लिए आवश्यक टूल्स तैयार करना', estimate: '2s' },
+          { stage: 'act', title: 'हिन्दी वॉयस सिंथेसिस और लाइव हुड सक्षम करना', estimate: 'Immediate' },
+          { stage: 'achieve', title: 'सफलतापूर्वक कार्य निष्पादित करना', estimate: '1m' }
+        ];
+      } else {
+        text = `### 👋 Hello! I'm Om AI Assistant.
 
 I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:
 
-* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately, analyze visual composition, and describe details precisely.
-* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.).
-* 📊 **Charts & Data Analytics (Sparks)**: Ingest CSV/Excel datasets for statistical summaries and inline interactive charts.
-* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, summarize long recordings, and extract timestamps.
-* 📑 **Document & Library Search**: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets, and text documents.
-* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.
-* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.
+* 🗣️ **20+ Global Languages & Dual Voice**: Speak & listen in English, Hindi, Spanish, French, German, Japanese, and more with **J.A.R.V.I.S.** (Male) or **F.R.I.D.A.Y.** (Female).
+* 👁️ **Vision & 3D Spatial Deconstructor**: Inspect photos, dismantle vehicles and engines into exploded 3D CAD parts with 360° orbit and video rendering.
+* 🧠 **Holographic Neural Thought Canvas**: Interactive multidimensional mind map visualizing complex project logic.
+* 💻 **Cyber Terminal CLI Simulator**: CRT phosphor terminal for system diagnostics, matrix telemetry, and subagent controls.
+* ⚡ **Autonomous Multi-Agent Swarm**: Self-healing agentic pipeline that thinks, plans, executes, and verifies.
 
 **What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!`;
-      reasoning = [
-        "1. Core Persona: Warm, highly engaging, direct, professional, and resourceful.",
-        "2. Operational Standard: Instant scannable overview of full multimodal capabilities.",
-        "3. Action Guidance: Ready for immediate execution across text, vision, code, media, and data."
-      ];
-      actions = [
-        { stage: 'think', title: 'Define your objective across code, vision, data, or documents', estimate: '2m' },
-        { stage: 'plan', title: 'Attach media files or outline desired specifications', estimate: '2m' },
-        { stage: 'act', title: 'Review generated solution, code, or data analysis', estimate: '10m' },
-        { stage: 'achieve', title: 'Execute code in sandbox or export results', estimate: '5m' }
-      ];
+        reasoning = [
+          "1. Core Persona: Warm, highly engaging, direct, professional, and resourceful.",
+          "2. Operational Standard: Instant scannable overview of full multimodal capabilities.",
+          "3. Action Guidance: Ready for immediate execution across text, vision, code, media, and data."
+        ];
+        actions = [
+          { stage: 'think', title: 'Define your objective across code, vision, data, or documents', estimate: '2m' },
+          { stage: 'plan', title: 'Attach media files or outline desired specifications', estimate: '2m' },
+          { stage: 'act', title: 'Review generated solution, code, or data analysis', estimate: '10m' },
+          { stage: 'achieve', title: 'Execute code in sandbox or export results', estimate: '5m' }
+        ];
+      }
     }
     // 0b. Identity, Capabilities & Help
     else if (lower.includes('who are you') || lower.includes('what can you do') || lower.includes('what is om') || lower.includes('help me') || lower.includes('about yourself') || lower === 'help') {

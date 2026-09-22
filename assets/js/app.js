@@ -24,6 +24,7 @@ class OMApp {
     this.renderChatMessages();
     this.updateHeaderInfo();
     this.updateDeveloperTierBadge();
+    this.initLanguageAndVoice();
     this.hideLoadingScreen();
   }
 
@@ -1337,8 +1338,81 @@ Key Ideas & Notes:
     if (!str) return '';
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
   }
+
+  initLanguageAndVoice() {
+    const lang = localStorage.getItem('om_voice_language') || 'en-US';
+    const gender = localStorage.getItem('om_voice_gender') || 'male';
+
+    const headerLangSelect = document.getElementById('global-lang-selector');
+    if (headerLangSelect) headerLangSelect.value = lang;
+
+    const liveLangSelect = document.getElementById('live-voice-lang-select');
+    if (liveLangSelect) liveLangSelect.value = lang;
+
+    this.updateVoiceGenderUI(gender);
+  }
+
+  toggleVoiceGender() {
+    const current = localStorage.getItem('om_voice_gender') || 'male';
+    const next = current === 'male' ? 'female' : 'male';
+    localStorage.setItem('om_voice_gender', next);
+
+    if (window.omVoice) window.omVoice.setVoiceGender(next);
+    if (window.omJarvisLive) window.omJarvisLive.setVoiceGender(next);
+
+    this.updateVoiceGenderUI(next);
+    const personaName = next === 'female' ? 'F.R.I.D.A.Y.' : 'J.A.R.V.I.S.';
+    this.showToast(`Voice set to ${next.toUpperCase()} (${personaName})`, 'info');
+  }
+
+  updateVoiceGenderUI(gender) {
+    const btn = document.getElementById('btn-toggle-voice-gender');
+    const icon = document.getElementById('header-gender-icon');
+    const label = document.getElementById('header-gender-label');
+
+    if (gender === 'female') {
+      if (icon) icon.textContent = '👩';
+      if (label) label.textContent = 'Female';
+      if (btn) btn.classList.add('female');
+    } else {
+      if (icon) icon.textContent = '👨';
+      if (label) label.textContent = 'Male';
+      if (btn) btn.classList.remove('female');
+    }
+  }
+
+  openNeuralCanvas(query = 'quantum_ai') {
+    const modal = document.getElementById('neural-thought-modal');
+    if (modal) {
+      modal.classList.add('active');
+      if (!window.omNeuralCanvas) {
+        window.omNeuralCanvas = new OMNeuralCanvas('neural-canvas');
+        window.omNeuralCanvas.init();
+      } else {
+        window.omNeuralCanvas.resize();
+      }
+      if (query) {
+        window.omNeuralCanvas.loadPreset(query);
+      }
+    }
+  }
+
+  openCyberTerminal() {
+    const modal = document.getElementById('cyber-terminal-modal');
+    if (modal) {
+      modal.classList.add('active');
+      if (!window.omCyberTerminal) {
+        window.omCyberTerminal = new OMCyberTerminal('cyber-terminal-container', 'cyber-terminal-input', 'cyber-terminal-output');
+        window.omCyberTerminal.init();
+      }
+      const input = document.getElementById('cyber-terminal-input');
+      if (input) setTimeout(() => input.focus(), 150);
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   window.omApp = new OMApp();
+  window.app = window.omApp;
 });
+

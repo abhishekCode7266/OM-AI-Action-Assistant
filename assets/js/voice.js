@@ -1,6 +1,7 @@
 /**
- * OM AI Assistant - Voice Engine
- * Handles Speech-to-Text (Dictation) and Text-to-Speech (Audio response read-out).
+ * OM AI Assistant - Voice Engine (Universal Multilingual & Dual Male/Female Voices)
+ * Supports 20+ Global World Languages, Speech-to-Text Recognition,
+ * Male/Female Voice Synthesis with Pitch/Cadence modulation, and Hands-free Dictation.
  */
 
 class OMVoiceEngine {
@@ -12,6 +13,32 @@ class OMVoiceEngine {
     this.isPlayingTTS = false;
     this.activeTTSMsgId = null;
 
+    this.currentLanguage = localStorage.getItem('om_voice_language') || 'en-US';
+    this.voiceGender = localStorage.getItem('om_voice_gender') || 'male'; // 'male' or 'female'
+
+    this.supportedLanguages = {
+      'en-US': { name: 'English (US)', flag: '🇺🇸' },
+      'hi-IN': { name: 'हिन्दी (Hindi)', flag: '🇮🇳' },
+      'en-GB': { name: 'English (UK)', flag: '🇬🇧' },
+      'en-IN': { name: 'English (India)', flag: '🇮🇳' },
+      'es-ES': { name: 'Español (Spanish)', flag: '🇪🇸' },
+      'fr-FR': { name: 'Français (French)', flag: '🇫🇷' },
+      'de-DE': { name: 'Deutsch (German)', flag: '🇩🇪' },
+      'ja-JP': { name: '日本語 (Japanese)', flag: '🇯🇵' },
+      'zh-CN': { name: '中文 (Mandarin)', flag: '🇨🇳' },
+      'ar-SA': { name: 'العربية (Arabic)', flag: '🇸🇦' },
+      'ru-RU': { name: 'Русский (Russian)', flag: '🇷🇺' },
+      'pt-BR': { name: 'Português (Portuguese)', flag: '🇧🇷' },
+      'bn-IN': { name: 'বাংলা (Bengali)', flag: '🇮🇳' },
+      'ta-IN': { name: 'தமிழ் (Tamil)', flag: '🇮🇳' },
+      'te-IN': { name: 'తెలుగు (Telugu)', flag: '🇮🇳' },
+      'mr-IN': { name: 'मराठी (Marathi)', flag: '🇮🇳' },
+      'ko-KR': { name: '한국어 (Korean)', flag: '🇰🇷' },
+      'it-IT': { name: 'Italiano (Italian)', flag: '🇮🇹' },
+      'nl-NL': { name: 'Nederlands (Dutch)', flag: '🇳🇱' },
+      'tr-TR': { name: 'Türkçe (Turkish)', flag: '🇹🇷' }
+    };
+
     this.initRecognition();
   }
 
@@ -21,7 +48,7 @@ class OMVoiceEngine {
       this.recognition = new SpeechRecognition();
       this.recognition.continuous = false;
       this.recognition.interimResults = true;
-      this.recognition.lang = 'en-US';
+      this.recognition.lang = this.currentLanguage;
 
       this.recognition.onstart = () => {
         this.isRecording = true;
@@ -48,7 +75,7 @@ class OMVoiceEngine {
 
         const pulseText = document.getElementById('voice-transcript-preview');
         if (pulseText) {
-          pulseText.textContent = interim || finalTranscript || "Listening to your voice...";
+          pulseText.textContent = interim || finalTranscript || `Listening in ${this.getLanguageDisplayName()}...`;
         }
       };
 
@@ -61,6 +88,39 @@ class OMVoiceEngine {
         this.stopRecording();
       };
     }
+  }
+
+  setLanguage(langCode) {
+    if (this.supportedLanguages[langCode]) {
+      this.currentLanguage = langCode;
+      localStorage.setItem('om_voice_language', langCode);
+      if (this.recognition) {
+        this.recognition.lang = langCode;
+      }
+      if (window.omJarvisLive) {
+        window.omJarvisLive.setLanguage(langCode);
+      }
+      if (window.omApp) {
+        window.omApp.updateLanguageUI(langCode);
+        window.omApp.showToast(`Voice & Language set to ${this.supportedLanguages[langCode].flag} ${this.supportedLanguages[langCode].name}`, 'info');
+      }
+    }
+  }
+
+  setVoiceGender(gender) {
+    this.voiceGender = gender === 'female' ? 'female' : 'male';
+    localStorage.setItem('om_voice_gender', this.voiceGender);
+    if (window.omJarvisLive) {
+      window.omJarvisLive.setVoiceGender(this.voiceGender);
+    }
+    if (window.omApp) {
+      window.omApp.updateVoiceGenderUI(this.voiceGender);
+      window.omApp.showToast(`Voice set to ${this.voiceGender === 'female' ? '👩 Female (F.R.I.D.A.Y. / Athena)' : '👨 Male (J.A.R.V.I.S. / Apollo)'}`, 'success');
+    }
+  }
+
+  getLanguageDisplayName() {
+    return this.supportedLanguages[this.currentLanguage]?.name || this.currentLanguage;
   }
 
   toggleRecording() {
@@ -81,6 +141,7 @@ class OMVoiceEngine {
   startRecording() {
     if (this.recognition && !this.isRecording) {
       try {
+        this.recognition.lang = this.currentLanguage;
         this.recognition.start();
       } catch (e) {
         console.warn("Recognition already started or permission error", e);
@@ -108,6 +169,32 @@ class OMVoiceEngine {
     }
   }
 
+  findBestVoice(langCode, gender) {
+    if (!this.synth) return null;
+    const voices = this.synth.getVoices();
+    const langPrefix = langCode.split('-')[0].toLowerCase();
+
+    // Matching language voices
+    const matchingLangVoices = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
+
+    if (gender === 'female') {
+      // Search for female indicators in voice name
+      const femaleKeywords = ['female', 'woman', 'zira', 'samantha', 'kavya', 'priya', 'victoria', 'eva', 'yuna', 'amelie', 'anna', 'monica', 'google', 'hindi'];
+      const femaleVoice = matchingLangVoices.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (femaleVoice) return femaleVoice;
+      if (matchingLangVoices.length > 1) return matchingLangVoices[1]; // Often second voice in OS is female
+    } else {
+      // Search for male indicators
+      const maleKeywords = ['male', 'man', 'david', 'george', 'daniel', 'oliver', 'rishi', 'alex', 'guy', 'stefan', 'thomas'];
+      const maleVoice = matchingLangVoices.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (maleVoice) return maleVoice;
+      if (matchingLangVoices.length > 0) return matchingLangVoices[0];
+    }
+
+    if (matchingLangVoices.length > 0) return matchingLangVoices[0];
+    return voices[0] || null;
+  }
+
   speakText(text, msgId = null) {
     if (!this.synth) {
       if (window.omApp) window.omApp.showToast("Speech synthesis not supported in this browser.", "info");
@@ -124,17 +211,29 @@ class OMVoiceEngine {
 
     // Clean markdown before speaking
     const cleanText = text
-      .replace(/```[\s\S]*?```/g, "Code block omitted.")
+      .replace(/```[\s\S]*?```/g, "Code implementation omitted.")
       .replace(/`([^`]+)`/g, "$1")
       .replace(/#+\s+/g, "")
-      .replace(/[*_~]/g, "")
+      .replace(/[*_~•]/g, "")
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .substring(0, 1500); // safety length
+      .substring(0, 1500);
 
     this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
-    const settings = window.omChatStore ? window.omChatStore.settings : {};
-    this.currentUtterance.rate = settings.voiceRate || 1.0;
-    this.currentUtterance.pitch = settings.voicePitch || 1.0;
+    this.currentUtterance.lang = this.currentLanguage;
+
+    const matchedVoice = this.findBestVoice(this.currentLanguage, this.voiceGender);
+    if (matchedVoice) {
+      this.currentUtterance.voice = matchedVoice;
+    }
+
+    // Adjust pitch & rate based on gender
+    if (this.voiceGender === 'female') {
+      this.currentUtterance.pitch = 1.15; // Bright, clear, energetic F.R.I.D.A.Y. timbre
+      this.currentUtterance.rate = 1.05;
+    } else {
+      this.currentUtterance.pitch = 0.94; // Deep, confident J.A.R.V.I.S. timbre
+      this.currentUtterance.rate = 1.04;
+    }
 
     this.currentUtterance.onstart = () => {
       this.isPlayingTTS = true;
