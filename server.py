@@ -137,6 +137,38 @@ class OMRequestHandler(BaseHTTPRequestHandler):
             prompt = body.get("prompt", "")
             mode = body.get("mode", "action")
 
+            clean_goal = prompt.replace("Decompose:", "").replace("Deconstruct:", "").strip()
+            if not clean_goal:
+                clean_goal = "General Objective"
+
+            lower = clean_goal.lower()
+            is_greeting = any(
+                lower == g or lower.startswith(g + " ")
+                for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
+            )
+            if is_greeting:
+                text_response = (
+                    "### 👋 Hello! I'm OM, your AI Assistant.\n\n"
+                    "I am ready to collaborate with you right now. Here is what we can do together:\n\n"
+                    "* 💻 **Write & Debug Code**: Generate clean applications, write functions, or fix syntax errors in Python, JavaScript, HTML, SQL, etc.\n"
+                    "* 📊 **Data Science & CSV**: Upload a dataset for instant statistical summaries and interactive inline SVG charts.\n"
+                    "* 🚀 **Architect Projects**: Deconstruct an app idea into a tech stack, folder tree, and actionable tasks.\n"
+                    "* 🎓 **Learn & Understand**: Socratic breakdowns, mental models, and real-world analogies for complex concepts.\n"
+                    "* 📝 **Professional Writing**: Draft executive emails, proposals, PRDs, or documentation.\n"
+                    "* 💼 **Career & Interview**: Practice high-frequency technical and STAR interview questions.\n\n"
+                    "**What would you like to work on today?** Feel free to ask a question, request code, or attach a file!"
+                )
+            else:
+                text_response = (
+                    f"### 🎯 Strategic Plan for: **{clean_goal}**\n\n"
+                    f"I have analyzed your objective and mapped out an actionable execution roadmap:\n\n"
+                    f"1. **Think (Scope & Requirements)**: Deconstruct '{clean_goal}' into foundational constraints, dependencies, and deliverables.\n"
+                    f"2. **Plan (Architecture & Milestones)**: Sequence architecture, API contracts, database schemas, and sprint checkpoints.\n"
+                    f"3. **Act (Implementation)**: Write modular, production-ready code and execute core development sprints.\n"
+                    f"4. **Achieve (Verification & Review)**: Benchmark latency, test edge cases, and deploy live.\n\n"
+                    f"How would you like to proceed? We can begin with Step 1 immediately or refine the scope!"
+                )
+
             # Cognitive response simulation & goal decomposition
             return self._send_json({
                 "sender": "om",
@@ -145,6 +177,7 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "tagline": "Think. Plan. Act. Achieve.",
                 "query": prompt,
                 "mode": mode,
+                "text": text_response,
                 "reasoning": (
                     "1. Parsed objective into core ambition, constraints, and target deliverables.\n"
                     "2. Cross-referenced multi-turn context and active Knowledge Vault.\n"

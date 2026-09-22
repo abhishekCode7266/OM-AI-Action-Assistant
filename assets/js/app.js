@@ -205,13 +205,25 @@ class OMApp {
 
   async handleSendMessage() {
     const input = document.getElementById('chat-user-input');
-    if (!input || this.assistant.isProcessing) return;
+    if (!input) return;
+
+    // Auto-heal: If processing was stuck for more than 4 seconds, unlock it
+    if (this.assistant.isProcessing) {
+      if (this._lastProcessStart && (Date.now() - this._lastProcessStart > 4000)) {
+        this.assistant.isProcessing = false;
+        this.removeTypingIndicator();
+      } else {
+        return;
+      }
+    }
+    this._lastProcessStart = Date.now();
 
     const text = input.value.trim();
     const attachments = [...this.fileManager.pendingFiles];
 
     if (!text && attachments.length === 0) return;
 
+    // Clear input field immediately
     input.value = '';
     input.style.height = 'auto';
 
@@ -219,8 +231,11 @@ class OMApp {
     this.fileManager.clearPendingFiles();
     this.renderAttachmentPreviews();
 
-    const activeChat = this.chatStore.getActiveChat();
-    if (!activeChat) return;
+    // Ensure active chat exists
+    let activeChat = this.chatStore.getActiveChat();
+    if (!activeChat) {
+      activeChat = this.chatStore.createChat("New Chat");
+    }
 
     // Add User Message to Store
     const userMsg = this.chatStore.addMessage(activeChat.id, {
@@ -238,7 +253,13 @@ class OMApp {
 
     try {
       // Process through Cognitive Engine
-      const assistantResponse = await this.assistant.processUserMessage(text, attachments);
+      let assistantResponse = await this.assistant.processUserMessage(text, attachments);
+      
+      // Guaranteed response fallback if null or empty
+      if (!assistantResponse || !assistantResponse.text) {
+        assistantResponse = this.assistant.generateAutonomousFallback(text, [], activeChat.mode || 'general', attachments);
+      }
+
       this.removeTypingIndicator();
 
       if (assistantResponse) {
@@ -252,13 +273,15 @@ class OMApp {
         }
       }
     } catch (err) {
+      console.warn("Message synthesis handled via fallback:", err);
       this.removeTypingIndicator();
-      this.chatStore.addMessage(activeChat.id, {
-        sender: 'om',
-        text: "I encountered an issue synthesizing the action vector. Please check your network or API settings.",
-        verified: false
-      });
+
+      const fallbackResp = this.assistant.generateAutonomousFallback(text, [], activeChat.mode || 'general', attachments);
+      this.chatStore.addMessage(activeChat.id, fallbackResp);
       this.renderChatMessages();
+    } finally {
+      this.assistant.isProcessing = false;
+      this.removeTypingIndicator();
     }
   }
 
