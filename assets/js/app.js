@@ -191,13 +191,35 @@ class OMApp {
       popoverTrigger.addEventListener('click', (e) => this.toggleProfilePopover(e));
     }
 
-    // Close Popover on Outside Click
+    // Close Popover & Context Menu on Outside Click
     document.addEventListener('click', (e) => {
       const popover = document.getElementById('nexus-popover-menu') || document.getElementById('gemini-popover-menu');
       const trigger = document.getElementById('btn-profile-popover-trigger');
       if (popover && (popover.classList.contains('show') || popover.style.display === 'flex')) {
         if (!popover.contains(e.target) && !trigger.contains(e.target)) {
           this.closeProfilePopover();
+        }
+      }
+
+      const contextMenu = document.getElementById('chat-item-context-menu');
+      if (contextMenu && contextMenu.style.display !== 'none') {
+        if (!contextMenu.contains(e.target) && !e.target.closest('.chat-item-menu-btn')) {
+          this.closeChatContextMenu();
+        }
+      }
+    });
+
+    // Code Sandbox Interactive Console Log Relay Listener
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'OM_CONSOLE_LOG') {
+        const consolePanel = document.getElementById('code-console-log-panel');
+        if (consolePanel) {
+          const line = document.createElement('div');
+          line.className = e.data.level === 'error' ? 'log-err' : 'log-info';
+          line.style.cssText = e.data.level === 'error' ? 'color: #f87171; margin-top: 2px;' : 'color: #34d399; margin-top: 2px;';
+          line.textContent = `> ${e.data.text}`;
+          consolePanel.appendChild(line);
+          consolePanel.scrollTop = consolePanel.scrollHeight;
         }
       }
     });
@@ -400,8 +422,7 @@ class OMApp {
             <span class="chat-item-icon">${modeIcon}</span>
             <span class="chat-item-title" title="${this.escapeHTML(chat.title)}">${this.escapeHTML(chat.title)}</span>
             <div class="chat-item-actions">
-              <button class="chat-action-btn" onclick="event.stopPropagation(); window.omApp.promptRenameChat('${chat.id}')" title="Rename">✏️</button>
-              <button class="chat-action-btn" onclick="event.stopPropagation(); window.omApp.deleteChat('${chat.id}')" title="Delete">🗑️</button>
+              <button class="chat-action-btn chat-item-menu-btn" onclick="event.stopPropagation(); window.omApp.openChatContextMenu(event, '${chat.id}')" title="More options">⋮</button>
             </div>
           </div>
         `;
@@ -421,6 +442,9 @@ class OMApp {
     }
 
     container.innerHTML = html;
+
+    // Render Notebooks in sidebar section
+    this.renderNotebooks();
 
     // Attach click listeners to select chat
     container.querySelectorAll('.sidebar-chat-item').forEach(item => {
@@ -1603,6 +1627,303 @@ Key Ideas & Notes:
       const input = document.getElementById('cyber-terminal-input');
       if (input) setTimeout(() => input.focus(), 150);
     }
+  }
+
+  // =========================================================================
+  // Chat Item 3-Dots Action Context Menu (Matching Image 4)
+  // =========================================================================
+  openChatContextMenu(e, chatId) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('chat-item-context-menu');
+    if (!menu) return;
+
+    this.activeContextChatId = chatId;
+    const chat = this.chatStore.getChat(chatId);
+
+    // Update Pin / Unpin label and icon
+    const pinLabel = document.getElementById('context-menu-pin-label');
+    const pinIcon = document.getElementById('context-menu-pin-icon');
+    if (pinLabel && pinIcon) {
+      if (chat && chat.pinned) {
+        pinLabel.textContent = 'Unpin';
+        pinIcon.textContent = '📌';
+      } else {
+        pinLabel.textContent = 'Pin';
+        pinIcon.textContent = '📌';
+      }
+    }
+
+    menu.style.display = 'flex';
+    menu.style.position = 'fixed';
+
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const menuWidth = 210;
+    const menuHeight = 270;
+
+    let left = rect.right + 6;
+    let top = rect.top - 10;
+
+    if (left + menuWidth > window.innerWidth) {
+      left = rect.left - menuWidth - 6;
+    }
+    if (top + menuHeight > window.innerHeight) {
+      top = window.innerHeight - menuHeight - 10;
+    }
+
+    menu.style.left = `${Math.max(10, left)}px`;
+    menu.style.top = `${Math.max(10, top)}px`;
+    menu.style.zIndex = '99999';
+  }
+
+  closeChatContextMenu() {
+    const menu = document.getElementById('chat-item-context-menu');
+    if (menu) menu.style.display = 'none';
+    this.activeContextChatId = null;
+  }
+
+  handleContextAction(action, chatId = null) {
+    const id = chatId || this.activeContextChatId;
+    this.closeChatContextMenu();
+    if (!id) return;
+
+    const chat = this.chatStore.getChat(id);
+    if (!chat) return;
+
+    switch (action) {
+      case 'share': {
+        const url = window.location.origin + window.location.pathname + '#chat=' + encodeURIComponent(id);
+        navigator.clipboard.writeText(url).then(() => {
+          this.showToast('Conversation share link copied to clipboard!', 'success');
+        }).catch(() => {
+          this.showToast('Conversation link ready!', 'info');
+        });
+        break;
+      }
+      case 'pin': {
+        const isPinned = this.chatStore.togglePinChat(id);
+        this.renderSidebar();
+        this.showToast(isPinned ? '📌 Chat pinned to top' : 'Chat unpinned', 'info');
+        break;
+      }
+      case 'rename': {
+        this.promptRenameChat(id);
+        break;
+      }
+      case 'pdf': {
+        this.downloadChatPDF(id);
+        break;
+      }
+      case 'docs': {
+        this.exportChatToDocs(id);
+        break;
+      }
+      case 'add_notebook': {
+        this.chatStore.addChatToNotebook('nb-1', chat);
+        this.renderNotebooks();
+        this.showToast(`Conversation linked to Nexus Notebook!`, 'success');
+        break;
+      }
+      case 'delete': {
+        this.deleteChat(id);
+        break;
+      }
+    }
+  }
+
+  promptRenameChat(chatId) {
+    const chat = this.chatStore.getChat(chatId);
+    if (!chat) return;
+    const newTitle = prompt('Rename Conversation:', chat.title);
+    if (newTitle && newTitle.trim()) {
+      this.chatStore.updateChatTitle(chatId, newTitle.trim());
+      this.renderSidebar();
+      this.updateHeaderInfo();
+      this.showToast('Conversation renamed', 'success');
+    }
+  }
+
+  deleteChat(chatId) {
+    const chat = this.chatStore.getChat(chatId);
+    const title = chat ? chat.title : 'this chat';
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+      this.chatStore.deleteChat(chatId);
+      this.renderSidebar();
+      this.renderChatMessages();
+      this.updateHeaderInfo();
+      this.showToast('Conversation deleted', 'info');
+    }
+  }
+
+  downloadChatPDF(chatId = null) {
+    const id = chatId || this.chatStore.activeChatId;
+    const chat = this.chatStore.getChat(id);
+    if (!chat) return;
+
+    const printWin = window.open('', '_blank');
+    if (!printWin) {
+      this.showToast('Please allow popup to preview PDF', 'error');
+      return;
+    }
+    const msgsHtml = chat.messages.map(m => `
+      <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+        <div style="font-weight: 700; color: ${m.sender === 'user' ? '#0284c7' : '#0f172a'}; margin-bottom: 8px;">
+          ${m.sender === 'user' ? '👤 User' : '🤖 OM Assistant'} (${m.timestamp || ''})
+        </div>
+        <div style="white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 14px;">${this.escapeHTML(m.text)}</div>
+      </div>
+    `).join('');
+
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${this.escapeHTML(chat.title)} - OM AI Export</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 820px; margin: 0 auto; color: #1e293b; }
+            h1 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 10px; margin-bottom: 6px; }
+            .header-info { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+            .print-btn { padding: 9px 18px; background: #0284c7; color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 24px; }
+            @media print { .print-btn { display: none; } }
+          </style>
+        </head>
+        <body>
+          <h1>${this.escapeHTML(chat.title)}</h1>
+          <div class="header-info">Exported from OM AI Action Assistant • Think. Plan. Act. Achieve. • ${new Date().toLocaleString()}</div>
+          <button class="print-btn" onclick="window.print()">📥 Print / Save as PDF</button>
+          ${msgsHtml}
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    setTimeout(() => {
+      printWin.print();
+    }, 450);
+    this.showToast('PDF export ready for download', 'success');
+  }
+
+  exportChatToDocs(chatId = null) {
+    const id = chatId || this.chatStore.activeChatId;
+    const md = this.chatStore.exportChatAsMarkdown(id);
+    const chat = this.chatStore.getChat(id);
+    if (!md || !chat) return;
+
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${chat.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_DocsExport.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showToast('Exported to Docs (Markdown) format!', 'success');
+  }
+
+  renderNotebooks() {
+    const container = document.getElementById('sidebar-notebooks-container');
+    if (!container || !this.chatStore.getNotebooks) return;
+    const nbs = this.chatStore.getNotebooks();
+    let html = `
+      <div class="sidebar-nav-item" onclick="window.omApp.createNewNotebook()">
+        <span class="nav-item-icon">➕</span>
+        <span class="nav-item-title">New notebook</span>
+      </div>
+    `;
+    nbs.slice(0, 4).forEach(nb => {
+      html += `
+        <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('${nb.id}')">
+          <span class="nav-item-icon">📄</span>
+          <span class="nav-item-title">${this.escapeHTML(nb.title)}</span>
+        </div>
+      `;
+    });
+    if (nbs.length > 4) {
+      html += `
+        <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
+          <span class="nav-item-icon">⋯</span>
+          <span class="nav-item-title">All notebooks (${nbs.length})</span>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  createNewNotebook(title = 'Untitled notebook') {
+    const nb = this.chatStore.createNotebook(title);
+    this.renderNotebooks();
+    this.openNotebookModal(nb.id);
+    this.showToast('Created new notebook', 'success');
+  }
+
+  openNotebookModal(notebookId = null) {
+    const modal = document.getElementById('notebook-workspace-modal');
+    if (!modal) return;
+    const nbs = this.chatStore.getNotebooks();
+    let nb = notebookId ? nbs.find(n => n.id === notebookId) : nbs[0];
+    if (!nb) nb = this.chatStore.createNotebook('Untitled notebook');
+
+    this.activeNotebookId = nb.id;
+    const titleInput = document.getElementById('notebook-title-input');
+    const contentTextarea = document.getElementById('notebook-content-textarea');
+    if (titleInput) titleInput.value = nb.title;
+    if (contentTextarea) contentTextarea.value = nb.content || '';
+
+    modal.classList.add('active');
+  }
+
+  saveActiveNotebook() {
+    if (!this.activeNotebookId) return;
+    const titleInput = document.getElementById('notebook-title-input');
+    const contentTextarea = document.getElementById('notebook-content-textarea');
+    const nbs = this.chatStore.getNotebooks();
+    const nb = nbs.find(n => n.id === this.activeNotebookId);
+    if (nb) {
+      if (titleInput) nb.title = titleInput.value.trim() || 'Untitled notebook';
+      if (contentTextarea) nb.content = contentTextarea.value;
+      this.chatStore.saveNotebooks(nbs);
+      this.renderNotebooks();
+      this.showToast('Notebook saved successfully', 'success');
+    }
+  }
+
+  addCurrentChatToActiveNotebook() {
+    const chat = this.chatStore.getActiveChat();
+    if (!chat) return;
+    const contentTextarea = document.getElementById('notebook-content-textarea');
+    const chatSnippet = `\n\n---\n### Attached Chat: ${chat.title}\n` + (chat.messages ? chat.messages.map(m => `**${m.sender === 'user' ? 'User' : 'OM'}**: ${m.text}`).join('\n\n') : '');
+    if (contentTextarea) {
+      contentTextarea.value += chatSnippet;
+    }
+    this.saveActiveNotebook();
+    this.showToast('Attached current conversation to notebook', 'success');
+  }
+
+  openImagesModal() {
+    const modal = document.getElementById('images-gallery-modal');
+    if (modal) modal.classList.add('active');
+  }
+
+  openLibraryModal() {
+    const modal = document.getElementById('resource-library-modal');
+    if (modal) modal.classList.add('active');
+  }
+
+  triggerPromptInChat(promptText) {
+    document.querySelectorAll('.om-modal-overlay').forEach(m => m.classList.remove('active'));
+    const input = document.getElementById('chat-user-input');
+    if (input) {
+      input.value = promptText;
+      this.handleSendMessage();
+    }
+  }
+
+  openHelpCenterModal() {
+    this.showToast('Nexus Help Center: All documentation and guides are active.', 'info');
+    this.openDocsModal();
+  }
+
+  openPrivacyModal() {
+    this.showToast('Privacy & Terms: Zero logging, 100% encrypted offline & cloud storage.', 'info');
   }
 }
 

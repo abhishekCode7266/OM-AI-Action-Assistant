@@ -32,12 +32,60 @@ class OMChatStore {
     const now = Date.now();
     return [
       {
+        id: 'chat-seed-reel',
+        title: 'Student Hacks Reel Script',
+        mode: 'writing',
+        pinned: true,
+        createdAt: now - 3600 * 1000 * 1,
+        updatedAt: now - 3600 * 1000 * 1,
+        messages: [
+          {
+            id: 'm-reel-1',
+            sender: 'user',
+            text: 'Create a viral 30-second Instagram Reel script for college students covering 3 powerful productivity hacks.',
+            timestamp: new Date(now - 3600 * 1000 * 1).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-reel-2',
+            sender: 'om',
+            text: `### 🎬 Viral 30-Second Student Hacks Reel Script\n\n**Hook (0–3s)**: Stop studying for 8 hours straight. Here are 3 science-backed hacks top students use:\n\n1. **The 25/5 Pomodoro Wave (3–10s)**: Work in 25-minute sprints with zero notifications, then take 5 minutes of real screen-free rest.\n2. **Feynman Quick-Teach (10–20s)**: Explain your toughest concept out loud as if teaching a 10-year-old. What you can't simplify, you don't understand yet.\n3. **Active Recall Testing (20–27s)**: Close your textbook and write down everything you remember. This forces neural retrieval paths to lock in memory.\n\n**Call-To-Action (27–30s)**: Save this reel and try it on your next study session! 🚀`,
+            reasoning: "1. Optimized pacing for short-form retention.\n2. Included 3 high-impact verified study strategies.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 1).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
+        id: 'chat-seed-cuisine',
+        title: 'Exploring Diverse American Cuisine',
+        mode: 'general',
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 3,
+        updatedAt: now - 3600 * 1000 * 3,
+        messages: [
+          {
+            id: 'm-cuis-1',
+            sender: 'user',
+            text: 'What are the defining characteristics and regional differences in American cuisine?',
+            timestamp: new Date(now - 3600 * 1000 * 3).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: 'm-cuis-2',
+            sender: 'om',
+            text: `### 🍲 Regional Tapestry of American Cuisine\n\nAmerican culinary tradition is defined by regional heritage and cultural fusion:\n\n* **Southern BBQ & Soul Food**: Slow-smoked brisket in Texas, Carolina vinegar-based pulled pork, and rich buttermilk fried chicken.\n* **New England Seafood**: Clam chowder, butter-poached Maine lobster rolls, and fresh Atlantic cod.\n* **Cajun & Creole (Louisiana)**: Gumbo, jambalaya, and crawfish étouffée with French, African, and Spanish spices.\n* **Tex-Mex & Southwest**: Charred chile peppers, fajitas, and slow-braised carnitas.\n* **Pacific Northwest & California**: Farm-to-table focus on wild salmon, sourdough, and seasonal produce.`,
+            reasoning: "1. Structured regional breakdown.\n2. Highlighted cultural influences and signature dishes.",
+            verified: true,
+            timestamp: new Date(now - 3600 * 1000 * 3).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      },
+      {
         id: 'chat-seed-1',
         title: 'AI Interviewer and Developer Prompts',
         mode: 'career',
-        pinned: true,
-        createdAt: now - 3600 * 1000 * 2,
-        updatedAt: now - 3600 * 1000 * 2,
+        pinned: false,
+        createdAt: now - 3600 * 1000 * 5,
+        updatedAt: now - 3600 * 1000 * 5,
         messages: [
           {
             id: 'm-1',
@@ -334,6 +382,67 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
     }
   }
 
+  togglePinChat(chatId) {
+    const chat = this.getChat(chatId);
+    if (chat) {
+      chat.pinned = !chat.pinned;
+      chat.updatedAt = Date.now();
+      this.saveChats();
+      return chat.pinned;
+    }
+    return false;
+  }
+
+  getNotebooks() {
+    try {
+      const stored = localStorage.getItem('om_notebooks_v1');
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    const defaultNotebooks = [
+      { id: 'nb-1', title: 'Untitled notebook', createdAt: Date.now() - 86400000 * 2, entries: [] },
+      { id: 'nb-2', title: 'Copy of Untitled notebook', createdAt: Date.now() - 86400000, entries: [] }
+    ];
+    this.saveNotebooks(defaultNotebooks);
+    return defaultNotebooks;
+  }
+
+  saveNotebooks(notebooks) {
+    try {
+      localStorage.setItem('om_notebooks_v1', JSON.stringify(notebooks));
+    } catch (e) {}
+  }
+
+  createNotebook(title = 'Untitled notebook') {
+    const list = this.getNotebooks();
+    const nb = { id: 'nb-' + Date.now(), title, createdAt: Date.now(), entries: [] };
+    list.unshift(nb);
+    this.saveNotebooks(list);
+    return nb;
+  }
+
+  deleteNotebook(id) {
+    let list = this.getNotebooks().filter(n => n.id !== id);
+    this.saveNotebooks(list);
+    return list;
+  }
+
+  addChatToNotebook(notebookId, chat) {
+    const list = this.getNotebooks();
+    const target = list.find(n => n.id === notebookId) || list[0];
+    if (target) {
+      target.entries = target.entries || [];
+      target.entries.push({
+        chatId: chat.id,
+        title: chat.title,
+        addedAt: Date.now(),
+        snippet: chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text.slice(0, 200) : ''
+      });
+      this.saveNotebooks(list);
+      return true;
+    }
+    return false;
+  }
+
   loadMemory() {
     try {
       const data = localStorage.getItem(this.MEMORY_KEY);
@@ -436,7 +545,7 @@ Core Directives:
       tier: 'Ultimate Developer (Free Lifetime VIP)',
       tierBadge: 'VIP',
       plan: 'ultimate_developer',
-      location: 'India',
+      location: 'Gurugram, Haryana, India',
       isDeveloper: true,
       devToken: _DEV_SIG_KEY,
       subscription: {
@@ -891,6 +1000,60 @@ Core Directives:
     });
 
     return md;
+  }
+
+  // Notebook operations
+  getNotebooks() {
+    try {
+      const data = localStorage.getItem('om_notebooks_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return [
+      { id: 'nb-1', title: 'Untitled notebook', createdAt: Date.now() - 86400000, sources: 2, notes: 5 },
+      { id: 'nb-2', title: 'Copy of Untitled notebook', createdAt: Date.now() - 43200000, sources: 1, notes: 3 }
+    ];
+  }
+
+  saveNotebooks(notebooks) {
+    try {
+      localStorage.setItem('om_notebooks_v1', JSON.stringify(notebooks));
+    } catch (e) {}
+  }
+
+  createNotebook(title = 'Untitled notebook') {
+    const notebooks = this.getNotebooks();
+    const newNb = {
+      id: 'nb-' + Date.now(),
+      title: title.trim() || 'Untitled notebook',
+      createdAt: Date.now(),
+      sources: 0,
+      notes: 1,
+      content: `# ${title}\n\nCreated on ${new Date().toLocaleDateString()}.\n\n### Research & Notes\nAdd sources, synthesis, and key insights here.`
+    };
+    notebooks.unshift(newNb);
+    this.saveNotebooks(notebooks);
+    return newNb;
+  }
+
+  deleteNotebook(notebookId) {
+    const notebooks = this.getNotebooks().filter(nb => nb.id !== notebookId);
+    this.saveNotebooks(notebooks);
+    return notebooks;
+  }
+
+  addChatToNotebook(notebookId, chat) {
+    const notebooks = this.getNotebooks();
+    let nb = notebooks.find(n => n.id === notebookId);
+    if (!nb) {
+      if (notebooks.length > 0) nb = notebooks[0];
+      else nb = this.createNotebook('My Notebook');
+    }
+    nb.sources = (nb.sources || 0) + 1;
+    nb.notes = (nb.notes || 0) + 1;
+    const chatSnippet = chat.messages ? chat.messages.map(m => `**${m.sender === 'user' ? 'User' : 'OM'}**: ${m.text}`).join('\n\n') : '';
+    nb.content = (nb.content || '') + `\n\n---\n### Attached Conversation: ${chat.title}\n${chatSnippet}`;
+    this.saveNotebooks(notebooks);
+    return nb;
   }
 }
 

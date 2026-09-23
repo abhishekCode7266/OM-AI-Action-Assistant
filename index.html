@@ -145,10 +145,13 @@
         <button class="nexus-tab-pill" id="tab-pill-spark" onclick="window.omApp.switchAppTab('spark')">Spark</button>
       </div>
 
-      <!-- Controls: New Chat & Search -->
+      <!-- Controls: New Chat, Search, Images, Videos, Library (Matching Gemini Image 2) -->
       <div class="sidebar-controls">
         <button class="btn-new-chat" id="btn-sidebar-new-chat" title="Create a new conversation">
-          <span>+ New chat</span>
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <span>✏️</span>
+            <span>New chat</span>
+          </span>
           <span style="font-size: 0.7rem; opacity: 0.7; font-family: var(--om-font-mono);">Ctrl+K</span>
         </button>
 
@@ -156,14 +159,60 @@
           <span class="sidebar-search-icon">🔍</span>
           <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search chats...">
         </div>
+
+        <div class="sidebar-quick-nav-list">
+          <div class="sidebar-nav-item" onclick="window.omApp.openImagesModal()" title="AI Generated & Vision Images">
+            <span class="nav-item-icon">🖼️</span>
+            <span class="nav-item-title">Images</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omDismantler.generateAssemblyVideo()" title="3D Assembly & Simulation Videos">
+            <span class="nav-item-icon">📼</span>
+            <span class="nav-item-title">Videos</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openLibraryModal()" title="Resource, Code & Prompt Library">
+            <span class="nav-item-icon">⊞</span>
+            <span class="nav-item-title">Library</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notebooks Section ("+ wali line me add sabhi bhag" - Matching Gemini Image 2) -->
+      <div class="sidebar-section-container">
+        <div class="sidebar-section-header">
+          <span class="section-title">Notebooks</span>
+          <button class="section-add-btn" onclick="window.omApp.createNewNotebook()" title="New notebook">+</button>
+        </div>
+        <div class="sidebar-notebooks-list" id="sidebar-notebooks-container">
+          <div class="sidebar-nav-item" onclick="window.omApp.createNewNotebook()">
+            <span class="nav-item-icon">➕</span>
+            <span class="nav-item-title">New notebook</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-1')">
+            <span class="nav-item-icon">📄</span>
+            <span class="nav-item-title">Untitled notebook</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-2')">
+            <span class="nav-item-icon">📄</span>
+            <span class="nav-item-title">Copy of Untitled notebook</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
+            <span class="nav-item-icon">⋯</span>
+            <span class="nav-item-title">All notebooks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recents Section Header (Matching Image 2) -->
+      <div class="sidebar-section-header" style="margin-top: 6px;">
+        <span class="section-title">Recents</span>
       </div>
 
       <!-- Chronologically Grouped Chat History -->
       <div class="sidebar-scroll-area" id="sidebar-history-container">
-        <!-- Rendered dynamically by app.js -->
+        <!-- Rendered dynamically by app.js with Image 4 3-dots action dropdown -->
       </div>
 
-      <!-- User Profile Footer matching Nexus Screenshot -->
+      <!-- User Profile Footer matching Image 2 & 3 -->
       <div class="sidebar-footer">
         <div class="nexus-profile-card" id="btn-profile-popover-trigger" title="Account, Settings & Options">
           <div class="profile-avatar-circle" id="sidebar-avatar-circle">
@@ -174,11 +223,11 @@
               <span class="profile-user-name" id="sidebar-profile-name">Udayast</span>
             </div>
             <div class="profile-sub-row">
-              <span class="profile-tier-badge" id="sidebar-profile-badge">VIP</span>
-              <span class="profile-location" id="sidebar-profile-location">India</span>
+              <span class="profile-tier-badge" id="sidebar-profile-badge">Pro</span>
+              <span class="profile-location" id="sidebar-profile-location">Gurugram, Haryana, India</span>
             </div>
           </div>
-          <div class="profile-chevron">⋮</div>
+          <div class="profile-gear-icon" title="Settings">⚙️</div>
         </div>
       </div>
     </aside>
@@ -493,11 +542,21 @@
     <div class="om-modal-content sandbox-modal-content">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-weight: 700;">▶ OM Interactive Code Sandbox Preview</span>
+          <span style="font-weight: 700;">▶ OM Interactive Code Sandbox & Live Program Execution</span>
         </div>
         <button class="chat-action-btn modal-close-trigger" style="font-size: 1rem;">✕</button>
       </div>
       <iframe id="code-sandbox-iframe" sandbox="allow-scripts allow-modals"></iframe>
+      <div class="code-console-wrapper">
+        <div class="code-console-header">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+            <span>Live Output & Execution Console</span>
+          </span>
+          <button class="code-console-clear-btn" onclick="document.getElementById('code-console-log-panel').innerHTML=''">Clear</button>
+        </div>
+        <pre class="code-console-log-panel" id="code-console-log-panel">> Initializing live execution runtime...</pre>
+      </div>
     </div>
   </div>
 
@@ -578,12 +637,163 @@
       <div class="popover-submenu" id="help-submenu" style="display: none;">
         <div class="submenu-item" onclick="window.omApp.openShortcutsModal()">⌨️ Keyboard Shortcuts</div>
         <div class="submenu-item" onclick="window.omApp.openDocsModal()">📖 Documentation</div>
+        <div class="submenu-item" onclick="window.omApp.openHelpCenterModal()">ℹ️ Help Center</div>
+        <div class="submenu-item" onclick="window.omApp.openPrivacyModal()">🛡️ Privacy & Terms</div>
       </div>
     </div>
     <div class="popover-divider"></div>
     <div class="popover-menu-item auth-action-item" id="popover-auth-btn" onclick="window.omApp.handleAuthAction()">
       <span class="popover-icon">🚪</span>
       <span class="popover-label" id="popover-auth-label">Sign Out</span>
+    </div>
+    <div class="popover-location-footer">
+      <span class="loc-text">Gurugram, Haryana, India</span> • <span class="loc-sub">From your IP address</span> • <a href="#" onclick="event.preventDefault(); window.omApp.showToast('Location updated: Gurugram, Haryana, India', 'info')">Update location</a>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Chat Item 3-Dots Action Context Menu (Matching Image 4)
+       ========================================================================= -->
+  <div class="chat-item-context-menu" id="chat-item-context-menu" style="display: none;">
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('share')">
+      <span class="context-menu-icon">📤</span>
+      <span class="context-menu-label">Share conversation</span>
+    </div>
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('pin')">
+      <span class="context-menu-icon" id="context-menu-pin-icon">📌</span>
+      <span class="context-menu-label" id="context-menu-pin-label">Pin</span>
+    </div>
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('rename')">
+      <span class="context-menu-icon">✏️</span>
+      <span class="context-menu-label">Rename</span>
+    </div>
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('pdf')">
+      <span class="context-menu-icon">📥</span>
+      <span class="context-menu-label">Download PDF</span>
+    </div>
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('docs')">
+      <span class="context-menu-icon">📄</span>
+      <span class="context-menu-label">Export to Docs</span>
+    </div>
+    <div class="context-menu-item" onclick="window.omApp.handleContextAction('add_notebook')">
+      <span class="context-menu-icon">📓</span>
+      <span class="context-menu-label">Add to notebook</span>
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item danger-item" onclick="window.omApp.handleContextAction('delete')">
+      <span class="context-menu-icon">🗑️</span>
+      <span class="context-menu-label">Delete</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Images Gallery Modal (Sidebar Quick Nav)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="images-gallery-modal">
+    <div class="om-modal-content" style="max-width: 760px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">🖼️</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Nexus Image Studio & Generated Media</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <span style="font-size: 0.82rem; color: var(--om-text-secondary);">Your generated blueprints, 3D renders, and analyzed vision images.</span>
+          <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Generate a high-detail concept render of a futuristic cyber drone in 4K resolution')">+ Generate Image</button>
+        </div>
+        <div class="images-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
+            <div style="height: 120px; background: linear-gradient(135deg, #1e1b4b, #312e81); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🛸</div>
+            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Autonomous Drone Model</div>
+            <div style="font-size: 0.68rem; color: var(--om-cyan);">3D Mesh • GLTF/USDZ</div>
+          </div>
+          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
+            <div style="height: 120px; background: linear-gradient(135deg, #064e3b, #047857); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🚗</div>
+            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cyber Sedan Exploded</div>
+            <div style="font-size: 0.68rem; color: var(--om-cyan);">CAD Architecture • Spline AI</div>
+          </div>
+          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
+            <div style="height: 120px; background: linear-gradient(135deg, #3730a3, #4338ca); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🧠</div>
+            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Neural Thought DAG Map</div>
+            <div style="font-size: 0.68rem; color: var(--om-cyan);">High-Res Blueprint • Vector</div>
+          </div>
+          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
+            <div style="height: 120px; background: linear-gradient(135deg, #701a75, #86198f); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🤖</div>
+            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Bipedal Humanoid Mech</div>
+            <div style="font-size: 0.68rem; color: var(--om-cyan);">Meshy AI • Rigged 3D</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Resource & Prompt Library Modal (Sidebar Quick Nav)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="resource-library-modal">
+    <div class="om-modal-content" style="max-width: 760px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">⊞</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Nexus Prompt & Resource Library</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 16px;">
+        <div style="margin-bottom: 14px; font-size: 0.82rem; color: var(--om-text-secondary);">
+          Curated collection of production-grade prompts, interview frameworks, and autonomous routines.
+        </div>
+        <div class="library-items-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎬 Viral Short-Form Video Prompt Generator</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Hook (0-3s), retention pacing, and high-conversion CTA template.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('Create a viral 30-second Instagram Reel script for college students covering 3 powerful productivity hacks.')">Use Prompt</button>
+          </div>
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎯 Senior Full-Stack Mock Interview (STAR Method)</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Architectural, behavioral, and scalability STAR questions.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('I want to prepare for a Senior Full-Stack Developer interview. Can you provide 3 challenging STAR questions and ideal answers?')">Use Prompt</button>
+          </div>
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">📦 Full-Stack Library Management System (OOP & DSA)</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Python class architecture with O(1) hash table lookup and transaction ledger.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('Write a Python Library Management System using Object-Oriented DSA with search, issue, and return features.')">Use Prompt</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Nexus Notebook Workspace Modal (Sidebar Notebooks)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="notebook-workspace-modal">
+    <div class="om-modal-content" style="max-width: 820px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">📓</span>
+          <span style="font-weight: 700; font-size: 1.1rem;" id="notebook-modal-title">Nexus Notebook Workspace</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <input type="text" id="notebook-title-input" class="om-input" placeholder="Notebook Title..." style="font-weight: 700; font-size: 1rem; max-width: 400px;">
+          <div style="display: flex; gap: 8px;">
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.addCurrentChatToActiveNotebook()">+ Add Active Chat</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.saveActiveNotebook()">Save Notebook</button>
+          </div>
+        </div>
+        <textarea id="notebook-content-textarea" class="om-input" rows="14" style="font-family: var(--om-font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical;" placeholder="Notebook notes, synthesized sources, and prompt blueprints..."></textarea>
+      </div>
     </div>
   </div>
 
