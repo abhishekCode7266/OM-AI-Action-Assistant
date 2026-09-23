@@ -396,11 +396,26 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
   getNotebooks() {
     try {
       const stored = localStorage.getItem('om_notebooks_v1');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
     const defaultNotebooks = [
-      { id: 'nb-1', title: 'Untitled notebook', createdAt: Date.now() - 86400000 * 2, entries: [] },
-      { id: 'nb-2', title: 'Copy of Untitled notebook', createdAt: Date.now() - 86400000, entries: [] }
+      {
+        id: 'nb-1',
+        title: 'Untitled notebook',
+        createdAt: Date.now() - 86400000 * 2,
+        content: `# Nexus Engineering & Research Notes\n\nProject: OM AI Action Assistant\nArchitect: Udayast (Boss)\nStatus: 100% Operational\n\n### Key Objectives\n1. Autonomous Multi-Agent Swarm pipelines (Think -> Plan -> Act -> Achieve)\n2. Real-time Python Code Execution with live terminal output\n3. 3D Spatial CAD Deconstruction & 360° Assembly simulations\n4. Multimodal Vision & OCR inspection across multiple image attachments\n\n---\n### Scratchpad & Ideas\n- High-velocity WebSockets / WebRTC for live voice streaming\n- GPU-accelerated local WebGL shader pipeline for CAD deconstruction`,
+        entries: []
+      },
+      {
+        id: 'nb-2',
+        title: 'Copy of Untitled notebook',
+        createdAt: Date.now() - 86400000,
+        content: `# Multimodal Prompt Engineering & System Blueprint\n\nTarget Environment: Nexus 2.0 Flash / Pro\nAccess Level: Free Lifetime Developer VIP ($0.00)\n\n### Standard Invariants\n- All user address formatted as Boss\n- Public profile name: Udayast\n- Location: Gurugram, Haryana, India\n- Responsive across desktop, tablet, and mobile displays\n\n---\n### Verified Subroutines\n- Silero VAD / Web Audio API energy threshold fallback\n- Interactive 3-dots context dropdown with PDF export`,
+        entries: []
+      }
     ];
     this.saveNotebooks(defaultNotebooks);
     return defaultNotebooks;

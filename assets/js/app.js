@@ -1923,14 +1923,13 @@ Key Ideas & Notes:
         </div>
       `;
     });
-    if (nbs.length > 4) {
-      html += `
-        <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
-          <span class="nav-item-icon">⋯</span>
-          <span class="nav-item-title">All notebooks (${nbs.length})</span>
-        </div>
-      `;
-    }
+    // Always show All notebooks at the bottom
+    html += `
+      <div class="sidebar-nav-item" onclick="window.omApp.openAllNotebooksModal()">
+        <span class="nav-item-icon">⋯</span>
+        <span class="nav-item-title">All notebooks</span>
+      </div>
+    `;
     container.innerHTML = html;
   }
 
@@ -1951,8 +1950,22 @@ Key Ideas & Notes:
     this.activeNotebookId = nb.id;
     const titleInput = document.getElementById('notebook-title-input');
     const contentTextarea = document.getElementById('notebook-content-textarea');
+    const dropdown = document.getElementById('notebook-select-dropdown');
+    const wordCount = document.getElementById('notebook-word-count');
+
+    if (dropdown) {
+      dropdown.innerHTML = nbs.map(n => `<option value="${n.id}" ${n.id === nb.id ? 'selected' : ''}>${this.escapeHTML(n.title)}</option>`).join('');
+    }
     if (titleInput) titleInput.value = nb.title;
-    if (contentTextarea) contentTextarea.value = nb.content || '';
+    if (contentTextarea) {
+      contentTextarea.value = nb.content || '';
+      const words = (nb.content || '').trim().split(/\s+/).filter(Boolean).length;
+      if (wordCount) wordCount.textContent = `${words} words`;
+      contentTextarea.oninput = () => {
+        const count = contentTextarea.value.trim().split(/\s+/).filter(Boolean).length;
+        if (wordCount) wordCount.textContent = `${count} words`;
+      };
+    }
 
     modal.classList.add('active');
   }
@@ -1972,6 +1985,61 @@ Key Ideas & Notes:
     }
   }
 
+  deleteActiveNotebook() {
+    if (!this.activeNotebookId) return;
+    const confirmDelete = confirm('Are you sure you want to delete this notebook?');
+    if (!confirmDelete) return;
+
+    this.chatStore.deleteNotebook(this.activeNotebookId);
+    this.renderNotebooks();
+    const modal = document.getElementById('notebook-workspace-modal');
+    if (modal) modal.classList.remove('active');
+    this.showToast('Notebook deleted', 'info');
+  }
+
+  exportActiveNotebook() {
+    if (!this.activeNotebookId) return;
+    const nbs = this.chatStore.getNotebooks();
+    const nb = nbs.find(n => n.id === this.activeNotebookId);
+    if (!nb) return;
+
+    const blob = new Blob([nb.content || ''], { type: 'text/markdown;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${nb.title.replace(/\s+/g, '_')}_notes.md`;
+    link.click();
+    this.showToast('Exported notebook as Markdown (.md)', 'success');
+  }
+
+  openAllNotebooksModal() {
+    const modal = document.getElementById('all-notebooks-modal');
+    const container = document.getElementById('all-notebooks-cards-container');
+    if (!modal) return;
+
+    const nbs = this.chatStore.getNotebooks();
+    if (container) {
+      let html = '';
+      nbs.forEach(nb => {
+        const words = (nb.content || '').trim().split(/\s+/).filter(Boolean).length;
+        const dateStr = new Date(nb.createdAt || Date.now()).toLocaleDateString();
+        html += `
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">📄 ${this.escapeHTML(nb.title)}</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted); margin-top: 2px;">${words} words • Created ${dateStr}</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="om-btn om-btn-xs om-btn-primary" onclick="document.getElementById('all-notebooks-modal').classList.remove('active'); window.omApp.openNotebookModal('${nb.id}')">Open / Edit</button>
+              <button class="om-btn om-btn-xs om-btn-danger" style="color: #f87171; background: rgba(239,68,68,0.15);" onclick="window.omApp.chatStore.deleteNotebook('${nb.id}'); window.omApp.renderNotebooks(); window.omApp.openAllNotebooksModal();">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+    modal.classList.add('active');
+  }
+
   addCurrentChatToActiveNotebook() {
     const chat = this.chatStore.getActiveChat();
     if (!chat) return;
@@ -1989,9 +2057,62 @@ Key Ideas & Notes:
     if (modal) modal.classList.add('active');
   }
 
+  setStudioRatio(ratio, btn) {
+    document.querySelectorAll('.studio-ratio-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    this.currentStudioRatio = ratio;
+  }
+
+  generateImageInStudio() {
+    const input = document.getElementById('image-studio-prompt-input');
+    const prompt = input ? input.value.trim() : '';
+    if (!prompt) {
+      this.showToast('Please describe the image to generate', 'info');
+      return;
+    }
+
+    const grid = document.getElementById('studio-images-grid');
+    if (grid) {
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+      card.style.cssText = 'background: rgba(15,23,42,0.7); border: 1.5px solid rgba(16,185,129,0.5); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;';
+      card.innerHTML = `
+        <div style="height: 140px; background: radial-gradient(circle, #0f766e, #030712); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;">
+          <span style="font-size: 3rem;">🎨</span>
+          <span style="font-size: 0.7rem; color: #34d399; margin-top: 4px;">AI Concept Generated</span>
+        </div>
+        <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.82rem; font-weight: 700; color: #fff;" title="${this.escapeHTML(prompt)}">${this.escapeHTML(prompt.slice(0, 32))}...</div>
+            <div style="font-size: 0.7rem; color: #34d399;">Nexus Multimodal • 4K Render</div>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 10px;">
+            <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Analyze this generated concept: ${this.escapeHTML(prompt)}')">💬 Discuss</button>
+          </div>
+        </div>
+      `;
+      grid.prepend(card);
+    }
+    input.value = '';
+    this.showToast('⚡ AI image concept generated in studio!', 'success');
+  }
+
+  openVideosModal() {
+    const modal = document.getElementById('videos-gallery-modal');
+    if (modal) modal.classList.add('active');
+  }
+
   openLibraryModal() {
     const modal = document.getElementById('resource-library-modal');
     if (modal) modal.classList.add('active');
+  }
+
+  filterLibraryItems(query) {
+    const q = (query || '').toLowerCase().trim();
+    document.querySelectorAll('#library-items-container .lib-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(q) ? 'flex' : 'none';
+    });
   }
 
   triggerPromptInChat(promptText) {

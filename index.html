@@ -165,7 +165,7 @@
             <span class="nav-item-icon">🖼️</span>
             <span class="nav-item-title">Images</span>
           </div>
-          <div class="sidebar-nav-item" onclick="window.omDismantler.generateAssemblyVideo()" title="3D Assembly & Simulation Videos">
+          <div class="sidebar-nav-item" onclick="window.omApp.openVideosModal()" title="3D Assembly & Simulation Videos">
             <span class="nav-item-icon">📼</span>
             <span class="nav-item-title">Videos</span>
           </div>
@@ -197,7 +197,7 @@
               <span class="nav-item-icon">📄</span>
               <span class="nav-item-title">Copy of Untitled notebook</span>
             </div>
-            <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
+            <div class="sidebar-nav-item" onclick="window.omApp.openAllNotebooksModal()">
               <span class="nav-item-icon">⋯</span>
               <span class="nav-item-title">All notebooks</span>
             </div>
@@ -690,42 +690,97 @@
   </div>
 
   <!-- =========================================================================
-       Images Gallery Modal (Sidebar Quick Nav)
+       1. Images Studio & Gallery Modal (Sidebar Quick Nav)
        ========================================================================= -->
   <div class="om-modal-overlay" id="images-gallery-modal">
-    <div class="om-modal-content" style="max-width: 760px; max-height: 85vh; display: flex; flex-direction: column;">
+    <div class="om-modal-content" style="max-width: 820px; max-height: 88vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 1.25rem;">🖼️</span>
-          <span style="font-weight: 700; font-size: 1.1rem;">Nexus Image Studio & Generated Media</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Nexus Image Studio & Vision Gallery</span>
         </div>
         <button class="chat-action-btn modal-close-trigger">✕</button>
       </div>
       <div class="modal-body" style="overflow-y: auto; padding: 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <span style="font-size: 0.82rem; color: var(--om-text-secondary);">Your generated blueprints, 3D renders, and analyzed vision images.</span>
-          <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Generate a high-detail concept render of a futuristic cyber drone in 4K resolution')">+ Generate Image</button>
+        <!-- AI Prompt Generator Bar -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>✨</span><span>Text-to-Image & Concept Generator</span>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="image-studio-prompt-input" class="om-input" placeholder="Describe the image or 3D concept you want to generate (e.g. Futuristic holographic cyber motorcycle in 8K)..." style="flex: 1; font-size: 0.85rem;">
+            <button class="om-btn om-btn-primary" onclick="window.omApp.generateImageInStudio()">⚡ Generate</button>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 0.74rem; color: var(--om-text-muted);">Aspect Ratio:</span>
+              <button class="om-btn om-btn-xs om-btn-secondary studio-ratio-btn active" onclick="window.omApp.setStudioRatio('1:1', this)">1:1</button>
+              <button class="om-btn om-btn-xs om-btn-secondary studio-ratio-btn" onclick="window.omApp.setStudioRatio('16:9', this)">16:9</button>
+              <button class="om-btn om-btn-xs om-btn-secondary studio-ratio-btn" onclick="window.omApp.setStudioRatio('9:16', this)">9:16</button>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="document.getElementById('hidden-image-input').click()">📷 Upload from Device</button>
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('Generate an architectural 3D blueprint of a modern smart building')">💡 Suggest Prompt</button>
+            </div>
+          </div>
         </div>
-        <div class="images-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
-          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
-            <div style="height: 120px; background: linear-gradient(135deg, #1e1b4b, #312e81); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🛸</div>
-            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Autonomous Drone Model</div>
-            <div style="font-size: 0.68rem; color: var(--om-cyan);">3D Mesh • GLTF/USDZ</div>
+
+        <!-- Gallery Grid -->
+        <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <span>Generated Blueprints & Vision Gallery</span>
+          <span style="font-size: 0.72rem; color: var(--om-cyan);" id="studio-gallery-count">5 Assets Ready</span>
+        </div>
+        <div class="images-gallery-grid" id="studio-images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;">
+          <!-- Card 1 -->
+          <div class="gallery-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 140px; background: radial-gradient(circle, #1e1b4b, #030712); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&auto=format&fit=crop', 'Autonomous Drone 3D Blueprint')">
+              <span style="font-size: 3rem;">🛸</span>
+              <span style="font-size: 0.7rem; color: #38bdf8; margin-top: 4px;">Click to Expand</span>
+            </div>
+            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff;">Autonomous Drone Model</div>
+                <div style="font-size: 0.7rem; color: var(--om-cyan);">3D Mesh • GLTF/USDZ • Spline AI</div>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Explain the aerodynamic propulsion and quad-rotor vectoring of this Autonomous Drone')">💬 Discuss</button>
+                <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omDismantler && window.omDismantler.openModal('drone')">3D CAD</button>
+              </div>
+            </div>
           </div>
-          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
-            <div style="height: 120px; background: linear-gradient(135deg, #064e3b, #047857); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🚗</div>
-            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cyber Sedan Exploded</div>
-            <div style="font-size: 0.68rem; color: var(--om-cyan);">CAD Architecture • Spline AI</div>
+          <!-- Card 2 -->
+          <div class="gallery-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 140px; background: radial-gradient(circle, #064e3b, #030712); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop', 'Cyber Sedan Exploded Chassis')">
+              <span style="font-size: 3rem;">🚗</span>
+              <span style="font-size: 0.7rem; color: #34d399; margin-top: 4px;">Click to Expand</span>
+            </div>
+            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff;">Cyber Sedan Exploded</div>
+                <div style="font-size: 0.7rem; color: var(--om-cyan);">CAD Architecture • Meshy AI</div>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Dismantle the Cyber Sedan into powertrain, chassis, suspension, and battery pack')">💬 Discuss</button>
+                <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omDismantler && window.omDismantler.openModal('car')">3D CAD</button>
+              </div>
+            </div>
           </div>
-          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
-            <div style="height: 120px; background: linear-gradient(135deg, #3730a3, #4338ca); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🧠</div>
-            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Neural Thought DAG Map</div>
-            <div style="font-size: 0.68rem; color: var(--om-cyan);">High-Res Blueprint • Vector</div>
-          </div>
-          <div class="gallery-card" style="background: rgba(255,255,255,0.04); border: 1px solid var(--om-border-subtle); border-radius: 8px; overflow: hidden; padding: 8px;">
-            <div style="height: 120px; background: linear-gradient(135deg, #701a75, #86198f); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🤖</div>
-            <div style="font-size: 0.76rem; font-weight: 600; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Bipedal Humanoid Mech</div>
-            <div style="font-size: 0.68rem; color: var(--om-cyan);">Meshy AI • Rigged 3D</div>
+          <!-- Card 3 -->
+          <div class="gallery-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 140px; background: radial-gradient(circle, #3730a3, #030712); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop', 'Neural Thought DAG Canvas Map')">
+              <span style="font-size: 3rem;">🧠</span>
+              <span style="font-size: 0.7rem; color: #a5f3fc; margin-top: 4px;">Click to Expand</span>
+            </div>
+            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff;">Neural Thought DAG Map</div>
+                <div style="font-size: 0.7rem; color: var(--om-cyan);">Holographic Mind Map • Vector</div>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Expand on the Neural Thought Canvas mind map')">💬 Discuss</button>
+                <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.openNeuralCanvas()">Canvas</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -733,10 +788,82 @@
   </div>
 
   <!-- =========================================================================
-       Resource & Prompt Library Modal (Sidebar Quick Nav)
+       2. Videos Studio & 3D Visualizer Modal (Sidebar Quick Nav)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="videos-gallery-modal">
+    <div class="om-modal-content" style="max-width: 840px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">📼</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">Nexus 3D Video Studio & Visualizer</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 16px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">360° Spatial Assembly Simulations & Renders</div>
+            <div style="font-size: 0.74rem; color: var(--om-text-muted); margin-top: 2px;">Watch animated CAD deconstructions, record WebM video clips, or launch full 3D interactive studio.</div>
+          </div>
+          <button class="om-btn om-btn-primary" onclick="window.omDismantler && window.omDismantler.openModal('drone')">🚀 Launch 3D Studio</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px;">
+          <!-- Video Card 1 -->
+          <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; padding: 12px; display: flex; flex-direction: column;">
+            <div style="position: relative; height: 140px; background: #030712; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 3rem;">🛸</span>
+              <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; color: #34d399;">360° WebM</div>
+            </div>
+            <div style="margin-top: 10px; flex: 1;">
+              <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">Autonomous Drone Assembly</div>
+              <div style="font-size: 0.72rem; color: var(--om-text-muted); margin-top: 2px;">Quad-propeller step-by-step deconstruction and rotation simulation.</div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omDismantler && window.omDismantler.openModal('drone'); setTimeout(() => window.omDismantler.toggleAutoAssemble(), 500);">▶ Play Simulation</button>
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omDismantler && window.omDismantler.openModal('drone'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 600);">🎥 Record</button>
+            </div>
+          </div>
+          <!-- Video Card 2 -->
+          <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; padding: 12px; display: flex; flex-direction: column;">
+            <div style="position: relative; height: 140px; background: #030712; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 3rem;">🚗</span>
+              <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; color: #34d399;">Exploded View</div>
+            </div>
+            <div style="margin-top: 10px; flex: 1;">
+              <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">Cyber Sedan Exploded Chassis</div>
+              <div style="font-size: 0.72rem; color: var(--om-text-muted); margin-top: 2px;">Full powertrain, doors, battery array, and suspension deconstruction.</div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omDismantler && window.omDismantler.openModal('car'); setTimeout(() => window.omDismantler.toggleAutoAssemble(), 500);">▶ Play Simulation</button>
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omDismantler && window.omDismantler.openModal('car'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 600);">🎥 Record</button>
+            </div>
+          </div>
+          <!-- Video Card 3 -->
+          <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; padding: 12px; display: flex; flex-direction: column;">
+            <div style="position: relative; height: 140px; background: #030712; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 3rem;">⚙️</span>
+              <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; color: #34d399;">High Velocity</div>
+            </div>
+            <div style="margin-top: 10px; flex: 1;">
+              <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">Turbine Engine Deconstruction</div>
+              <div style="font-size: 0.72rem; color: var(--om-text-muted); margin-top: 2px;">Aviation turbine compressor blades and combustion chambers.</div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omDismantler && window.omDismantler.openModal('turbine'); setTimeout(() => window.omDismantler.toggleAutoAssemble(), 500);">▶ Play Simulation</button>
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omDismantler && window.omDismantler.openModal('turbine'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 600);">🎥 Record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       3. Resource & Prompt Library Modal (Sidebar Quick Nav)
        ========================================================================= -->
   <div class="om-modal-overlay" id="resource-library-modal">
-    <div class="om-modal-content" style="max-width: 760px; max-height: 85vh; display: flex; flex-direction: column;">
+    <div class="om-modal-content" style="max-width: 820px; max-height: 88vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 1.25rem;">⊞</span>
@@ -745,30 +872,51 @@
         <button class="chat-action-btn modal-close-trigger">✕</button>
       </div>
       <div class="modal-body" style="overflow-y: auto; padding: 16px;">
-        <div style="margin-bottom: 14px; font-size: 0.82rem; color: var(--om-text-secondary);">
-          Curated collection of production-grade prompts, interview frameworks, and autonomous routines.
+        <div style="margin-bottom: 14px;">
+          <input type="text" class="om-input" id="library-search-input" placeholder="Search templates, routines & prompts..." oninput="window.omApp.filterLibraryItems(this.value)" style="width: 100%; font-size: 0.85rem;">
         </div>
-        <div class="library-items-list" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="library-items-list" id="library-items-container" style="display: flex; flex-direction: column; gap: 10px;">
           <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎬 Viral Short-Form Video Prompt Generator</div>
-              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Hook (0-3s), retention pacing, and high-conversion CTA template.</div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🐍 Complete Python Microservices Backend Scaffold</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">FastAPI async endpoints, Pydantic schemas, dependency injection & dockerization.</div>
             </div>
-            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('Create a viral 30-second Instagram Reel script for college students covering 3 powerful productivity hacks.')">Use Prompt</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Generate a complete Python FastAPI backend scaffold with async database connection, authentication middleware, and Dockerfile.')">Use Prompt</button>
           </div>
           <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎯 Senior Full-Stack Mock Interview (STAR Method)</div>
-              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Architectural, behavioral, and scalability STAR questions.</div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🧮 Interactive Scientific GUI Calculator (Dark Mode)</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Tkinter grid geometry with eval guardrails, pastel buttons, and exception handling.</div>
             </div>
-            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('I want to prepare for a Senior Full-Stack Developer interview. Can you provide 3 challenging STAR questions and ideal answers?')">Use Prompt</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Create an interactive dark mode Python GUI calculator with math functions and clean layout.')">Use Prompt</button>
+          </div>
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">📊 CSV Sparks Statistical Data Analytics Pipeline</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Pandas aggregation, outlier detection, Pearson correlation matrix & SVG charts.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Analyze this CSV dataset: calculate mean, median, standard deviation, and detect anomalous outliers.')">Use Prompt</button>
+          </div>
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎬 Viral 30-Second Short-Form Video Retention Script</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Hook (0-3s), pacing cadence, cognitive pattern interrupts, and conversion CTA.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Create a viral 30-second Instagram Reel script for college students covering 3 powerful productivity hacks.')">Use Prompt</button>
+          </div>
+          <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">🎯 Senior Full-Stack Mock Interview (STAR Framework)</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">High-scale distributed systems, microservices resiliency, and real scenario challenges.</div>
+            </div>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('I want to prepare for a Senior Full-Stack Developer interview. Can you provide 3 challenging STAR questions and ideal answers?')">Use Prompt</button>
           </div>
           <div class="lib-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
             <div>
               <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">📦 Full-Stack Library Management System (OOP & DSA)</div>
               <div style="font-size: 0.74rem; color: var(--om-text-muted);">Python class architecture with O(1) hash table lookup and transaction ledger.</div>
             </div>
-            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.triggerPromptInChat('Write a Python Library Management System using Object-Oriented DSA with search, issue, and return features.')">Use Prompt</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.triggerPromptInChat('Write a Python Library Management System using Object-Oriented DSA with search, issue, and return features.')">Use Prompt</button>
           </div>
         </div>
       </div>
@@ -776,10 +924,10 @@
   </div>
 
   <!-- =========================================================================
-       Nexus Notebook Workspace Modal (Sidebar Notebooks)
+       4. Nexus Notebook Workspace Modal (Sidebar Notebooks Item Click)
        ========================================================================= -->
   <div class="om-modal-overlay" id="notebook-workspace-modal">
-    <div class="om-modal-content" style="max-width: 820px; max-height: 88vh; display: flex; flex-direction: column;">
+    <div class="om-modal-content" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 1.25rem;">📓</span>
@@ -788,14 +936,48 @@
         <button class="chat-action-btn modal-close-trigger">✕</button>
       </div>
       <div class="modal-body" style="overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <input type="text" id="notebook-title-input" class="om-input" placeholder="Notebook Title..." style="font-weight: 700; font-size: 1rem; max-width: 400px;">
-          <div style="display: flex; gap: 8px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px;">
+            <select id="notebook-select-dropdown" class="om-input" style="max-width: 220px; font-weight: 600; font-size: 0.85rem;" onchange="window.omApp.openNotebookModal(this.value)"></select>
+            <input type="text" id="notebook-title-input" class="om-input" placeholder="Notebook Title..." style="font-weight: 700; font-size: 0.95rem; flex: 1;">
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
             <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.addCurrentChatToActiveNotebook()">+ Add Active Chat</button>
-            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.saveActiveNotebook()">Save Notebook</button>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.exportActiveNotebook()">📥 Export .MD</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.saveActiveNotebook()">💾 Save</button>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openAllNotebooksModal()">⋯ All Notebooks</button>
+            <button class="om-btn om-btn-xs om-btn-danger" style="color: #f87171; background: rgba(239,68,68,0.15);" onclick="window.omApp.deleteActiveNotebook()">🗑️ Delete</button>
           </div>
         </div>
-        <textarea id="notebook-content-textarea" class="om-input" rows="14" style="font-family: var(--om-font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical;" placeholder="Notebook notes, synthesized sources, and prompt blueprints..."></textarea>
+        <textarea id="notebook-content-textarea" class="om-input" rows="15" style="font-family: var(--om-font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical;" placeholder="Type your notebook research notes, synthesized prompts, and project blueprints..."></textarea>
+        <div style="display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--om-text-muted);">
+          <span id="notebook-word-count">0 words</span>
+          <span>Auto-saved to local secure storage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. All Notebooks Manager Modal (Sidebar "... All notebooks" Click)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="all-notebooks-modal">
+    <div class="om-modal-content" style="max-width: 780px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">📚</span>
+          <span style="font-weight: 700; font-size: 1.1rem;">All Notebooks Manager</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <span style="font-size: 0.82rem; color: var(--om-text-secondary);">Manage, organize, and synthesize all your project notebooks.</span>
+          <button class="om-btn om-btn-primary om-btn-xs" onclick="window.omApp.createNewNotebook()">+ Create New Notebook</button>
+        </div>
+        <div id="all-notebooks-cards-container" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Rendered dynamically by window.omApp.renderAllNotebooksCards() -->
+        </div>
       </div>
     </div>
   </div>
