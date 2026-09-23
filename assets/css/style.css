@@ -219,19 +219,28 @@ h1, h2, h3, h4, h5 {
   pointer-events: none;
 }
 
-.sidebar-scroll-area {
+.sidebar-scrollable-body {
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
-  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
 }
 
+.sidebar-scrollable-body::-webkit-scrollbar,
 .sidebar-scroll-area::-webkit-scrollbar {
   width: 4px;
 }
+.sidebar-scrollable-body::-webkit-scrollbar-thumb,
 .sidebar-scroll-area::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
+}
+
+.sidebar-scroll-area {
+  flex: 1 1 auto;
+  min-height: 120px;
+  padding: 0.25rem 0.75rem 1rem 0.75rem;
 }
 
 .sidebar-group-title {
@@ -951,6 +960,21 @@ h1, h2, h3, h4, h5 {
   color: #fff;
 }
 
+.att-dock-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.attachment-chip-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .remove-att-btn {
   background: transparent;
   border: 0;
@@ -959,6 +983,41 @@ h1, h2, h3, h4, h5 {
   font-size: 0.8rem;
 }
 .remove-att-btn:hover { color: #fff; }
+
+.msg-attachments-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.msg-img-preview {
+  max-width: 180px;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.msg-img-preview:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.msg-file-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #e2e8f0;
+}
 
 /* Voice Visualizer Bar */
 .voice-visualizer-bar {

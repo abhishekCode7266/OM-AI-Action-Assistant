@@ -89,6 +89,56 @@ class OMApp {
         inputField.style.height = 'auto';
         inputField.style.height = Math.min(inputField.scrollHeight, 180) + 'px';
       });
+
+      // Clipboard Paste Support for Images (e.g. Snipping tool, screenshots, copied images)
+      inputField.addEventListener('paste', async (e) => {
+        const items = (e.clipboardData || window.clipboardData)?.items;
+        if (!items) return;
+        let imagesAdded = 0;
+        for (const item of items) {
+          if (item.type && item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+              await this.fileManager.processFile(file);
+              imagesAdded++;
+            }
+          }
+        }
+        if (imagesAdded > 0) {
+          this.renderAttachmentPreviews();
+          this.showToast(`🖼️ ${imagesAdded} image(s) pasted from clipboard`, 'info');
+        }
+      });
+
+      // Drag and Drop files / images directly onto chat input wrapper
+      const chatInputWrapper = document.querySelector('.chat-input-wrapper') || inputField.parentElement;
+      if (chatInputWrapper) {
+        ['dragenter', 'dragover'].forEach(evt => {
+          chatInputWrapper.addEventListener(evt, (e) => {
+            e.preventDefault();
+            chatInputWrapper.style.borderColor = 'var(--om-cyan, #06b6d4)';
+            chatInputWrapper.style.boxShadow = '0 0 15px rgba(6, 182, 212, 0.3)';
+          });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+          chatInputWrapper.addEventListener(evt, (e) => {
+            e.preventDefault();
+            chatInputWrapper.style.borderColor = '';
+            chatInputWrapper.style.boxShadow = '';
+          });
+        });
+        chatInputWrapper.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            for (const file of droppedFiles) {
+              await this.fileManager.processFile(file);
+            }
+            this.renderAttachmentPreviews();
+            this.showToast(`📎 ${droppedFiles.length} file(s) attached`, 'info');
+          }
+        });
+      }
     }
 
     // Voice Dictation Button
@@ -99,7 +149,7 @@ class OMApp {
       });
     }
 
-    // File Upload Trigger
+    // File Upload Trigger (Multiple Support)
     const fileInput = document.getElementById('hidden-file-input');
     const attachBtn = document.getElementById('btn-attach-file');
     if (attachBtn && fileInput) {
@@ -111,10 +161,13 @@ class OMApp {
         }
         fileInput.value = '';
         this.renderAttachmentPreviews();
+        if (files.length > 0) {
+          this.showToast(`📎 ${files.length} file(s) loaded`, 'info');
+        }
       });
     }
 
-    // Image Upload Trigger
+    // Image Upload Trigger (Multiple Support)
     const imageInput = document.getElementById('hidden-image-input');
     const imageBtn = document.getElementById('btn-attach-image');
     if (imageBtn && imageInput) {
@@ -126,6 +179,9 @@ class OMApp {
         }
         imageInput.value = '';
         this.renderAttachmentPreviews();
+        if (files.length > 0) {
+          this.showToast(`🖼️ ${files.length} image(s) loaded for inspection`, 'info');
+        }
       });
     }
 
@@ -494,7 +550,7 @@ class OMApp {
       attachmentsHtml = '<div class="msg-attachments-row">';
       msg.attachments.forEach(att => {
         if (att.isImage && att.previewUrl) {
-          attachmentsHtml += `<img src="${att.previewUrl}" class="msg-img-preview" alt="${att.name}">`;
+          attachmentsHtml += `<img src="${att.previewUrl}" class="msg-img-preview" alt="${this.escapeHTML(att.name)}" onclick="window.omApp.openImageViewer('${att.previewUrl}', '${this.escapeHTML(att.name)}')" title="Click to expand image">`;
         } else {
           attachmentsHtml += `<span class="msg-file-pill">📎 ${this.escapeHTML(att.name)}</span>`;
         }
@@ -646,10 +702,14 @@ class OMApp {
     container.style.display = 'flex';
     let html = '';
     files.forEach(f => {
+      const thumb = (f.isImage && f.previewUrl)
+        ? `<img src="${f.previewUrl}" class="att-dock-thumb" alt="${this.escapeHTML(f.name)}">`
+        : `<span style="font-size: 1rem;">${f.isImage ? '🖼️' : '📎'}</span>`;
       html += `
         <div class="attachment-chip">
-          <span>${f.isImage ? '🖼️' : '📎'} ${this.escapeHTML(f.name)} (${this.fileManager.formatSize(f.size)})</span>
-          <button class="remove-att-btn" onclick="window.omApp.removeAttachment('${f.id}')">✕</button>
+          ${thumb}
+          <span class="attachment-chip-name" title="${this.escapeHTML(f.name)}">${this.escapeHTML(f.name)} (${this.fileManager.formatSize(f.size)})</span>
+          <button class="remove-att-btn" onclick="window.omApp.removeAttachment('${f.id}')" title="Remove attachment">✕</button>
         </div>
       `;
     });
@@ -659,6 +719,32 @@ class OMApp {
   removeAttachment(fileId) {
     this.fileManager.removePendingFile(fileId);
     this.renderAttachmentPreviews();
+  }
+
+  openImageViewer(url, name = 'Image Preview') {
+    let modal = document.getElementById('image-viewer-lightbox-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'image-viewer-lightbox-modal';
+      modal.className = 'om-modal-overlay';
+      modal.innerHTML = `
+        <div class="om-modal-card" style="max-width: 85vw; max-height: 85vh; padding: 15px; display: flex; flex-direction: column; align-items: center; background: #060913; border: 1.5px solid rgba(6,182,212,0.4); border-radius: 12px; z-index: 10000;">
+          <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span id="image-viewer-title" style="color: #38bdf8; font-weight: 700; font-size: 0.9rem;">Image Viewer</span>
+            <button class="chat-action-btn" onclick="document.getElementById('image-viewer-lightbox-modal').classList.remove('active')" style="font-size: 1.1rem; color: #fff; cursor: pointer;">✕</button>
+          </div>
+          <div style="flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; max-height: 70vh;">
+            <img id="image-viewer-img" src="" style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);">
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    const imgEl = modal.querySelector('#image-viewer-img');
+    const titleEl = modal.querySelector('#image-viewer-title');
+    if (imgEl) imgEl.src = url;
+    if (titleEl) titleEl.textContent = name;
+    modal.classList.add('active');
   }
 
   updateHeaderInfo() {

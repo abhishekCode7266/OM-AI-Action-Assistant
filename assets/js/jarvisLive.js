@@ -422,14 +422,22 @@ class OMJarvisLiveEngine {
     }
 
     const isHindi = this.currentLanguage.startsWith('hi');
-    const replyText = this.generatePersonaResponse(userSpeech, isHindi);
+    const lower = userSpeech.toLowerCase();
+
+    // Check if this is a coding / Python execution command
+    const isCodeExecution = (
+      lower.includes('python') || lower.includes('code') || lower.includes('project') || 
+      lower.includes('hello code') || lower.includes('script') || lower.includes('program') || 
+      lower.includes('programme') || lower.includes('execute') || lower.includes('chalao') || 
+      lower.includes('banao') || lower.includes('likho') || lower.includes('calculator') ||
+      (lower.includes('run') && !lower.includes('running'))
+    );
+
+    const replyText = this.generatePersonaResponse(userSpeech, isHindi, isCodeExecution);
 
     // Hands-Free Autonomous Program & Work Execution Trigger via Voice ("gola")
-    const lower = userSpeech.toLowerCase();
-    if (lower.includes('run program') || lower.includes('execute code') || lower.includes('run code') || 
-        lower.includes('program chalao') || lower.includes('code run karo') || lower.includes('execute') ||
-        lower.includes('chalao') || lower.includes('programme') || lower.includes('python code') || lower.includes('javascript code')) {
-      // Execute the program live immediately
+    if (isCodeExecution) {
+      // Execute the program live immediately and populate HUD & Chat History
       if (window.omAssistant) {
         window.omAssistant.executeLiveCodeFromVoice(userSpeech);
       }
@@ -459,16 +467,18 @@ class OMJarvisLiveEngine {
       if (window.omApp) window.omApp.downloadChatPDF();
     }
 
-    // Record message in active chat store
-    const chatStore = window.omChatStore;
-    if (chatStore) {
-      let active = chatStore.getActiveChat();
-      if (!active) active = chatStore.createChat("Live Voice Conversation");
-      chatStore.addMessage(active.id, { sender: 'user', text: userSpeech });
-      chatStore.addMessage(active.id, { sender: 'assistant', text: replyText });
-      if (window.omApp) {
-        window.omApp.renderSidebar();
-        window.omApp.renderChatMessages();
+    // Record message in active chat store (if not already handled by executeLiveCodeFromVoice)
+    if (!isCodeExecution) {
+      const chatStore = window.omChatStore;
+      if (chatStore) {
+        let active = chatStore.getActiveChat();
+        if (!active) active = chatStore.createChat("Live Voice Conversation");
+        chatStore.addMessage(active.id, { sender: 'user', text: userSpeech });
+        chatStore.addMessage(active.id, { sender: 'assistant', text: replyText });
+        if (window.omApp) {
+          window.omApp.renderSidebar();
+          window.omApp.renderChatMessages();
+        }
       }
     }
 
@@ -480,17 +490,17 @@ class OMJarvisLiveEngine {
     });
   }
 
-  generatePersonaResponse(userText, isHindi = false) {
+  generatePersonaResponse(userText, isHindi = false, isCodeExecution = false) {
     const lower = userText.toLowerCase();
     const p = this.personas[this.persona] || this.personas.friday;
 
     // Live Program Execution Response
-    if (lower.includes('run program') || lower.includes('execute code') || lower.includes('run code') ||
+    if (isCodeExecution || lower.includes('run program') || lower.includes('execute code') || lower.includes('run code') ||
         lower.includes('program chalao') || lower.includes('code run karo') || lower.includes('execute') ||
         lower.includes('chalao') || lower.includes('programme') || lower.includes('python code') || lower.includes('javascript code')) {
       return isHindi
-        ? `बॉस, आपका प्रोग्राम तुरंत लाइव निष्पादित कर दिया गया है! कोड रनर और लाइव कंसोल वर्कस्पेस पर सक्रिय है।`
-        : `Executing your program right now on the live workspace, Boss! Code runner and execution console are active with zero errors.`;
+        ? `बॉस, आपका पाइथन प्रोजेक्ट और कोड तुरंत लाइव निष्पादित कर दिया गया है! पूरा कोड और टर्मिनल आउटपुट आपकी स्क्रीन पर सक्रिय है।`
+        : `Boss, your Python project and code have been generated and executed live! The source code and terminal output are running on your screen right now.`;
     }
 
     // 3D dismantle / exploded view request

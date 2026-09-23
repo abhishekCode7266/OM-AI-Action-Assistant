@@ -176,40 +176,43 @@
         </div>
       </div>
 
-      <!-- Notebooks Section ("+ wali line me add sabhi bhag" - Matching Gemini Image 2) -->
-      <div class="sidebar-section-container">
-        <div class="sidebar-section-header">
-          <span class="section-title">Notebooks</span>
-          <button class="section-add-btn" onclick="window.omApp.createNewNotebook()" title="New notebook">+</button>
+      <!-- Scrollable Sidebar Body: Notebooks, Recents & History -->
+      <div class="sidebar-scrollable-body" id="sidebar-scrollable-body">
+        <!-- Notebooks Section ("+ wali line me add sabhi bhag" - Matching Gemini Image 2) -->
+        <div class="sidebar-section-container">
+          <div class="sidebar-section-header">
+            <span class="section-title">Notebooks</span>
+            <button class="section-add-btn" onclick="window.omApp.createNewNotebook()" title="New notebook">+</button>
+          </div>
+          <div class="sidebar-notebooks-list" id="sidebar-notebooks-container">
+            <div class="sidebar-nav-item" onclick="window.omApp.createNewNotebook()">
+              <span class="nav-item-icon">➕</span>
+              <span class="nav-item-title">New notebook</span>
+            </div>
+            <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-1')">
+              <span class="nav-item-icon">📄</span>
+              <span class="nav-item-title">Untitled notebook</span>
+            </div>
+            <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-2')">
+              <span class="nav-item-icon">📄</span>
+              <span class="nav-item-title">Copy of Untitled notebook</span>
+            </div>
+            <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
+              <span class="nav-item-icon">⋯</span>
+              <span class="nav-item-title">All notebooks</span>
+            </div>
+          </div>
         </div>
-        <div class="sidebar-notebooks-list" id="sidebar-notebooks-container">
-          <div class="sidebar-nav-item" onclick="window.omApp.createNewNotebook()">
-            <span class="nav-item-icon">➕</span>
-            <span class="nav-item-title">New notebook</span>
-          </div>
-          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-1')">
-            <span class="nav-item-icon">📄</span>
-            <span class="nav-item-title">Untitled notebook</span>
-          </div>
-          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal('nb-2')">
-            <span class="nav-item-icon">📄</span>
-            <span class="nav-item-title">Copy of Untitled notebook</span>
-          </div>
-          <div class="sidebar-nav-item" onclick="window.omApp.openNotebookModal()">
-            <span class="nav-item-icon">⋯</span>
-            <span class="nav-item-title">All notebooks</span>
-          </div>
+
+        <!-- Recents Section Header (Matching Image 2) -->
+        <div class="sidebar-section-header" style="margin-top: 6px;">
+          <span class="section-title">Recents</span>
         </div>
-      </div>
 
-      <!-- Recents Section Header (Matching Image 2) -->
-      <div class="sidebar-section-header" style="margin-top: 6px;">
-        <span class="section-title">Recents</span>
-      </div>
-
-      <!-- Chronologically Grouped Chat History -->
-      <div class="sidebar-scroll-area" id="sidebar-history-container">
-        <!-- Rendered dynamically by app.js with Image 4 3-dots action dropdown -->
+        <!-- Chronologically Grouped Chat History -->
+        <div class="sidebar-scroll-area" id="sidebar-history-container">
+          <!-- Rendered dynamically by app.js with Image 4 3-dots action dropdown -->
+        </div>
       </div>
 
       <!-- User Profile Footer matching Image 2 & 3 -->
@@ -410,9 +413,9 @@
             <button class="remove-att-btn" onclick="window.omVoice.stopRecording()" title="Stop voice recording">✕ Stop</button>
           </div>
 
-          <!-- Hidden File Inputs -->
-          <input type="file" id="hidden-file-input" style="display: none;" accept=".txt,.md,.csv,.json,.pdf,.docx,.js,.py,.html,.css,.sql">
-          <input type="file" id="hidden-image-input" style="display: none;" accept="image/*">
+          <!-- Hidden File Inputs (Supports Multiple Files & Images) -->
+          <input type="file" id="hidden-file-input" style="display: none;" accept=".txt,.md,.csv,.json,.pdf,.docx,.js,.py,.html,.css,.sql" multiple>
+          <input type="file" id="hidden-image-input" style="display: none;" accept="image/*" multiple>
 
           <!-- Floating Input Capsule -->
           <div class="input-capsule">
@@ -1267,6 +1270,30 @@
           <div class="transcript-row jarvis-row">
             <span class="transcript-speaker-tag jarvis-tag">PERSONA:</span>
             <span id="live-jarvis-transcript" class="transcript-text">At your service, Boss. All tactical systems are operating at nominal efficiency.</span>
+          </div>
+        </div>
+
+        <!-- Live Voice Interactive Program Execution & Console HUD (ChatGPT Code Interpreter Style) -->
+        <div class="live-execution-hud-card" id="live-execution-hud-card" style="display: none; background: #020617; border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 12px; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: left;">
+          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1rem;">⚡</span>
+              <span style="font-weight: 700; color: #38bdf8; font-size: 0.82rem;" id="live-exec-title">Python Code Runtime (Executed Live • Exit Code 0)</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omAssistant && window.omAssistant.executeLiveCodeFromVoice('python hello code')" style="font-size: 0.7rem; padding: 2px 8px;">▶ Re-run</button>
+              <button class="chat-action-btn" onclick="document.getElementById('live-execution-hud-card').style.display='none'" style="font-size: 0.8rem; color: #94a3b8;">✕</button>
+            </div>
+          </div>
+          <div style="max-height: 110px; overflow-y: auto; background: rgba(15, 23, 42, 0.8); border-radius: 6px; padding: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 8px;">
+            <pre style="margin: 0;"><code id="live-exec-code-content" style="font-family: var(--om-font-mono, monospace); font-size: 0.74rem; color: #a5f3fc; line-height: 1.4; white-space: pre-wrap;"></code></pre>
+          </div>
+          <div style="background: rgba(0, 0, 0, 0.5); border-radius: 6px; padding: 8px; border: 1px solid rgba(16, 185, 129, 0.25);">
+            <div style="font-size: 0.68rem; font-weight: 700; color: #10b981; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+              <span>TERMINAL OUTPUT (STDOUT):</span>
+            </div>
+            <pre id="live-exec-terminal-output" style="margin: 0; font-family: var(--om-font-mono, monospace); font-size: 0.72rem; color: #34d399; white-space: pre-wrap; line-height: 1.35; max-height: 95px; overflow-y: auto;"></pre>
           </div>
         </div>
 
