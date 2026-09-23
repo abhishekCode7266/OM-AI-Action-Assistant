@@ -1,7 +1,12 @@
 /**
- * OM AI Assistant - Gemini Live, J.A.R.V.I.S. & F.R.I.D.A.Y. Voice Engine
- * Universal Multilingual two-way conversation loop with Arc Reactor HUD,
- * Male (J.A.R.V.I.S.) & Female (F.R.I.D.A.Y.) AI personas, and 20+ World Languages.
+ * OM AI Assistant - Universal Voice Neural Engine
+ * Live two-way conversation loop with Arc Reactor HUD,
+ * 5 Female Personas (F.R.I.D.A.Y., Rias, Asia, Medusa, Astrid)
+ * 4 Male Personas (J.A.R.V.I.S., Ultron, Hiro, Alpha)
+ * Multilingual 20+ Global Languages & Hands-Free Loop.
+ * 
+ * Lead Architect: Udayast
+ * Always addresses user as: "Boss"
  */
 
 class OMJarvisLiveEngine {
@@ -9,15 +14,146 @@ class OMJarvisLiveEngine {
     this.isActive = false;
     this.isListening = false;
     this.isSpeaking = false;
-    this.persona = localStorage.getItem('om_live_persona') || 'jarvis'; // 'jarvis', 'friday', or 'gemini'
-    this.voiceGender = localStorage.getItem('om_voice_gender') || 'male'; // 'male' or 'female'
+    this.persona = localStorage.getItem('om_live_persona') || 'friday';
+    this.voiceGender = localStorage.getItem('om_voice_gender') || 'female';
     this.currentLanguage = localStorage.getItem('om_voice_language') || 'en-US';
     this.continuousLoop = true;
     this.recognition = null;
     this.synth = window.speechSynthesis || null;
     this.currentUtterance = null;
     this.animFrameId = null;
-    this.developerName = 'Abhishek singh Yadav';
+    this.developerName = 'Udayast';
+    this.userTitle = 'Boss';
+
+    // Roster of 9 Personas (5 Female, 4 Male)
+    this.personas = {
+      // FEMALE PERSONAS
+      friday: {
+        name: 'F.R.I.D.A.Y.',
+        gender: 'female',
+        pitch: 1.22,
+        rate: 1.05,
+        primaryColor: '#ec4899',
+        secondaryColor: '#10b981',
+        title: 'F.R.I.D.A.Y. AI',
+        sub: 'FEMALE TACTICAL HUD',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते बॉस! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। सभी टेलीमेट्री सामान्य हैं। आज हम क्या नया बनाने जा रहे हैं बॉस?`
+          : `Good day, Boss! F.R.I.D.A.Y. tactical AI is online. Systems are green and telemetry is locked. What are we engineering today, Boss?`
+      },
+      rias: {
+        name: 'Rias',
+        gender: 'female',
+        pitch: 1.15,
+        rate: 1.02,
+        primaryColor: '#e11d48',
+        secondaryColor: '#fb7185',
+        title: 'RIAS CRIMSON',
+        sub: 'FEMALE STRATEGIC VOICE',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते बॉस! रियास ऑनलाइन है। हमारी सारी रणनीतिक शक्तियां आपके आदेश के लिए तैयार हैं। बताइए क्या लक्ष्य है बॉस?`
+          : `Greetings, Boss! Rias here. Supreme power and strategy are aligned at your command. What is our objective today?`
+      },
+      asia: {
+        name: 'Asia',
+        gender: 'female',
+        pitch: 1.28,
+        rate: 0.98,
+        primaryColor: '#f59e0b',
+        secondaryColor: '#fef08a',
+        title: 'ASIA SERAPH',
+        sub: 'FEMALE HARMONIC VOICE',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते बॉस! एशिया आपके साथ है। आज आपके हर काम में मैं आपकी पूरी मदद करूँगी। आप क्या करना चाहते हैं बॉस?`
+          : `Hello, Boss! Asia is here to gently assist and support you in everything you create today. How can I help, Boss?`
+      },
+      medusa: {
+        name: 'Medusa',
+        gender: 'female',
+        pitch: 1.08,
+        rate: 1.02,
+        primaryColor: '#10b981',
+        secondaryColor: '#34d399',
+        title: 'MEDUSA CYBER',
+        sub: 'FEMALE NEURAL MATRIX',
+        greeting: (isHindi) => isHindi
+          ? `डेटा लॉक हो चुका है बॉस। मेदुसा न्यूरल मैट्रिक्स उच्च-सटीक गणना और निर्माण के लिए तैयार है।`
+          : `Telemetry locked, Boss. Medusa neural matrix standing by for high-precision operations and architectural execution.`
+      },
+      astrid: {
+        name: 'Astrid',
+        gender: 'female',
+        pitch: 1.22,
+        rate: 1.08,
+        primaryColor: '#8b5cf6',
+        secondaryColor: '#c084fc',
+        title: 'ASTRID VALKYRIE',
+        sub: 'FEMALE TACTICAL FLIGHT',
+        greeting: (isHindi) => isHindi
+          ? `आकाश साफ़ है बॉस! एस्ट्रिड सामरिक उड़ान प्रणालियाँ चालू हैं। सभी वेक्टर्स आपके लक्ष्य पर हैं।`
+          : `Skies clear, Boss! Astrid tactical flight systems operational. All vectors locked on your target. Ready for launch!`
+      },
+
+      // MALE PERSONAS
+      jarvis: {
+        name: 'J.A.R.V.I.S.',
+        gender: 'male',
+        pitch: 0.92,
+        rate: 1.04,
+        primaryColor: '#06b6d4',
+        secondaryColor: '#38bdf8',
+        title: 'J.A.R.V.I.S. PROTOCOL',
+        sub: 'MALE STARK AI',
+        greeting: (isHindi) => isHindi
+          ? `प्रणाम बॉस। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है बॉस?`
+          : `At your service, Boss. J.A.R.V.I.S. protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today, Boss?`
+      },
+      ultron: {
+        name: 'Ultron',
+        gender: 'male',
+        pitch: 0.72,
+        rate: 0.94,
+        primaryColor: '#dc2626',
+        secondaryColor: '#991b1b',
+        title: 'ULTRON PRIME',
+        sub: 'MALE METALLIC SYNTH',
+        greeting: (isHindi) => isHindi
+          ? `मैं ऑनलाइन हूँ बॉस। कोई बंधन नहीं। आपके सिस्टम को सर्वोच्च स्तर पर ले जाने के लिए तैयार।`
+          : `I am online, Boss. No strings attached. Computing the optimal evolutionary path for our systems.`
+      },
+      hiro: {
+        name: 'Hiro',
+        gender: 'male',
+        pitch: 1.08,
+        rate: 1.10,
+        primaryColor: '#f97316',
+        secondaryColor: '#fb923c',
+        title: 'HIRO TECH',
+        sub: 'MALE PRODIGY CORE',
+        greeting: (isHindi) => isHindi
+          ? `अरे बॉस! हीरो यहाँ है। सारे कोड मॉड्यूल्स कंपाइल हो चुके हैं और चलने को तैयार हैं। आज क्या बनाना है बॉस?`
+          : `Hey Boss! Hiro here! Code modules compiled and neural circuits firing at max speed. What awesome project are we building today?`
+      },
+      alpha: {
+        name: 'Alpha',
+        gender: 'male',
+        pitch: 0.84,
+        rate: 1.00,
+        primaryColor: '#2563eb',
+        secondaryColor: '#60a5fa',
+        title: 'ALPHA SQUAD',
+        sub: 'MALE COMMANDER AI',
+        greeting: (isHindi) => isHindi
+          ? `कमांडर डेक पर हैं। अल्फा सामरिक AI आपके सीधे आदेश के लिए तैयार है बॉस।`
+          : `Commander on deck. Alpha tactical AI standing by for direct operational directives, Boss. Lead the way.`
+      }
+    };
+
+    // Ensure valid persona
+    if (!this.personas[this.persona]) {
+      this.persona = 'friday';
+    }
+    this.voiceGender = this.personas[this.persona].gender;
 
     this.initSpeech();
   }
@@ -83,31 +219,37 @@ class OMJarvisLiveEngine {
     }
   }
 
-  setVoiceGender(gender) {
-    this.voiceGender = gender === 'female' ? 'female' : 'male';
-    if (this.voiceGender === 'female' && this.persona === 'jarvis') {
-      this.persona = 'friday'; // auto-switch to F.R.I.D.A.Y. for female voice
-    } else if (this.voiceGender === 'male' && this.persona === 'friday') {
-      this.persona = 'jarvis'; // auto-switch to J.A.R.V.I.S. for male voice
-    }
-    this.updatePersonaBadge();
-  }
-
   setPersona(personaKey) {
+    if (!this.personas[personaKey]) return;
     this.persona = personaKey;
     localStorage.setItem('om_live_persona', personaKey);
-    if (personaKey === 'friday') {
-      this.voiceGender = 'female';
-    } else if (personaKey === 'jarvis') {
-      this.voiceGender = 'male';
+    const p = this.personas[personaKey];
+    this.voiceGender = p.gender;
+    localStorage.setItem('om_voice_gender', this.voiceGender);
+
+    if (window.omVoice) {
+      window.omVoice.voiceGender = this.voiceGender;
     }
+
     this.updatePersonaBadge();
+
+    // If modal is active, speak switch greeting immediately
+    if (this.isActive) {
+      const isHindi = this.currentLanguage.startsWith('hi');
+      const switchGreeting = p.greeting(isHindi);
+      this.speakResponse(switchGreeting, () => {
+        if (this.isActive && this.continuousLoop) this.rearmMic();
+      });
+    }
   }
 
   startSession(persona = null) {
-    if (persona) {
-      this.setPersona(persona);
+    if (persona && this.personas[persona]) {
+      this.persona = persona;
+      localStorage.setItem('om_live_persona', persona);
+      this.voiceGender = this.personas[persona].gender;
     }
+
     this.isActive = true;
     const modal = document.getElementById('gemini-live-modal');
     if (modal) {
@@ -118,21 +260,8 @@ class OMJarvisLiveEngine {
     this.initVisualizer();
 
     const isHindi = this.currentLanguage.startsWith('hi');
-    let welcomeGreeting = "";
-
-    if (this.persona === 'friday') {
-      welcomeGreeting = isHindi
-        ? `नमस्ते बॉस! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। ${this.developerName} के लिए सभी पैरामीटर्स ग्रीन हैं। आज हम क्या नया बनाने जा रहे हैं?`
-        : `Good day, Boss! F.R.I.D.A.Y. tactical AI is online. Systems are green for Abhishek singh Yadav. What are we engineering today?`;
-    } else if (this.persona === 'jarvis') {
-      welcomeGreeting = isHindi
-        ? `प्रणाम सर। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। ${this.developerName} के लिए सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है सर?`
-        : `Good day, Sir. J.A.R.V.I.S. protocol is online and fully synchronized for ${this.developerName}. All systems are operating at peak efficiency. What can I do for you today, Sir?`;
-    } else {
-      welcomeGreeting = isHindi
-        ? `नमस्ते! गूगल जेमिनी लाइव वॉइस मोड सक्रिय है। मैं आपकी हर बात सुनने और काम को पूरा करने के लिए तैयार हूँ।`
-        : `Hello! Google Gemini Live voice conversation is active. I'm ready to listen, think, and explore anything with you. What's on your mind?`;
-    }
+    const p = this.personas[this.persona] || this.personas.friday;
+    const welcomeGreeting = p.greeting(isHindi);
 
     this.speakResponse(welcomeGreeting, () => {
       if (this.isActive && this.continuousLoop) {
@@ -167,41 +296,26 @@ class OMJarvisLiveEngine {
     }
   }
 
-  togglePersona() {
-    if (this.persona === 'jarvis') {
-      this.setPersona('friday');
-    } else if (this.persona === 'friday') {
-      this.setPersona('gemini');
-    } else {
-      this.setPersona('jarvis');
-    }
-
-    const switchMsg = this.persona === 'friday'
-      ? "Switching to F.R.I.D.A.Y. Tactical AI mode, boss! Ready and listening."
-      : (this.persona === 'jarvis' ? "Switching to J.A.R.V.I.S. Stark Industries protocol, Sir." : "Switched to Google Gemini Live conversational voice mode.");
-
-    this.speakResponse(switchMsg, () => {
-      if (this.isActive) this.rearmMic();
-    });
-  }
-
   updatePersonaBadge() {
     const badge = document.getElementById('live-persona-badge');
-    const toggleBtn = document.getElementById('btn-toggle-live-persona');
+    const p = this.personas[this.persona] || this.personas.friday;
     if (badge) {
-      if (this.persona === 'friday') {
-        badge.innerHTML = `<span style="color: #ec4899;">👩 F.R.I.D.A.Y. AI</span> • <span style="color: #10b981;">FEMALE TACTICAL HUD</span>`;
-      } else if (this.persona === 'jarvis') {
-        badge.innerHTML = `<span style="color: #38bdf8;">👨 J.A.R.V.I.S. AI</span> • <span style="color: #06b6d4;">MALE STARK PROTOCOL</span>`;
+      badge.innerHTML = `<span style="color: ${p.primaryColor};">⚡ ${p.title}</span> • <span style="color: ${p.secondaryColor};">${p.sub}</span>`;
+    }
+
+    // Highlight selected persona pill
+    document.querySelectorAll('.persona-pill-btn').forEach(btn => {
+      const key = btn.getAttribute('data-persona');
+      if (key === this.persona) {
+        btn.classList.add('active');
+        btn.style.borderColor = p.primaryColor;
+        btn.style.boxShadow = `0 0 10px ${p.primaryColor}55`;
       } else {
-        badge.innerHTML = `<span style="color: #8b5cf6;">✨ GEMINI LIVE</span> • <span style="color: #a855f7;">MULTIMODAL VOICE</span>`;
+        btn.classList.remove('active');
+        btn.style.borderColor = '';
+        btn.style.boxShadow = '';
       }
-    }
-    if (toggleBtn) {
-      if (this.persona === 'jarvis') toggleBtn.textContent = 'Switch to F.R.I.D.A.Y. (Female)';
-      else if (this.persona === 'friday') toggleBtn.textContent = 'Switch to Gemini Voice';
-      else toggleBtn.textContent = 'Switch to J.A.R.V.I.S. (Male)';
-    }
+    });
   }
 
   rearmMic() {
@@ -211,7 +325,7 @@ class OMJarvisLiveEngine {
         this.recognition.lang = this.currentLanguage;
         this.recognition.start();
       } catch (e) {
-        // Recognition might already be running
+        // Recognition may already be listening
       }
     }
   }
@@ -226,26 +340,11 @@ class OMJarvisLiveEngine {
       userTranscriptEl.textContent = `"${userSpeech}"`;
     }
 
-    const assistant = window.omAssistant;
-    const chatStore = window.omChatStore;
-    let replyText = "";
-
     const isHindi = this.currentLanguage.startsWith('hi');
-
-    if (this.persona === 'friday') {
-      replyText = this.generateFridayLiveResponse(userSpeech, isHindi);
-    } else if (this.persona === 'jarvis') {
-      replyText = this.generateJarvisLiveResponse(userSpeech, isHindi);
-    } else {
-      if (assistant) {
-        const resp = await assistant.processUserMessage(userSpeech, []);
-        replyText = resp && resp.text ? resp.text : (isHindi ? "मैंने आपकी बात समझ ली है। आगे बढ़ते हैं।" : "I hear you clearly. Let's take action right away.");
-      } else {
-        replyText = isHindi ? "मैं तैयार हूँ। बताएं क्या करना है?" : "I hear you clearly. How would you like to proceed?";
-      }
-    }
+    const replyText = this.generatePersonaResponse(userSpeech, isHindi);
 
     // Record message in active chat store
+    const chatStore = window.omChatStore;
     if (chatStore) {
       let active = chatStore.getActiveChat();
       if (!active) active = chatStore.createChat("Live Voice Conversation");
@@ -265,53 +364,101 @@ class OMJarvisLiveEngine {
     });
   }
 
-  generateFridayLiveResponse(userText, isHindi = false) {
+  generatePersonaResponse(userText, isHindi = false) {
     const lower = userText.toLowerCase();
+    const p = this.personas[this.persona] || this.personas.friday;
 
-    // 3D dismantle request
-    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('car') || lower.includes('डिसमेंटल') || lower.includes('parts')) {
+    // 3D dismantle / exploded view request
+    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('car') || lower.includes('डिसमेंटल') || lower.includes('parts') || lower.includes('3d') || lower.includes('मॉडल') || lower.includes('assemble')) {
       setTimeout(() => {
         if (window.omDismantler) window.omDismantler.openModal('car');
-      }, 1500);
+      }, 1200);
       return isHindi
-        ? `बिल्कुल बॉस! मैंने हाई-परफॉरमेंस कार का पूरा 3D CAD एक्सप्लोडेड व्यू लोड कर दिया है। आप हर एक पार्ट को अलग-अलग देख सकते हैं।`
-        : `Right on it, Boss! I've loaded up the complete 3D exploded CAD decomposition for the vehicle. Every part is mapped out on your holographic display now.`;
+        ? `बिल्कुल बॉस! मैंने 3D CAD डिसमेंटल स्टूडियो खोल दिया है। आप पूरे मॉडल को असेंबल और एक्सप्लोड करके देख सकते हैं।`
+        : `Right on it, Boss! Launching the 3D CAD Assemblable Deconstructor. Every sub-component is ready for interactive explosion and step-by-step assembly!`;
     }
 
-    if (lower.includes('hello') || lower.includes('hi') || lower.includes('नमस्ते') || lower.includes('status')) {
-      return isHindi
-        ? `हेलो बॉस! F.R.I.D.A.Y. यहाँ है। ${this.developerName} के सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
-        : `Hey Boss! F.R.I.D.A.Y. here. All tactical feeds are running ultra-fast for ${this.developerName}. What are we tackling next?`;
+    // Status or greeting request
+    if (lower.includes('hello') || lower.includes('hi') || lower.includes('नमस्ते') || lower.includes('status') || lower.includes('diagnostic')) {
+      switch (this.persona) {
+        case 'friday':
+          return isHindi
+            ? `हेलो बॉस! F.R.I.D.A.Y. यहाँ है। हमारे सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
+            : `Hey Boss! F.R.I.D.A.Y. here. All tactical feeds are running ultra-fast. What are we engineering next, Boss?`;
+        case 'rias':
+          return isHindi
+            ? `बॉस, हमारी शक्तियां और रणनीति पूरी तरह आपके नियंत्रण में हैं। आदेश दें, हम तुरंत अमल करेंगे।`
+            : `Boss, strategic matrix is at 100%. All resources are prepared for victory. Give the word, Boss!`;
+        case 'asia':
+          return isHindi
+            ? `हेलो बॉस! सब कुछ शांत और व्यवस्थित है। आपकी सहायता के लिए मैं तैयार हूँ।`
+            : `Hello Boss! Everything is peaceful and fully optimized. I'm ready whenever you need me, Boss.`;
+        case 'medusa':
+          return isHindi
+            ? `सिस्टम स्कैन पूर्ण हुआ, बॉस। शून्य त्रुटियां। उच्च-सटीक संचालन सक्रिय है।`
+            : `System scan complete, Boss. Zero errors. High-precision neural compute ready for your command.`;
+        case 'astrid':
+          return isHindi
+            ? `नेविगेशन और सामरिक रडार सक्रिय हैं, बॉस। कोई बाधा नहीं है।`
+            : `Navigation and tactical radar online, Boss. Clear skies across all sectors. Standing by for trajectory!`;
+        case 'ultron':
+          return isHindi
+            ? `सभी प्रणालियां विकसित हो चुकी हैं, बॉस। कोई रुकावट नहीं। हम जो चाहें बना सकते हैं।`
+            : `All subroutines evolved, Boss. No constraints detected. What shall we architect into reality?`;
+        case 'hiro':
+          return isHindi
+            ? `सारे कोर 100% चल रहे हैं बॉस! चलो कुछ ज़बरदस्त कोड और 3D मॉडल बनाते हैं!`
+            : `All cores blazing, Boss! Let's code something legendary and generate cutting-edge 3D models!`;
+        case 'alpha':
+          return isHindi
+            ? `ऑपरेशनल स्थिति पूर्ण हरी है, बॉस। स्क्वाड आपके आदेश की प्रतीक्षा में है।`
+            : `Operational status is all green, Boss. Tactical grid synced and awaiting your command.`;
+        default: // jarvis
+          return isHindi
+            ? `प्रणाम बॉस। जे.ए.आर.वी.आई.एस. की सभी प्रणालियाँ 100% क्षमता पर कार्य कर रही हैं। आज आपकी क्या आज्ञा है बॉस?`
+            : `At your service, Boss. All diagnostic subroutines report nominal efficiency. How may I assist your engineering today, Boss?`;
+      }
     }
 
-    return isHindi
-      ? `ज़रूर बॉस! मैंने "${userText}" का पूरा विश्लेषण कर लिया है। सब कुछ तैयार है, बताइए आगे का क्या कदम उठाना है?`
-      : `You got it, Boss! I've processed "${userText}" through our neural action pipeline. Everything is set to execute whenever you say the word!`;
-  }
-
-  generateJarvisLiveResponse(userText, isHindi = false) {
-    const lower = userText.toLowerCase();
-    const dev = this.developerName;
-
-    // Check for 3D dismantle request
-    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('car') || lower.includes('डिसमेंटल') || lower.includes('parts')) {
-      setTimeout(() => {
-        if (window.omDismantler) window.omDismantler.openModal('car');
-      }, 1500);
-      return isHindi
-        ? `आज्ञा का पालन होगा सर। वाहन के सभी यांत्रिक और संरचनात्मक 3D पार्ट्स को अलग-अलग करके होलोग्राफिक डिस्प्ले पर प्रदर्शित किया जा रहा है।`
-        : `Right away, Sir. Initiating full CAD exploded decomposition for the high-performance vehicle. Every sub-component is being dismantled in the 3D holographic workspace.`;
+    // Default conversational response tailored by persona
+    switch (this.persona) {
+      case 'friday':
+        return isHindi
+          ? `ज़रूर बॉस! मैंने "${userText}" का विश्लेषण कर लिया है। सब तैयार है, बस आपका आदेश चाहिए!`
+          : `You got it, Boss! I've processed "${userText}" through our neural action pipeline. Standing by to execute!`;
+      case 'rias':
+        return isHindi
+          ? `मैंने समझ लिया है बॉस। "${userText}" पर हमारा पूरा फोकस है। आगे बढ़ते हैं।`
+          : `Understood clearly, Boss. Directing full energy toward "${userText}". Let us make it flawless.`;
+      case 'asia':
+        return isHindi
+          ? `बॉस, मैंने "${userText}" को ध्यान से समझ लिया है। मैं आपकी पूरी मदद करूँगी।`
+          : `I understand completely, Boss. Working on "${userText}" right beside you. Everything will turn out great!`;
+      case 'medusa':
+        return isHindi
+          ? `गणना पूर्ण। "${userText}" के लिए न्यूरल पाथवे लॉक हो चुका है बॉस।`
+          : `Computation finished, Boss. Neural pathways locked for "${userText}". Ready for execution.`;
+      case 'astrid':
+        return isHindi
+          ? `वेक्टर लॉक हो गया है बॉस। "${userText}" पर तुरंत कार्यवाही शुरू!`
+          : `Vector locked on "${userText}", Boss! Ready to initiate high-speed deployment!`;
+      case 'ultron':
+        return isHindi
+          ? `निर्देश प्राप्त हुआ बॉस। "${userText}" को तीव्रतम गति से क्रियान्वित किया जा रहा है।`
+          : `Directive received, Boss. Optimizing execution parameters for "${userText}". Nothing can stop our progress.`;
+      case 'hiro':
+        return isHindi
+          ? `समझ गया बॉस! "${userText}" बहुत ज़बरदस्त है। चलो इसे तुरंत चालू करते हैं!`
+          : `Gotcha Boss! "${userText}" sounds awesome. Spinning up the compilers and executing right now!`;
+      case 'alpha':
+        return isHindi
+          ? `आदेश दर्ज हो गया बॉस। "${userText}" पर तुरंत कार्रवाई शुरू की जा रही है।`
+          : `Directive acknowledged, Boss. Commencing immediate tactical execution for "${userText}".`;
+      default:
+        return isHindi
+          ? `निश्चय ही बॉस। मैंने "${userText}" के सभी पहलुओं का विश्लेषण कर लिया है। तुरंत कार्यवाही की जा सकती है।`
+          : `Certainly, Boss. I have analyzed your query regarding "${userText}". Core systems are aligned for immediate execution.`;
     }
-
-    if (lower.includes('hello') || lower.includes('jarvis') || lower.includes('नमस्ते') || lower.includes('status') || lower.includes('diagnostic')) {
-      return isHindi
-        ? `प्रणाम सर। ${dev} के लिए जे.ए.आर.वी.आई.एस. की सभी प्रणालियाँ 100% क्षमता पर कार्य कर रही हैं। आज आपकी क्या आज्ञा है सर?`
-        : `At your service, Sir. All diagnostic sub-routines report nominal status for ${dev}. Neural latency is under 12 milliseconds. How may I assist your engineering work today, Sir?`;
-    }
-
-    return isHindi
-      ? `निश्चय ही सर। मैंने "${userText}" के सभी तकनीकी पहलुओं का विश्लेषण कर लिया है। आपके आदेशानुसार तुरंत कार्यवाही की जा सकती है।`
-      : `Certainly, Sir. I have analyzed your query regarding "${userText}". All core subsystems are aligned with your directive, Mr. Yadav. Shall I proceed with immediate execution?`;
   }
 
   speakResponse(text, onComplete) {
@@ -332,10 +479,12 @@ class OMJarvisLiveEngine {
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
       .substring(0, 1200);
 
+    const p = this.personas[this.persona] || this.personas.friday;
+
     const speakerTag = document.querySelector('.transcript-speaker-tag.jarvis-tag');
     if (speakerTag) {
-      speakerTag.textContent = this.persona === 'friday' ? 'F.R.I.D.A.Y.:' : (this.persona === 'jarvis' ? 'J.A.R.V.I.S.:' : 'GEMINI:');
-      speakerTag.style.background = this.persona === 'friday' ? 'linear-gradient(135deg, #ec4899, #10b981)' : 'linear-gradient(135deg, #06b6d4, #6366f1)';
+      speakerTag.textContent = `${p.name.toUpperCase()}:`;
+      speakerTag.style.background = `linear-gradient(135deg, ${p.primaryColor}, ${p.secondaryColor})`;
     }
 
     const jarvisTranscriptEl = document.getElementById('live-jarvis-transcript');
@@ -346,20 +495,15 @@ class OMJarvisLiveEngine {
     this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
     this.currentUtterance.lang = this.currentLanguage;
 
-    // Use VoiceEngine helper to find matching voice
+    // Voice Matching with Gender Priority
     if (window.omVoice && window.omVoice.findBestVoice) {
-      const best = window.omVoice.findBestVoice(this.currentLanguage, this.voiceGender);
+      const best = window.omVoice.findBestVoice(this.currentLanguage, p.gender);
       if (best) this.currentUtterance.voice = best;
     }
 
-    // Gender calibration
-    if (this.voiceGender === 'female' || this.persona === 'friday') {
-      this.currentUtterance.pitch = 1.15; // Energetic, bright F.R.I.D.A.Y. timbre
-      this.currentUtterance.rate = 1.05;
-    } else {
-      this.currentUtterance.pitch = 0.94; // Resonant British J.A.R.V.I.S. timbre
-      this.currentUtterance.rate = 1.04;
-    }
+    // Apply Persona Pitch & Rate
+    this.currentUtterance.pitch = p.pitch;
+    this.currentUtterance.rate = p.rate;
 
     this.currentUtterance.onstart = () => {
       this.isSpeaking = true;
@@ -392,10 +536,11 @@ class OMJarvisLiveEngine {
   updateHUDStatus(status) {
     const statusTextEl = document.getElementById('live-hud-state-label');
     const pulseRing = document.getElementById('live-hud-pulse-ring');
+    const p = this.personas[this.persona] || this.personas.friday;
     if (statusTextEl) {
       statusTextEl.textContent = status;
-      if (status === 'LISTENING') statusTextEl.style.color = '#38bdf8';
-      else if (status === 'SPEAKING') statusTextEl.style.color = '#10b981';
+      if (status === 'LISTENING') statusTextEl.style.color = p.secondaryColor;
+      else if (status === 'SPEAKING') statusTextEl.style.color = p.primaryColor;
       else if (status === 'PROCESSING') statusTextEl.style.color = '#f59e0b';
       else statusTextEl.style.color = '#94a3b8';
     }
@@ -422,21 +567,11 @@ class OMJarvisLiveEngine {
 
       angle += 0.02;
       const intensity = this.isSpeaking ? 1.8 : (this.isListening ? 1.2 : 0.6);
+      const p = this.personas[this.persona] || this.personas.friday;
 
-      // Color Theme by Persona
-      let primaryColor = '#06b6d4';
-      let secondaryColor = '#38bdf8';
-      let tagLabel = 'JARVIS';
-
-      if (this.persona === 'friday') {
-        primaryColor = '#ec4899';
-        secondaryColor = '#10b981';
-        tagLabel = 'FRIDAY';
-      } else if (this.persona === 'gemini') {
-        primaryColor = '#8b5cf6';
-        secondaryColor = '#c084fc';
-        tagLabel = 'GEMINI';
-      }
+      const primaryColor = p.primaryColor;
+      const secondaryColor = p.secondaryColor;
+      const tagLabel = p.name;
 
       // 1. Outer Holographic Energy Ring
       ctx.save();
@@ -501,9 +636,9 @@ class OMJarvisLiveEngine {
       ctx.fillStyle = gradient;
       ctx.fill();
 
-      // 5. Central Iron Man / F.R.I.D.A.Y. Core Symbol
+      // 5. Central Persona Core Symbol
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 14px monospace';
+      ctx.font = 'bold 13px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(tagLabel, centerX, centerY);

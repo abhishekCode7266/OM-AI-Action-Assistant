@@ -172,27 +172,47 @@ class OMVoiceEngine {
   findBestVoice(langCode, gender) {
     if (!this.synth) return null;
     const voices = this.synth.getVoices();
-    const langPrefix = langCode.split('-')[0].toLowerCase();
+    if (!voices || voices.length === 0) return null;
 
-    // Matching language voices
-    const matchingLangVoices = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
+    const langPrefix = (langCode || 'en-US').split('-')[0].toLowerCase();
+
+    // 1. Filter voices for language
+    const langVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(langPrefix));
+    const targetPool = langVoices.length > 0 ? langVoices : voices;
+
+    const femaleKeywords = [
+      'female', 'woman', 'zira', 'samantha', 'kavya', 'swara', 'priya', 'victoria',
+      'eva', 'yuna', 'amelie', 'anna', 'monica', 'heera', 'kalpana', 'geeta', 'sunita',
+      'ayumi', 'haruka', 'sayaka', 'karen', 'tessa', 'sangeeta', 'veena', 'alice',
+      'fiona', 'helena', 'sara', 'lucia', 'laura', 'stephanie', 'catherine', 'mary',
+      'cortana', 'google हिन्दी', 'google us english'
+    ];
+
+    const maleKeywords = [
+      'male', 'man', 'david', 'george', 'daniel', 'oliver', 'rishi', 'alex',
+      'guy', 'stefan', 'thomas', 'madhur', 'ravi', 'hemant', 'mark', 'james',
+      'richard', 'john', 'cosimo', 'nicolas'
+    ];
 
     if (gender === 'female') {
-      // Search for female indicators in voice name
-      const femaleKeywords = ['female', 'woman', 'zira', 'samantha', 'kavya', 'priya', 'victoria', 'eva', 'yuna', 'amelie', 'anna', 'monica', 'google', 'hindi'];
-      const femaleVoice = matchingLangVoices.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
-      if (femaleVoice) return femaleVoice;
-      if (matchingLangVoices.length > 1) return matchingLangVoices[1]; // Often second voice in OS is female
+      // Prioritize explicit female match in target language
+      const fMatch = targetPool.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (fMatch) return fMatch;
+      // Filter out known male names
+      const nonMale = targetPool.filter(v => !maleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (nonMale.length > 0) return nonMale[0];
+      // Fallback to any global female voice
+      const globalFemale = voices.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (globalFemale) return globalFemale;
+      return targetPool[0];
     } else {
-      // Search for male indicators
-      const maleKeywords = ['male', 'man', 'david', 'george', 'daniel', 'oliver', 'rishi', 'alex', 'guy', 'stefan', 'thomas'];
-      const maleVoice = matchingLangVoices.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k)));
-      if (maleVoice) return maleVoice;
-      if (matchingLangVoices.length > 0) return matchingLangVoices[0];
+      // Prioritize explicit male match
+      const mMatch = targetPool.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (mMatch) return mMatch;
+      const nonFemale = targetPool.filter(v => !femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
+      if (nonFemale.length > 0) return nonFemale[0];
+      return targetPool[0];
     }
-
-    if (matchingLangVoices.length > 0) return matchingLangVoices[0];
-    return voices[0] || null;
   }
 
   speakText(text, msgId = null) {
@@ -228,10 +248,10 @@ class OMVoiceEngine {
 
     // Adjust pitch & rate based on gender
     if (this.voiceGender === 'female') {
-      this.currentUtterance.pitch = 1.15; // Bright, clear, energetic F.R.I.D.A.Y. timbre
+      this.currentUtterance.pitch = 1.22; // High-definition, bright, distinctly female
       this.currentUtterance.rate = 1.05;
     } else {
-      this.currentUtterance.pitch = 0.94; // Deep, confident J.A.R.V.I.S. timbre
+      this.currentUtterance.pitch = 0.92; // Deep, confident male resonance
       this.currentUtterance.rate = 1.04;
     }
 

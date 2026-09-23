@@ -717,7 +717,7 @@ class OMApp {
   updateDeveloperTierBadge() {
     const isDev = this.chatStore.isDeveloper();
     const plan = this.chatStore.getUserPlan();
-    const user = this.chatStore.currentUser || { name: 'Abhishek singh Yadav', location: 'Gurugram, Haryana, India', isDeveloper: true };
+    const user = this.chatStore.currentUser || { name: 'Udayast', location: 'India', isDeveloper: true };
 
     const planLabel = document.getElementById('sidebar-user-plan-label');
     const tierLabel = document.getElementById('sidebar-user-tier-label');
@@ -731,12 +731,12 @@ class OMApp {
     const popoverAuthLabel = document.getElementById('popover-auth-label');
     const devVipCard = document.getElementById('developer-vip-badge-card');
 
-    if (nameEl) nameEl.textContent = user.name || 'Abhishek singh Yadav';
-    if (locationEl) locationEl.textContent = user.location || 'Gurugram, Haryana, India';
+    if (nameEl) nameEl.textContent = user.name || 'Udayast';
+    if (locationEl) locationEl.textContent = user.location || 'India';
     
     if (avatarInitialsEl) {
-      const parts = (user.name || 'Abhishek singh Yadav').trim().split(/\s+/);
-      const initials = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0][0] || 'A').toUpperCase();
+      const parts = (user.name || 'Udayast').trim().split(/\s+/);
+      const initials = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0][0] || 'U').toUpperCase();
       avatarInitialsEl.textContent = initials;
     }
 
@@ -880,9 +880,9 @@ class OMApp {
   openImportMemoryModal() {
     this.closeProfilePopover();
     const sampleFacts = [
-      "Abhishek singh Yadav prefers structured, test-verified clean code.",
+      "Udayast prefers structured, test-verified clean code.",
       "Primary engineering stack: Python, JavaScript, Google Gemini 2.0 Flash, DSA algorithms.",
-      "Developer location: Gurugram, Haryana, India.",
+      "Developer location: India.",
       "Cognitive process follows Think-Plan-Act-Achieve."
     ];
     let added = 0;
@@ -898,7 +898,7 @@ class OMApp {
 
   openAvatarModal() {
     this.closeProfilePopover();
-    const currentName = this.chatStore.currentUser ? this.chatStore.currentUser.name : 'Abhishek singh Yadav';
+    const currentName = this.chatStore.currentUser ? this.chatStore.currentUser.name : 'Udayast';
     const newName = prompt('Enter profile name / initials for your Gemini Avatar:', currentName);
     if (newName && newName.trim()) {
       if (this.chatStore.currentUser) {
@@ -1019,7 +1019,7 @@ class OMApp {
         content.innerHTML = `
           <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid rgba(16, 185, 129, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
             <div style="font-weight: 800; color: #10b981; font-size: 0.95rem;">👑 Ultimate Developer VIP Access (Active)</div>
-            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Assigned to: <strong>Abhishek singh Yadav</strong> • Lifetime $0.00 Exemption</div>
+            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Assigned to: <strong>Udayast</strong> (Boss) • Lifetime $0.00 Exemption</div>
           </div>
           <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
             <li>✓ <strong style="color: #fff;">Queries & Tokens:</strong> UNLIMITED (Infinite compute)</li>
@@ -1064,8 +1064,8 @@ class OMApp {
       textarea.value = localStorage.getItem('om_gemini_notebook') || 
 `# Gemini Notebook & Research Canvas
 Project: OM AI Action Assistant
-Developer: Abhishek singh Yadav
-Location: Gurugram, Haryana, India
+Architect: Udayast
+Location: India
 
 Key Ideas & Notes:
 - Think-Plan-Act-Achieve cognitive framework
@@ -1089,7 +1089,7 @@ Key Ideas & Notes:
     this.closeProfilePopover();
     const fb = prompt('What feedback or feature request do you have for OM AI Assistant?');
     if (fb && fb.trim()) {
-      this.showToast('Thank you Abhishek! Feedback submitted to product team.', 'success');
+      this.showToast('Thank you Boss! Feedback submitted to product team.', 'success');
     }
   }
 
@@ -1149,18 +1149,18 @@ Key Ideas & Notes:
   }
 
   authAsDeveloper() {
-    this.chatStore.signIn('abhishek.yadav@om.ai', 'password123', true);
+    this.chatStore.signIn('udayast.lead@om.ai', 'password123', true);
     this.updateDeveloperTierBadge();
     const modal = document.getElementById('auth-modal');
     if (modal) modal.classList.remove('active');
-    this.showToast('⚡ Welcome back, Abhishek singh Yadav! Ultimate Developer Lifetime Pass active.', 'success');
+    this.showToast('⚡ Welcome back, Boss! Ultimate Developer Lifetime Pass active.', 'success');
   }
 
   submitSignIn(e) {
     if (e) e.preventDefault();
     const email = document.getElementById('signin-email')?.value || '';
     const pass = document.getElementById('signin-password')?.value || '';
-    this.chatStore.signIn(email, pass, email.includes('abhishek'));
+    this.chatStore.signIn(email, pass, email.includes('udayast') || email.includes('abhishek') || email.includes('dev') || email.includes('boss'));
     this.updateDeveloperTierBadge();
     const modal = document.getElementById('auth-modal');
     if (modal) modal.classList.remove('active');

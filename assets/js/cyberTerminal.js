@@ -14,7 +14,8 @@ class OMCyberTerminal {
     this.historyIndex = -1;
     this.isMatrixActive = false;
     this.matrixInterval = null;
-    this.developerName = 'Abhishek singh Yadav';
+    this.developerName = 'Udayast';
+    this.userAddress = 'Boss';
   }
 
   init() {

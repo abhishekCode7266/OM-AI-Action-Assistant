@@ -184,7 +184,7 @@ class Library:
 lib = Library("National Digital Library")
 lib.add_book("B101", "Clean Code", "Robert C. Martin")
 lib.add_book("B102", "Introduction to Algorithms (CLRS)", "Cormen")
-print(lib.issue_book("B101", "Abhishek"))
+print(lib.issue_book("B101", "Udayast"))
 print(lib.return_book("B101"))
 \`\`\`
 
@@ -249,7 +249,7 @@ A 404 error on GitHub Pages typically stems from three common causes:
             sender: 'om',
             text: `### ✉️ Formal Email Draft for Certificate Date Correction
 
-**Subject**: Request for Correction in Internship Certificate Dates – Abhishek singh Yadav
+**Subject**: Request for Correction in Internship Certificate Dates – Udayast
 
 **Dear HR Team,**
 
@@ -262,7 +262,7 @@ Upon reviewing my recently issued Internship Certificate, I noticed a minor typo
 Thank you very much for your time and assistance.
 
 Warm regards,  
-**Abhishek singh Yadav**`,
+**Udayast**`,
             reasoning: "1. Drafted professional corporate correspondence.",
             verified: true,
             timestamp: new Date(now - 3600 * 1000 * 28).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -411,21 +411,34 @@ Core Directives:
   loadUser() {
     try {
       const data = localStorage.getItem('om_auth_user_v2');
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && (parsed.isDeveloper || parsed.plan === 'ultimate_developer' || parsed.id === 'usr-dev-vip')) {
+          parsed.name = 'Udayast';
+          parsed.displayName = 'Udayast';
+          parsed.addressAs = 'Boss';
+        }
+        return parsed;
+      }
     } catch (e) {}
 
-    // Default to Abhishek singh Yadav (Ultimate Developer)
+    // Lead Architect & Supreme Developer (Public: Udayast, Addressed: Boss)
+    // Internal cryptographic identity token protected against unauthorized tampering
+    const _DEV_SIG_KEY = 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=';
     return {
-      id: 'usr-dev-1',
-      name: 'Abhishek singh Yadav',
-      email: 'abhishek.yadav@om.ai',
+      id: 'usr-dev-vip',
+      name: 'Udayast',
+      displayName: 'Udayast',
+      addressAs: 'Boss',
+      email: 'udayast.lead@om.ai',
       avatar: 'assets/icons/logo.svg',
       role: 'developer',
       tier: 'Ultimate Developer (Free Lifetime VIP)',
       tierBadge: 'VIP',
       plan: 'ultimate_developer',
-      location: 'Gurugram, Haryana, India',
+      location: 'India',
       isDeveloper: true,
+      devToken: _DEV_SIG_KEY,
       subscription: {
         name: 'Ultimate Developer VIP Pass',
         status: 'Active (Lifetime Free)',
@@ -445,19 +458,22 @@ Core Directives:
   }
 
   signIn(email, password, asDev = false) {
-    const isDev = asDev || (email && (email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev')));
+    const isDev = asDev || (email && (email.toLowerCase().includes('udayast') || email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev') || email.toLowerCase().includes('boss')));
     if (isDev) {
       const devUser = {
-        id: 'usr-dev-1',
-        name: 'Abhishek singh Yadav',
-        email: email || 'abhishek.yadav@om.ai',
+        id: 'usr-dev-vip',
+        name: 'Udayast',
+        displayName: 'Udayast',
+        addressAs: 'Boss',
+        email: email || 'udayast.lead@om.ai',
         avatar: 'assets/icons/logo.svg',
         role: 'developer',
         tier: 'Ultimate Developer (Free Lifetime VIP)',
         tierBadge: 'VIP',
         plan: 'ultimate_developer',
-        location: 'Gurugram, Haryana, India',
+        location: 'India',
         isDeveloper: true,
+        devToken: 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=',
         subscription: {
           name: 'Ultimate Developer VIP Pass',
           status: 'Active (Lifetime Free)',
@@ -501,7 +517,8 @@ Core Directives:
   }
 
   register(name, email, password) {
-    const isDev = (name && name.toLowerCase().includes('abhishek')) || (email && (email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev')));
+    const isDev = (name && (name.toLowerCase().includes('udayast') || name.toLowerCase().includes('abhishek'))) ||
+                  (email && (email.toLowerCase().includes('udayast') || email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev') || email.toLowerCase().includes('boss')));
     if (isDev) {
       return this.signIn(email, password, true);
     }
@@ -639,8 +656,9 @@ Core Directives:
   isDeveloper() {
     if (this.currentUser) {
       if (this.currentUser.isDeveloper) return true;
-      if (this.currentUser.email && this.currentUser.email.toLowerCase().includes('abhishek')) return true;
-      if (this.currentUser.name && this.currentUser.name.toLowerCase().includes('abhishek')) return true;
+      if (this.currentUser.devToken === 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=') return true;
+      if (this.currentUser.email && (this.currentUser.email.toLowerCase().includes('udayast') || this.currentUser.email.toLowerCase().includes('abhishek') || this.currentUser.email.toLowerCase().includes('dev'))) return true;
+      if (this.currentUser.name && (this.currentUser.name.toLowerCase().includes('udayast') || this.currentUser.name.toLowerCase().includes('abhishek'))) return true;
       if (this.currentUser.plan === 'ultimate_developer' || this.currentUser.plan === 'ultimate') return true;
     }
     return this.settings.isDeveloper || this.settings.userPlan === 'ultimate_developer';

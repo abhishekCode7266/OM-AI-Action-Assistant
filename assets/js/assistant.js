@@ -416,11 +416,11 @@ I have initiated a full **3D holographic deconstruction** of the ${modelName}. E
     // 00b. J.A.R.V.I.S. (Iron Man) Persona & Stark Protocol
     // =========================================================================
     else if (lower.includes('jarvis') || lower.includes('iron man') || lower.includes('stark') || lower.includes('arc reactor') || lower.includes('protocol') || lower.includes('suit') || lower.includes('armor')) {
-      const devName = "Abhishek singh Yadav";
+      const devName = "Udayast";
 
       text = `### ⚡ J.A.R.V.I.S. Protocol Active – Diagnostics Online
 
-*At your service, Sir.*
+*At your service, Boss.*
 
 All sensory and telemetry feeds are operating at maximum bandwidth for **${devName}**. The Arc Reactor power grid is stabilized at **100% capacity**, neural latency is clocked at **4.2 milliseconds**, and Stark Industries defense encryption is online.
 
@@ -433,7 +433,7 @@ All sensory and telemetry feeds are operating at maximum bandwidth for **${devNa
 | **Arc Reactor Core** | 🟢 **OPTIMAL** | 3.0 Gigawatts output • 99.8% thermal efficiency | Mark LXXXV Stabilization |
 | **Cognitive Planner** | 🟢 **ACTIVE** | Think-Plan-Act-Achieve pipeline synchronized | Multi-agent task decomposition |
 | **Holographic 3D CAD** | 🟢 **ARMED** | 3D Exploded View & Video Generator primed | Sub-micron tolerance tracking |
-| **Voice Synthesis** | 🟢 **CALIBRATED** | Two-way continuous Gemini Live audio link | British cadence • Zero latency |
+| **Voice Synthesis** | 🟢 **CALIBRATED** | Two-way continuous Live audio link | Resonant cadence • Zero latency |
 | **Autonomous Sandbox** | 🟢 **SECURE** | Isolated JavaScript/Python execution buffer | Auto-linting & runtime safety |
 
 ---
@@ -444,34 +444,34 @@ All sensory and telemetry feeds are operating at maximum bandwidth for **${devNa
       <span style="font-size: 1.5rem; animation: pulseDot 1.5s infinite;">💠</span>
       <div>
         <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">STARK INDUSTRIES J.A.R.V.I.S. INTERFACE</div>
-        <div style="font-size: 0.74rem; color: #38bdf8;">Authorized Operator: ${devName} • Ultimate Developer Pass</div>
+        <div style="font-size: 0.74rem; color: #38bdf8;">Authorized Operator: ${devName} (Boss) • Ultimate Developer Pass</div>
       </div>
     </div>
     <span class="stage-tag stage-achieve" style="background: rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 800;">ALL SYSTEMS GO</span>
   </div>
   <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
-    Would you like to initiate the <strong>Gemini Live Voice HUD</strong> for a hands-free spoken session, Sir? Or shall I run a full diagnostic on your codebase and 3D assets?
+    Would you like to initiate the <strong>Live Voice HUD</strong> for a hands-free spoken session, Boss? Or shall I run a full diagnostic on your codebase and 3D assets?
   </p>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
     <button class="om-btn om-btn-primary" onclick="window.omJarvisLive.startSession('jarvis')">
       🎙️ Launch J.A.R.V.I.S. Live Voice HUD
     </button>
-    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('car')">
-      📐 Open 3D CAD Dismantler
+    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('drone')">
+      📐 Open 3D Assemblable Studio
     </button>
   </div>
 </div>
 
-What is your directive today, Sir?`;
+What is your directive today, Boss?`;
 
       reasoning = [
         "1. Persona Alignment: J.A.R.V.I.S. tone, British AI butler cadence, polite yet sharp.",
-        "2. Developer Acknowledgment: Recognized Abhishek singh Yadav as the authorized operator/creator.",
+        "2. Developer Acknowledgment: Recognized Udayast (Boss) as the authorized operator/creator.",
         "3. Telemetry HUD: Provided real-time status matrix with Arc Reactor and Voice HUD buttons."
       ];
       actions = [
         { stage: 'think', title: 'Poll all sensory inputs and telemetry feeds', estimate: '1s' },
-        { stage: 'plan', title: 'Formulate tactical operational options for Mr. Yadav', estimate: '2s' },
+        { stage: 'plan', title: 'Formulate tactical operational options for Boss', estimate: '2s' },
         { stage: 'act', title: 'Execute J.A.R.V.I.S. protocol with continuous voice loop', estimate: 'Continuous' },
         { stage: 'achieve', title: 'Deliver complete engineering objectives', estimate: 'Immediate' }
       ];
@@ -482,13 +482,13 @@ What is your directive today, Sir?`;
     // 00b2. F.R.I.D.A.Y. (Iron Man) Tactical AI Persona (Female Voice)
     // =========================================================================
     else if (lower.includes('friday') || lower.includes('f.r.i.d.a.y') || lower.includes('female voice') || (lower.includes('female') && lower.includes('jarvis'))) {
-      const devName = "Abhishek singh Yadav";
+      const devName = "Udayast";
 
       text = `### 💎 F.R.I.D.A.Y. Tactical Defense & Multimodal Assistant Active
 
 *Good day, Boss! F.R.I.D.A.Y. here and ready to roll.*
 
-Sensory arrays and real-time telemetry are operating at peak efficiency for **${devName}**. Mark LXXXV tactical combat systems, code compilers, and 3D CAD mesh generators are synchronized to your voice commands.
+Sensory arrays and real-time telemetry are operating at peak efficiency for **${devName}** (Boss). Mark LXXXV tactical combat systems, code compilers, and 3D CAD mesh generators are synchronized to your voice commands.
 
 ---
 
@@ -522,8 +522,8 @@ Sensory arrays and real-time telemetry are operating at peak efficiency for **${
     <button class="om-btn om-btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession('friday');">
       🎙️ Launch F.R.I.D.A.Y. Voice HUD
     </button>
-    <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openNeuralCanvas('Tactical Strategy');">
-      🧠 Open Neural Thought Canvas
+    <button class="om-btn om-btn-secondary" onclick="if(window.omDismantler) window.omDismantler.openModal('drone');">
+      📐 Open 3D Assemblable Studio
     </button>
     <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openCyberTerminal();">
       💻 Open Cyber Terminal
@@ -535,7 +535,7 @@ What are your orders, Boss?`;
 
       reasoning = [
         "1. Persona Alignment: F.R.I.D.A.Y. tone, sharp, energetic Irish/tactical AI from Iron Man movies.",
-        "2. Developer Acknowledgment: Addressed Abhishek singh Yadav as 'Boss' with full VIP permissions.",
+        "2. Developer Acknowledgment: Addressed Udayast as 'Boss' with full VIP permissions.",
         "3. Interactive HUD: Rendered female tactical theme card with direct voice launch buttons."
       ];
       actions = [
@@ -622,7 +622,7 @@ OM AI Assistant includes an interactive **retro-futuristic CRT command-line cons
 
 * 🟢 **CRT Phosphor Screen**: Retro scanlines, high-contrast cyan/emerald glow, and command history buffer.
 * ⚡ **Live Directives**: Execute \`status\`, \`whoami\`, \`voice male/female\`, \`lang [code]\`, \`dismantle [object]\`, \`matrix\`, and \`agent [task]\`.
-* 🛡️ **Root Access for Abhishek singh Yadav**: Full VIP administrative authority enabled by default.
+* 🛡️ **Root Access for Udayast (Boss)**: Full VIP administrative authority enabled by default.
 
 ---
 
@@ -781,7 +781,7 @@ What high-level goal shall the autonomous agent swarm execute for you?`;
       <span style="font-size: 1.5rem;">🇮🇳</span>
       <div>
         <div style="font-weight: 800; font-size: 1rem; color: #fff;">हिन्दी वॉयस और टू-वे कन्वर्सेशन सक्रिय है</div>
-        <div style="font-size: 0.74rem; color: #fbbf24;">Abhishek singh Yadav जी के लिए $0.00 आजीवन वीआईपी एक्सेस</div>
+        <div style="font-size: 0.74rem; color: #fbbf24;">Udayast (बॉस) के लिए $0.00 आजीवन वीआईपी एक्सेस</div>
       </div>
     </div>
     <span class="stage-tag stage-achieve" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: 800;">हिन्दी एक्टिव</span>
