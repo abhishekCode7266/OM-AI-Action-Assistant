@@ -367,8 +367,8 @@ Core Directives:
       const data = localStorage.getItem(this.SETTINGS_KEY);
       const parsed = data ? JSON.parse(data) : {};
       return {
-        apiKey: localStorage.getItem('om_custom_provider_key') || parsed.apiKey || '',
-        model: parsed.model || 'gemini-2.0-flash',
+        apiKey: localStorage.getItem('om_nexus_key') || localStorage.getItem('om_custom_provider_key') || parsed.apiKey || '',
+        model: (parsed.model && !parsed.model.includes('gemini')) ? parsed.model : 'nexus-2.0-flash',
         autoSpeech: parsed.autoSpeech !== undefined ? parsed.autoSpeech : false,
         voiceRate: parsed.voiceRate || 1.0,
         voicePitch: parsed.voicePitch || 1.0,
@@ -381,7 +381,7 @@ Core Directives:
     } catch (e) {
       return {
         apiKey: '',
-        model: 'gemini-2.0-flash',
+        model: 'nexus-2.0-flash',
         autoSpeech: false,
         voiceRate: 1.0,
         voicePitch: 1.0,
@@ -504,7 +504,7 @@ Core Directives:
       subscription: {
         name: '3-Month Free Trial',
         status: 'Active (90 Days Free)',
-        price: '$0.00 (First 3 Months Free, then ₹1,950/mo)',
+        price: '₹0 (3 Months Free Trial)',
         expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
         tierId: 'trial_3month',
         daysRemaining: 90,
@@ -539,7 +539,7 @@ Core Directives:
       subscription: {
         name: '3-Month Free Trial',
         status: 'Active (90 Days Free)',
-        price: '$0.00 (First 3 Months Free, then ₹1,950/mo)',
+        price: '₹0 (3 Months Free Trial)',
         expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
         tierId: 'trial_3month',
         daysRemaining: 90,
@@ -579,35 +579,40 @@ Core Directives:
 
   upgradePlan(tierId) {
     const tierMap = {
-      trial_3month: { name: '3-Month Free Trial', price: '$0.00 (First 90 Days Free)', tierBadge: 'Trial', expires: '90 Days from activation' },
-      free: { name: 'Public Free', price: '$0.00 / mo', tierBadge: 'Free', expires: 'Standard Access' },
-      pro: { name: 'Gemini Pro', price: '₹1,950 / mo ($19.99)', tierBadge: 'Pro', expires: 'Monthly Auto-Renewal' },
-      ultra: { name: 'Google AI Ultra', price: '₹4,900 / mo ($49.99)', tierBadge: 'Ultra', expires: 'Monthly Auto-Renewal' },
-      ultimate: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' },
-      ultimate_developer: { name: 'Ultimate Developer Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' }
+      trial_0: { name: '₹0 Free Trial', price: '₹0 / Starter', tierBadge: 'Free', expires: 'Standard Starter Access' },
+      free: { name: '₹0 Free Trial', price: '₹0 / Starter', tierBadge: 'Free', expires: 'Standard Starter Access' },
+      trial_3month: { name: '3-Month Free Trial', price: '₹0 / for 90 days', tierBadge: 'Trial', expires: '90 Days from activation' },
+      plan_3month: { name: 'Nexus 3-Month Plan', price: '₹199 / 3 Months', tierBadge: '3M', expires: '90 Days auto-renew' },
+      plan_1year: { name: 'Nexus 1-Year Standard', price: '₹399 / 1 Year', tierBadge: '1Y', expires: '365 Days auto-renew' },
+      plan_1year_pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
+      pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
+      ultra: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
+      ultimate: { name: 'Ultimate Developer VIP Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' },
+      ultimate_developer: { name: 'Ultimate Developer VIP Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' }
     };
 
-    const isDev = (tierId === 'ultimate' || tierId === 'ultimate_developer');
-    const target = tierMap[tierId] || tierMap.pro;
+    const isDev = (tierId === 'ultimate' || tierId === 'ultimate_developer' || this.isDeveloper());
+    const target = tierMap[tierId] || tierMap.plan_1year_pro;
 
-    this.currentUser.plan = tierId;
-    this.currentUser.tier = target.name;
-    this.currentUser.tierBadge = target.tierBadge;
+    this.currentUser.plan = isDev ? 'ultimate_developer' : tierId;
+    this.currentUser.tier = isDev ? 'Ultimate Developer (Free Lifetime VIP)' : target.name;
+    this.currentUser.tierBadge = isDev ? 'VIP' : target.tierBadge;
     this.currentUser.isDeveloper = isDev;
     if (tierId === 'trial_3month') {
       this.currentUser.trialStartedAt = Date.now();
     }
     this.currentUser.subscription = {
-      name: target.name,
+      name: isDev ? 'Ultimate Developer VIP Pass' : target.name,
       status: 'Active',
-      price: target.price,
+      price: isDev ? '$0.00 / Free Forever' : target.price,
       expires: isDev ? 'Never (Lifetime VIP)' : target.expires,
-      tierId: tierId,
-      isTrial: tierId === 'trial_3month'
+      tierId: isDev ? 'ultimate_developer' : tierId,
+      isTrial: tierId === 'trial_3month' || tierId === 'trial_0',
+      isUnlimited: isDev || tierId === 'plan_1year_pro' || tierId === 'pro' || tierId === 'ultra'
     };
 
     this.saveUser(this.currentUser);
-    this.saveSettings({ userPlan: tierId, isDeveloper: isDev });
+    this.saveSettings({ userPlan: this.currentUser.plan, isDeveloper: isDev });
     return this.currentUser;
   }
 
@@ -618,7 +623,7 @@ Core Directives:
         isTrial: false,
         isExpired: false,
         daysRemaining: Infinity,
-        label: '👑 Free Lifetime Developer VIP ($0.00)'
+        label: '👑 Free Lifetime Developer VIP ($0.00 Unlimited)'
       };
     }
 
@@ -627,13 +632,20 @@ Core Directives:
       return { isDeveloper: false, isTrial: false, isExpired: false, daysRemaining: 0, label: 'Guest' };
     }
 
-    if (user.plan === 'pro' || user.plan === 'ultra') {
+    if (user.plan === 'plan_1year_pro' || user.plan === 'plan_1year' || user.plan === 'plan_3month' || user.plan === 'pro' || user.plan === 'ultra') {
+      const labels = {
+        plan_3month: 'Nexus 3-Month Plan (₹199)',
+        plan_1year: 'Nexus 1-Year Standard (₹399)',
+        plan_1year_pro: 'Nexus 1-Year Pro Unlimited (₹699)',
+        pro: 'Nexus 1-Year Pro Unlimited (₹699)',
+        ultra: 'Nexus 1-Year Pro Unlimited (₹699)'
+      };
       return {
         isDeveloper: false,
         isTrial: false,
         isExpired: false,
         daysRemaining: null,
-        label: user.plan === 'ultra' ? 'Google AI Ultra' : 'Gemini Pro'
+        label: labels[user.plan] || 'Active Paid Subscription'
       };
     }
 

@@ -1222,10 +1222,11 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================================================
-   Google Gemini UI Extensions: Pill Switcher, Profile & Popover Menu
+   Nexus UI Extensions: Pill Switcher, Profile & Popover Menu
    ========================================================================== */
 
 /* Top Pill Switcher (Chat vs Spark) */
+.nexus-pill-switcher,
 .gemini-pill-switcher {
   display: flex;
   align-items: center;
@@ -1236,6 +1237,7 @@ h1, h2, h3, h4, h5 {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.nexus-tab-pill,
 .gemini-tab-pill {
   flex: 1;
   display: flex;
@@ -1253,11 +1255,13 @@ h1, h2, h3, h4, h5 {
   transition: var(--om-transition);
 }
 
+.nexus-tab-pill:hover,
 .gemini-tab-pill:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.05);
 }
 
+.nexus-tab-pill.active,
 .gemini-tab-pill.active {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
@@ -1275,6 +1279,7 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Sidebar Profile Card Footer */
+.nexus-profile-card,
 .gemini-profile-card {
   display: flex;
   align-items: center;
@@ -1383,7 +1388,8 @@ h1, h2, h3, h4, h5 {
   border-color: rgba(255, 255, 255, 0.12);
 }
 
-/* 16-Item Gemini Popover Menu */
+/* 16-Item Nexus Popover Menu */
+.nexus-popover-menu,
 .gemini-popover-menu {
   position: absolute;
   bottom: 68px;
@@ -1402,13 +1408,16 @@ h1, h2, h3, h4, h5 {
   animation: fadeIn 0.16s ease-out;
 }
 
+.nexus-popover-menu.show,
 .gemini-popover-menu.show {
   display: flex;
 }
 
+.nexus-popover-menu::-webkit-scrollbar,
 .gemini-popover-menu::-webkit-scrollbar {
   width: 4px;
 }
+.nexus-popover-menu::-webkit-scrollbar-thumb,
 .gemini-popover-menu::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
@@ -1832,8 +1841,9 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================================================
-   Gemini Live Voice & J.A.R.V.I.S. Interactive Voice Modal
+   Nexus Live Voice & J.A.R.V.I.S. Interactive Voice Modal
    ========================================================================== */
+.nexus-live-modal-content,
 .gemini-live-modal-content {
   max-width: 580px;
   background: radial-gradient(circle at 50% 20%, #0d152c 0%, #060913 100%);
@@ -2256,5 +2266,375 @@ h1, h2, h3, h4, h5 {
   border: 1px solid rgba(6, 182, 212, 0.25);
   flex-shrink: 0;
 }
+
+/* ==========================================================================
+   Floating Minimized PiP Widget (Small form / Background Voice & Tasks)
+   ========================================================================== */
+.floating-live-pip-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: rgba(11, 15, 25, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(6, 182, 212, 0.4);
+  border-radius: 50px;
+  padding: 8px 16px 8px 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(6, 182, 212, 0.25);
+  display: none;
+  align-items: center;
+  gap: 12px;
+  max-width: 360px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pipSlideIn 0.35s ease-out;
+}
+
+.floating-live-pip-widget.active {
+  display: flex;
+}
+
+@keyframes pipSlideIn {
+  from {
+    transform: translateY(30px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.pip-reactor-orb {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0369a1 70%, #082f49 100%);
+  border: 2px solid var(--om-cyan);
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  animation: orbPulse 2s infinite ease-in-out;
+}
+
+.pip-reactor-orb:hover {
+  transform: scale(1.08);
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.9), 0 0 35px rgba(56, 189, 248, 0.4);
+  }
+}
+
+.pip-info-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  max-width: 170px;
+}
+
+.pip-header-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pip-persona-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--om-cyan);
+  white-space: nowrap;
+}
+
+.pip-hud-state {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.pip-live-speech-ticker {
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.pip-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pip-action-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pip-action-btn:hover {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: var(--om-cyan);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.pip-action-btn.active {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.pip-action-btn.close-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   Live Media Vision Panel (Screen Share & Camera Vision)
+   ========================================================================== */
+.live-media-vision-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0;
+  width: 100%;
+}
+
+.media-stream-box {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid rgba(6, 182, 212, 0.35);
+  background: #020617;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  display: none;
+}
+
+.media-stream-box video {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.media-stream-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.media-stream-tag {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(6, 182, 212, 0.5);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--om-cyan);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.media-stream-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: recBlink 1s infinite alternate;
+}
+
+@keyframes recBlink {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+.media-action-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.media-control-btn {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.media-control-btn:hover {
+  background: var(--om-cyan);
+  color: #030712;
+}
+
+/* ==========================================================================
+   Mobile Bottom Navigation Dock (Universal Mobile & Tablet)
+   ========================================================================== */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62px;
+  background: rgba(11, 15, 25, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 1000;
+  padding: 0 10px calc(env(safe-area-inset-bottom, 0px) + 2px);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.mobile-nav-items-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+}
+
+.mob-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  min-height: 48px;
+  min-width: 48px;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.mob-nav-btn .mob-nav-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.mob-nav-btn:active,
+.mob-nav-btn.active {
+  color: var(--om-cyan);
+  background: rgba(6, 182, 212, 0.08);
+}
+
+.mob-nav-btn.special-live {
+  color: #f43f5e;
+}
+
+.mob-nav-btn.special-live .mob-nav-icon {
+  filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.6));
+}
+
+/* ==========================================================================
+   Universal Responsive Media Queries (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .pricing-tiers-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+  }
+
+  /* Leave clearance for mobile bottom bar */
+  .chat-main-container,
+  .app-container {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .floating-live-pip-widget {
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    right: 12px;
+    left: 12px;
+    max-width: none;
+    border-radius: 16px;
+  }
+
+  .pricing-tiers-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .nexus-live-modal-content,
+  .gemini-live-modal-content {
+    max-width: 95%;
+    margin: 10px;
+    padding: 12px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 270px;
+    height: 100vh;
+    z-index: 1050;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.85);
+  }
+
+  /* Increase touch targets for mobile thumb usability */
+  .om-btn,
+  .chat-action-btn,
+  .input-tool-btn,
+  .nexus-tab-pill,
+  .gemini-tab-pill {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
+
 
 

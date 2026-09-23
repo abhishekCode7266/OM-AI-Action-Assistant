@@ -14,9 +14,9 @@
 
 > 💡 **Why did the Vercel link ask for login?** Vercel enables "Deployment Protection" by default on preview URLs for private accounts. To make the Vercel URL open publicly for everyone: In [Vercel Settings ➔ Deployment Protection](https://vercel.com/abhishek-ef1f/om-ai/settings/deployment-protection), set **Vercel Authentication** to **Disabled** and click **Save**!
 
-[![Status: Online](https://img.shields.io/badge/OM%20Engine-v2.5%20Gemini%20Ready-06B6D4?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
+[![Status: Online](https://img.shields.io/badge/OM%20Engine-v3.0%20Nexus%20Ready-06B6D4?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![Developer Mode](https://img.shields.io/badge/Developer%20Mode-Ultimate%20Free-6366F1?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
-[![AI Models](https://img.shields.io/badge/Models-Gemini%202.0%20%7C%201.5%20Pro-10B981?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
+[![AI Models](https://img.shields.io/badge/Models-Nexus%202.0%20%7C%201.5%20Pro-10B981?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![Test Suite](https://img.shields.io/badge/Tests-10%2F10%20Passing-10B981?style=flat-square)](tests/test_server.py)
 
 ---

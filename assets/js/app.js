@@ -129,10 +129,11 @@ class OMApp {
       });
     }
 
-    // Model Quick Selector Dropdown (Gemini 2.0 / 1.5 Pro / Autonomous)
+    // Model Quick Selector Dropdown (Nexus 2.0 / 1.5 Pro / Autonomous)
     const modelQuickSelect = document.getElementById('chat-model-quick-selector');
     if (modelQuickSelect) {
-      modelQuickSelect.value = this.chatStore.settings.model || 'gemini-2.0-flash';
+      const curModel = this.chatStore.settings.model;
+      modelQuickSelect.value = (curModel && !curModel.includes('gemini')) ? curModel : 'nexus-2.0-flash';
       modelQuickSelect.addEventListener('change', (e) => {
         const newModel = e.target.value;
         this.chatStore.saveSettings({ model: newModel });
@@ -184,7 +185,7 @@ class OMApp {
       });
     }
 
-    // Profile Popover Trigger (matching Google Gemini 3-dots)
+    // Profile Popover Trigger (matching Nexus 3-dots)
     const popoverTrigger = document.getElementById('btn-profile-popover-trigger');
     if (popoverTrigger) {
       popoverTrigger.addEventListener('click', (e) => this.toggleProfilePopover(e));
@@ -192,7 +193,7 @@ class OMApp {
 
     // Close Popover on Outside Click
     document.addEventListener('click', (e) => {
-      const popover = document.getElementById('gemini-popover-menu');
+      const popover = document.getElementById('nexus-popover-menu') || document.getElementById('gemini-popover-menu');
       const trigger = document.getElementById('btn-profile-popover-trigger');
       if (popover && (popover.classList.contains('show') || popover.style.display === 'flex')) {
         if (!popover.contains(e.target) && !trigger.contains(e.target)) {
@@ -200,6 +201,66 @@ class OMApp {
         }
       }
     });
+
+    // PiP Floating Widget Event Listeners
+    const pipOrb = document.getElementById('pip-reactor-orb');
+    if (pipOrb) {
+      pipOrb.addEventListener('click', () => {
+        if (window.omJarvisLive) window.omJarvisLive.expandFromPiP();
+      });
+    }
+    const pipExpandBtn = document.getElementById('pip-btn-expand');
+    if (pipExpandBtn) {
+      pipExpandBtn.addEventListener('click', () => {
+        if (window.omJarvisLive) window.omJarvisLive.expandFromPiP();
+      });
+    }
+    const pipCloseBtn = document.getElementById('pip-btn-close');
+    if (pipCloseBtn) {
+      pipCloseBtn.addEventListener('click', () => {
+        if (window.omJarvisLive) window.omJarvisLive.stopSession();
+      });
+    }
+    const pipScreenBtn = document.getElementById('pip-btn-screen');
+    if (pipScreenBtn) {
+      pipScreenBtn.addEventListener('click', () => {
+        if (window.omMediaVision) window.omMediaVision.startScreenShare();
+      });
+    }
+    const pipCamBtn = document.getElementById('pip-btn-camera');
+    if (pipCamBtn) {
+      pipCamBtn.addEventListener('click', () => {
+        if (window.omMediaVision) window.omMediaVision.startCamera();
+      });
+    }
+
+    // Modal Minimize Button
+    const modalMinBtn = document.getElementById('btn-live-minimize');
+    if (modalMinBtn) {
+      modalMinBtn.addEventListener('click', () => {
+        if (window.omJarvisLive) window.omJarvisLive.minimizeToPiP();
+      });
+    }
+
+    // Modal Screen Share & Camera Share buttons
+    const screenShareBtn = document.getElementById('btn-toggle-screen-share');
+    if (screenShareBtn) {
+      screenShareBtn.addEventListener('click', () => {
+        if (window.omMediaVision) window.omMediaVision.startScreenShare();
+      });
+    }
+    const camShareBtn = document.getElementById('btn-toggle-camera-share');
+    if (camShareBtn) {
+      camShareBtn.addEventListener('click', () => {
+        if (window.omMediaVision) window.omMediaVision.startCamera();
+      });
+    }
+    const flipCamBtn = document.getElementById('btn-flip-camera');
+    if (flipCamBtn) {
+      flipCamBtn.addEventListener('click', () => {
+        if (window.omMediaVision) window.omMediaVision.flipCamera();
+      });
+    }
 
     // Checkout payment method card selection
     document.querySelectorAll('.pay-method-card input[type="radio"]').forEach(radio => {
@@ -802,7 +863,7 @@ class OMApp {
   }
 
   /* =========================================================================
-     Google Gemini Tab Switcher (Chat vs Spark)
+     Nexus Tab Switcher (Chat vs Spark)
      ========================================================================= */
   switchAppTab(tab) {
     const chatPill = document.getElementById('tab-pill-chat');
@@ -813,8 +874,8 @@ class OMApp {
       if (chatPill) chatPill.classList.remove('active');
       if (sparkPill) sparkPill.classList.add('active');
       this.assistant.setMode('data');
-      if (headerTitle) headerTitle.textContent = 'Gemini Spark ✨ Data & Multimodal Analytics';
-      this.showToast('✨ Gemini Spark Activated: Ready for Data, Charts & Multimodal tasks', 'info');
+      if (headerTitle) headerTitle.textContent = 'Nexus Spark ✨ Data & Multimodal Analytics';
+      this.showToast('✨ Nexus Spark Activated: Ready for Data, Charts & Multimodal tasks', 'info');
     } else {
       if (sparkPill) sparkPill.classList.remove('active');
       if (chatPill) chatPill.classList.add('active');
@@ -823,16 +884,16 @@ class OMApp {
         const active = this.chatStore.getActiveChat();
         headerTitle.textContent = active ? active.title : 'OM Chat';
       }
-      this.showToast('Switched to Gemini Chat Mode', 'info');
+      this.showToast('Switched to Nexus Chat Mode', 'info');
     }
   }
 
   /* =========================================================================
-     16-Item Gemini Popover Menu & Modals
+     16-Item Nexus Popover Menu & Modals
      ========================================================================= */
   toggleProfilePopover(e) {
     if (e) e.stopPropagation();
-    const menu = document.getElementById('gemini-popover-menu');
+    const menu = document.getElementById('nexus-popover-menu') || document.getElementById('gemini-popover-menu');
     if (!menu) return;
     const isShowing = menu.classList.contains('show') || menu.style.display === 'flex';
     if (isShowing) {
@@ -844,7 +905,7 @@ class OMApp {
   }
 
   closeProfilePopover() {
-    const menu = document.getElementById('gemini-popover-menu');
+    const menu = document.getElementById('nexus-popover-menu') || document.getElementById('gemini-popover-menu');
     if (menu) {
       menu.classList.remove('show');
       menu.style.display = 'none';
@@ -881,7 +942,7 @@ class OMApp {
     this.closeProfilePopover();
     const sampleFacts = [
       "Udayast prefers structured, test-verified clean code.",
-      "Primary engineering stack: Python, JavaScript, Google Gemini 2.0 Flash, DSA algorithms.",
+      "Primary engineering stack: Python, JavaScript, Nexus 2.0 Flash, DSA algorithms.",
       "Developer location: India.",
       "Cognitive process follows Think-Plan-Act-Achieve."
     ];
@@ -893,13 +954,13 @@ class OMApp {
         added++;
       }
     });
-    this.showToast(`Imported ${added} memory items into Gemini Memory Intelligence`, 'success');
+    this.showToast(`Imported ${added} memory items into Nexus Memory Intelligence`, 'success');
   }
 
   openAvatarModal() {
     this.closeProfilePopover();
     const currentName = this.chatStore.currentUser ? this.chatStore.currentUser.name : 'Udayast';
-    const newName = prompt('Enter profile name / initials for your Gemini Avatar:', currentName);
+    const newName = prompt('Enter profile name / initials for your Nexus Avatar:', currentName);
     if (newName && newName.trim()) {
       if (this.chatStore.currentUser) {
         this.chatStore.currentUser.name = newName.trim();
@@ -1024,7 +1085,7 @@ class OMApp {
           <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
             <li>✓ <strong style="color: #fff;">Queries & Tokens:</strong> UNLIMITED (Infinite compute)</li>
             <li>✓ <strong style="color: #fff;">Rate Limits:</strong> NONE (Zero throttling)</li>
-            <li>✓ <strong style="color: #fff;">Full Toolset:</strong> Gemini 2.0 Flash, 1.5 Pro, Vision, Audio/Video, 3D CAD Dismantler, Swarm</li>
+            <li>✓ <strong style="color: #fff;">Full Toolset:</strong> Nexus 2.0 Flash, 1.5 Pro, Vision, Audio/Video, 3D CAD Assembler, Swarm</li>
             <li>✓ <strong style="color: #fff;">Cost & Expiry:</strong> $0.00 / NEVER (Free Forever)</li>
           </ul>
           <p style="font-size: 0.8rem; color: #64748b;">You hold lead architect superuser status across all OM AI subsystems.</p>
@@ -1037,10 +1098,10 @@ class OMApp {
           </div>
           <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
             <li>✓ <strong style="color: #fff;">Trial Duration:</strong> 90 Days Total (${trial.daysRemaining} days remaining)</li>
-            <li>✓ <strong style="color: #fff;">Included:</strong> Gemini 2.0 Flash, 3D CAD Exploded View, Dual Voice (J.A.R.V.I.S. & F.R.I.D.A.Y.)</li>
+            <li>✓ <strong style="color: #fff;">Included:</strong> Nexus 2.0 Flash, 3D CAD Assembler, 9 Voice Personas (F.R.I.D.A.Y., J.A.R.V.I.S., etc.)</li>
             <li>✓ <strong style="color: #fff;">Status:</strong> ${trial.isExpired ? '<span style="color:#ef4444; font-weight:bold;">EXPIRED (Please Upgrade)</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVE</span>'}</li>
           </ul>
-          <button class="om-btn om-btn-primary" style="width: 100%; margin-top: 8px;" onclick="window.omApp.openSubscriptionModal()">Upgrade to Pro / Ultra</button>
+          <button class="om-btn om-btn-primary" style="width: 100%; margin-top: 8px;" onclick="window.omApp.openSubscriptionModal()">Upgrade to Pro Plans</button>
         `;
       } else {
         content.innerHTML = `
@@ -1061,15 +1122,15 @@ class OMApp {
     const modal = document.getElementById('notebook-modal');
     const textarea = document.getElementById('notebook-text-area');
     if (textarea) {
-      textarea.value = localStorage.getItem('om_gemini_notebook') || 
-`# Gemini Notebook & Research Canvas
+      textarea.value = localStorage.getItem('om_nexus_notebook') || localStorage.getItem('om_gemini_notebook') || 
+`# Nexus Notebook & Research Canvas
 Project: OM AI Action Assistant
 Architect: Udayast
 Location: India
 
 Key Ideas & Notes:
 - Think-Plan-Act-Achieve cognitive framework
-- Full-stack Gemini 2.0 Flash integration
+- Full-stack Nexus 2.0 Flash integration
 - 100% Free Lifetime Developer Access enabled`;
     }
     if (modal) modal.classList.add('active');
@@ -1078,9 +1139,12 @@ Key Ideas & Notes:
   saveNotebookContent() {
     const textarea = document.getElementById('notebook-text-area');
     if (textarea) {
-      localStorage.setItem('om_gemini_notebook', textarea.value);
-      this.showToast('Saved notes to Gemini Notebook!', 'success');
+      localStorage.setItem('om_nexus_notebook', textarea.value);
+      this.showToast('Saved notes to Nexus Notebook!', 'success');
     }
+    const modal = document.getElementById('notebook-modal');
+    if (modal) modal.classList.remove('active');
+  }
     const modal = document.getElementById('notebook-modal');
     if (modal) modal.classList.remove('active');
   }
@@ -1183,16 +1247,27 @@ Key Ideas & Notes:
      Subscription Checkout & Payment Flow
      ========================================================================= */
   selectSubscriptionPlan(tierId) {
-    if (tierId === 'trial_3month' || tierId === 'trial' || tierId === 'free') {
-      if (this.chatStore.isDeveloper()) {
-        this.showToast('👑 You already have Lifetime Free Developer VIP Access ($0.00 Unlimited)', 'info');
-      } else {
-        this.chatStore.upgradePlan('trial_3month');
-        this.updateDeveloperTierBadge();
-        this.showToast('🎉 3-Month Free Trial Active! Enjoy 90 days of complete multimodal access.', 'success');
-      }
+    if (this.chatStore.isDeveloper()) {
+      this.showToast('👑 You have Lifetime Free Developer VIP Access ($0.00 Unlimited)', 'info');
       const modal = document.getElementById('subscription-plans-modal');
       if (modal) modal.classList.remove('active');
+      return;
+    }
+
+    if (tierId === 'trial_0' || tierId === 'free') {
+      this.chatStore.upgradePlan('trial_0');
+      this.updateDeveloperTierBadge();
+      this.showToast('🎉 Free Trial activated! Enjoy standard starter access.', 'success');
+      const modal = document.getElementById('subscription-plans-modal');
+      if (modal) modal.classList.remove('active');
+    } else if (tierId === 'trial_3month' || tierId === 'trial') {
+      this.chatStore.upgradePlan('trial_3month');
+      this.updateDeveloperTierBadge();
+      this.showToast('🎉 3-Month Free Trial Active! Enjoy 90 days of complete multimodal access.', 'success');
+      const modal = document.getElementById('subscription-plans-modal');
+      if (modal) modal.classList.remove('active');
+    } else {
+      this.startCheckout(tierId);
     }
   }
 
@@ -1205,35 +1280,48 @@ Key Ideas & Notes:
     const nameEl = document.getElementById('checkout-plan-name');
     const priceEl = document.getElementById('checkout-plan-price');
 
-    if (nameEl) {
-      nameEl.textContent = tierId === 'ultra' ? 'Google AI Ultra Subscription' : 'Gemini Pro Subscription';
-    }
-    if (priceEl) {
-      priceEl.textContent = tierId === 'ultra' ? '₹4,900 / mo ($49.99)' : '₹1,950 / mo ($19.99)';
-    }
+    const planDetails = {
+      trial_0: { name: '₹0 Free Trial', price: '₹0 / Starter' },
+      trial_3month: { name: '3-Month Free Trial', price: '₹0 / for 90 days' },
+      plan_3month: { name: 'Nexus 3-Month Plan', price: '₹199 / 3 Months' },
+      plan_1year: { name: 'Nexus 1-Year Standard', price: '₹399 / 1 Year' },
+      plan_1year_pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' },
+      pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' },
+      ultra: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' }
+    };
+
+    const details = planDetails[tierId] || planDetails.plan_1year_pro;
+
+    if (nameEl) nameEl.textContent = details.name;
+    if (priceEl) priceEl.textContent = details.price;
 
     if (modal) modal.classList.add('active');
   }
 
   completeCheckout() {
-    const tier = this._checkoutTierId || 'pro';
+    const tier = this._checkoutTierId || 'plan_1year_pro';
     this.chatStore.upgradePlan(tier);
     this.updateDeveloperTierBadge();
 
     const checkoutModal = document.getElementById('checkout-modal');
     if (checkoutModal) checkoutModal.classList.remove('active');
 
-    const tierLabel = tier === 'ultra' ? 'Google AI Ultra' : 'Gemini Pro';
-    this.showToast(`🎉 Subscription Active! Upgraded to ${tierLabel}. Enjoy high-speed priority AI.`, 'success');
+    const user = this.chatStore.currentUser;
+    const planName = user ? user.tier : 'Nexus Pro';
+    this.showToast(`🎉 Subscription Active! Upgraded to ${planName}. Enjoy uncapped high-speed AI tools.`, 'success');
   }
 
   /* =========================================================================
-     Gemini Live & 3D Dismantle Triggers
+     Nexus Live & 3D Dismantle Triggers
      ========================================================================= */
-  openGeminiLiveModal(persona = 'jarvis') {
+  openNexusLiveModal(persona = 'friday') {
     if (window.omJarvisLive) {
       window.omJarvisLive.startSession(persona);
     }
+  }
+
+  openGeminiLiveModal(persona = 'friday') {
+    this.openNexusLiveModal(persona);
   }
 
   open3DDismantleModal(model = 'car') {
@@ -1247,7 +1335,7 @@ Key Ideas & Notes:
     if (!modal) return;
 
     const settings = this.chatStore.settings;
-    const keyInput = document.getElementById('settings-gemini-key-input');
+    const keyInput = document.getElementById('settings-nexus-key-input') || document.getElementById('settings-gemini-key-input');
     const modelSelect = document.getElementById('settings-model-select');
     const promptInput = document.getElementById('settings-system-prompt');
     const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
@@ -1256,8 +1344,8 @@ Key Ideas & Notes:
     const isDev = this.chatStore.isDeveloper();
 
     if (keyInput) keyInput.value = settings.apiKey || '';
-    if (modelSelect) modelSelect.value = settings.model || 'gemini-2.0-flash';
-    if (quickModelSelect) quickModelSelect.value = settings.model || 'gemini-2.0-flash';
+    if (modelSelect) modelSelect.value = (settings.model && !settings.model.includes('gemini')) ? settings.model : 'nexus-2.0-flash';
+    if (quickModelSelect) quickModelSelect.value = (settings.model && !settings.model.includes('gemini')) ? settings.model : 'nexus-2.0-flash';
     if (promptInput) promptInput.value = settings.systemPrompt || '';
     if (autoSpeechCheck) autoSpeechCheck.checked = !!settings.autoSpeech;
 
@@ -1266,7 +1354,7 @@ Key Ideas & Notes:
       devBtn.className = isDev ? "om-btn om-btn-xs om-btn-primary" : "om-btn om-btn-xs om-btn-secondary";
     }
 
-    const statusDiv = document.getElementById('gemini-key-status');
+    const statusDiv = document.getElementById('nexus-key-status') || document.getElementById('gemini-key-status');
     if (statusDiv) statusDiv.style.display = 'none';
 
     this.renderMemoryFactsList();
@@ -1308,14 +1396,14 @@ Key Ideas & Notes:
     const saveBtn = document.getElementById('btn-save-settings');
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
-        const keyInput = document.getElementById('settings-gemini-key-input');
+        const keyInput = document.getElementById('settings-nexus-key-input') || document.getElementById('settings-gemini-key-input');
         const modelSelect = document.getElementById('settings-model-select');
         const promptInput = document.getElementById('settings-system-prompt');
         const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
         const memToggle = document.getElementById('settings-memory-enabled-chk');
         const quickModelSelect = document.getElementById('chat-model-quick-selector');
 
-        const chosenModel = modelSelect ? modelSelect.value : 'gemini-2.0-flash';
+        const chosenModel = modelSelect ? modelSelect.value : 'nexus-2.0-flash';
         const apiKeyVal = keyInput ? keyInput.value.trim() : '';
 
         this.chatStore.saveSettings({
@@ -1349,12 +1437,12 @@ Key Ideas & Notes:
       });
     }
 
-    // Test Gemini Key Button
-    const testKeyBtn = document.getElementById('btn-test-gemini-key');
-    const statusDiv = document.getElementById('gemini-key-status');
+    // Test Nexus Key Button
+    const testKeyBtn = document.getElementById('btn-test-nexus-key') || document.getElementById('btn-test-gemini-key');
+    const statusDiv = document.getElementById('nexus-key-status') || document.getElementById('gemini-key-status');
     if (testKeyBtn) {
       testKeyBtn.addEventListener('click', async () => {
-        const keyInput = document.getElementById('settings-gemini-key-input');
+        const keyInput = document.getElementById('settings-nexus-key-input') || document.getElementById('settings-gemini-key-input');
         const key = keyInput ? keyInput.value.trim() : '';
         if (!key) {
           if (statusDiv) {
@@ -1370,7 +1458,7 @@ Key Ideas & Notes:
         if (statusDiv) {
           statusDiv.style.display = 'block';
           statusDiv.style.color = 'var(--om-cyan)';
-          statusDiv.textContent = 'Connecting to Google Generative AI API...';
+          statusDiv.textContent = 'Connecting to Nexus AI API...';
         }
 
         try {
@@ -1380,13 +1468,13 @@ Key Ideas & Notes:
             const count = data.models ? data.models.length : 0;
             if (statusDiv) {
               statusDiv.style.color = '#a6e3a1';
-              statusDiv.textContent = `🟢 Connected! Found ${count} Google Gemini models (Gemini 2.0 Flash ready).`;
+              statusDiv.textContent = `🟢 Connected! Found ${count} Nexus AI models (Nexus 2.0 Flash ready).`;
             }
-            this.showToast('Google Gemini API Key is valid and active!', 'success');
+            this.showToast('Nexus AI API Key is valid and active!', 'success');
           } else {
             if (statusDiv) {
               statusDiv.style.color = '#f38ba8';
-              statusDiv.textContent = `🔴 Key Verification Error (HTTP ${res.status}): Please check key from AI Studio.`;
+              statusDiv.textContent = `🔴 Key Verification Error (HTTP ${res.status}): Please check API key.`;
             }
           }
         } catch (e) {

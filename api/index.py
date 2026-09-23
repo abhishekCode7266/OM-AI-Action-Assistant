@@ -159,7 +159,7 @@ class handler(BaseHTTPRequestHandler):
                 "tagline": "Think. Plan. Act. Achieve.",
                 "persona": "Master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.",
                 "engine_version": "3.0.0",
-                "ai_models_supported": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash", "om-autonomous-engine"],
+                "ai_models_supported": ["nexus-2.0-flash", "nexus-1.5-pro", "nexus-1.5-flash", "om-autonomous-engine"],
                 "developer_mode": "unlimited_free",
                 "multimodal_capabilities": [
                     "Vision & Image Analysis",
@@ -242,13 +242,13 @@ class handler(BaseHTTPRequestHandler):
             if not clean_goal:
                 clean_goal = "General Objective"
 
-            effective_gemini_key = user_api_key if (user_api_key and user_api_key.startswith("AIzaSy")) else os.environ.get("GEMINI_API_KEY", "")
+            effective_nexus_key = user_api_key if (user_api_key and user_api_key.startswith("AIzaSy")) else (os.environ.get("NEXUS_API_KEY", "") or os.environ.get("GEMINI_API_KEY", ""))
 
-            # Call Google Gemini 1.5 Flash if key is present
-            if effective_gemini_key:
+            # Call Nexus 1.5 Flash if key is present
+            if effective_nexus_key:
                 try:
-                    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={effective_gemini_key}"
-                    gemini_payload = json.dumps({
+                    nexus_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={effective_nexus_key}"
+                    nexus_payload = json.dumps({
                         "contents": [{
                             "role": "user",
                             "parts": [{
@@ -265,8 +265,8 @@ class handler(BaseHTTPRequestHandler):
                     }).encode("utf-8")
 
                     req = urllib.request.Request(
-                        gemini_url,
-                        data=gemini_payload,
+                        nexus_url,
+                        data=nexus_payload,
                         headers={"Content-Type": "application/json"}
                     )
                     with urllib.request.urlopen(req, timeout=10) as g_resp:
@@ -281,9 +281,9 @@ class handler(BaseHTTPRequestHandler):
                                     "tagline": "Think. Plan. Act. Achieve.",
                                     "query": prompt,
                                     "mode": mode,
-                                    "apiKeyUsed": "Google Gemini 1.5 Flash (Live)",
+                                    "apiKeyUsed": "Nexus 1.5 Flash (Live)",
                                     "text": text,
-                                    "reasoning": "1. Connected live to Google Gemini 1.5 Flash.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 99/100).",
+                                    "reasoning": "1. Connected live to Nexus 1.5 Flash Engine.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 99/100).",
                                     "verified": True,
                                     "actions": [
                                         {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},

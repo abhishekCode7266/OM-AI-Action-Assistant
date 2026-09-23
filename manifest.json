@@ -1,0 +1,18 @@
+{
+  "short_name": "OM AI",
+  "name": "OM – AI Action Assistant",
+  "description": "Next-generation multimodal conversational AI collaborator with Nexus Live Voice, 3D CAD Assemblable Studio, and autonomous agentic workflows.",
+  "icons": [
+    {
+      "src": "assets/icons/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512 any"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "display": "standalone",
+  "orientation": "any",
+  "categories": ["productivity", "utilities", "developer tools"]
+}

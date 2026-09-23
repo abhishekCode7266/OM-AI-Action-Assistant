@@ -15,12 +15,12 @@ export default async function handler(req, res) {
   const cleanGoal = prompt.replace(/^(decompose:|deconstruct:|plan:|launch:|build:|how to|i want to)\s*/i, '').trim() || 'Core Goal';
   const capGoal = cleanGoal.charAt(0).toUpperCase() + cleanGoal.slice(1);
 
-  const effectiveGeminiKey = (body.apiKey && body.apiKey.startsWith('AIzaSy')) ? body.apiKey : process.env.GEMINI_API_KEY;
+  const effectiveNexusKey = (body.apiKey && body.apiKey.startsWith('AIzaSy')) ? body.apiKey : (process.env.NEXUS_API_KEY || process.env.GEMINI_API_KEY);
 
-  if (effectiveGeminiKey) {
+  if (effectiveNexusKey) {
     try {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveGeminiKey}`;
-      const geminiResp = await fetch(geminiUrl, {
+      const nexusUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveNexusKey}`;
+      const nexusResp = await fetch(nexusUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -31,10 +31,10 @@ export default async function handler(req, res) {
         })
       });
 
-      if (geminiResp.ok) {
-        const geminiData = await geminiResp.json();
-        const geminiText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (geminiText) {
+      if (nexusResp.ok) {
+        const nexusData = await nexusResp.json();
+        const nexusText = nexusData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (nexusText) {
           return res.status(200).json({
             sender: 'om',
             greeting: "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
@@ -42,9 +42,9 @@ export default async function handler(req, res) {
             tagline: "Think. Plan. Act. Achieve.",
             query: prompt,
             mode: mode,
-            apiKeyUsed: 'Google Gemini 1.5 Flash (Live)',
-            text: geminiText,
-            reasoning: "1. Connected live to Google Gemini 1.5 Flash.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 99/100).",
+            apiKeyUsed: 'Nexus 1.5 Flash (Live)',
+            text: nexusText,
+            reasoning: "1. Connected live to Nexus 1.5 Flash Engine.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 99/100).",
             verified: true,
             actions: [
               { stage: 'think', title: `Scope requirements for ${capGoal}`, estimate: '1d' },
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         }
       }
     } catch (err) {
-      console.warn("Gemini call failed in serverless handler, falling back to autonomous engine", err);
+      console.warn("Nexus call failed in serverless handler, falling back to autonomous engine", err);
     }
   }
 

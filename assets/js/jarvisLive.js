@@ -251,9 +251,15 @@ class OMJarvisLiveEngine {
     }
 
     this.isActive = true;
-    const modal = document.getElementById('gemini-live-modal');
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
     if (modal) {
       modal.classList.add('active');
+    }
+
+    // Ensure PiP is hidden when full modal opens
+    const pip = document.getElementById('floating-live-pip-widget');
+    if (pip) {
+      pip.classList.remove('active');
     }
 
     this.updatePersonaBadge();
@@ -268,6 +274,51 @@ class OMJarvisLiveEngine {
         this.rearmMic();
       }
     });
+  }
+
+  minimizeToPiP() {
+    if (!this.isActive) return;
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+    const pip = document.getElementById('floating-live-pip-widget');
+    if (pip) {
+      pip.classList.add('active');
+      this.updatePiPContent();
+    }
+    if (window.omApp) {
+      window.omApp.showToast('Voice session minimized to floating PiP. Tap orb to expand or continue speaking freely across all views!', 'info');
+    }
+  }
+
+  expandFromPiP() {
+    const pip = document.getElementById('floating-live-pip-widget');
+    if (pip) {
+      pip.classList.remove('active');
+    }
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  updatePiPContent() {
+    const pipPersona = document.getElementById('pip-persona-title');
+    const pipTicker = document.getElementById('pip-live-speech-ticker');
+    const p = this.personas[this.persona] || this.personas.friday;
+    if (pipPersona) {
+      pipPersona.textContent = p.name;
+      pipPersona.style.color = p.primaryColor;
+    }
+    if (pipTicker && !pipTicker.textContent) {
+      pipTicker.textContent = `Active • Listening in ${this.currentLanguage}`;
+    }
+    const orb = document.querySelector('.pip-reactor-orb');
+    if (orb) {
+      orb.style.boxShadow = `0 0 16px ${p.primaryColor}88`;
+      orb.style.borderColor = p.primaryColor;
+    }
   }
 
   stopSession() {
@@ -286,9 +337,20 @@ class OMJarvisLiveEngine {
       this.animFrameId = null;
     }
 
-    const modal = document.getElementById('gemini-live-modal');
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
     if (modal) {
       modal.classList.remove('active');
+    }
+
+    const pip = document.getElementById('floating-live-pip-widget');
+    if (pip) {
+      pip.classList.remove('active');
+    }
+
+    // Stop live media share if active
+    if (window.omMediaVision) {
+      window.omMediaVision.stopScreenShare();
+      window.omMediaVision.stopCamera();
     }
 
     if (window.omApp) {
@@ -334,14 +396,32 @@ class OMJarvisLiveEngine {
     if (!this.isActive) return;
     this.updateHUDStatus('PROCESSING');
 
-    // Update Live Transcript
+    // Update Live Transcript & PiP ticker
     const userTranscriptEl = document.getElementById('live-user-transcript');
     if (userTranscriptEl) {
       userTranscriptEl.textContent = `"${userSpeech}"`;
     }
+    const pipTicker = document.getElementById('pip-live-speech-ticker');
+    if (pipTicker) {
+      pipTicker.textContent = `"${userSpeech}"`;
+    }
 
     const isHindi = this.currentLanguage.startsWith('hi');
     const replyText = this.generatePersonaResponse(userSpeech, isHindi);
+
+    // Hands-Free Autonomous Action Triggering via Voice
+    const lower = userSpeech.toLowerCase();
+    if (lower.includes('screen share') || lower.includes('स्क्रीन शेयर')) {
+      if (window.omMediaVision) window.omMediaVision.startScreenShare();
+    } else if (lower.includes('camera') || lower.includes('कैमरा')) {
+      if (window.omMediaVision) window.omMediaVision.startCamera();
+    } else if ((lower.includes('3d') || lower.includes('cad') || lower.includes('model')) && window.omDismantler) {
+      if (lower.includes('drone')) window.omDismantler.openModal('drone');
+      else if (lower.includes('robot')) window.omDismantler.openModal('robot');
+      else if (lower.includes('car')) window.omDismantler.openModal('car');
+      else if (lower.includes('engine') || lower.includes('turbine')) window.omDismantler.openModal('turbine');
+      else window.omDismantler.openModal('drone');
+    }
 
     // Record message in active chat store
     const chatStore = window.omChatStore;
@@ -546,6 +626,16 @@ class OMJarvisLiveEngine {
     }
     if (pulseRing) {
       pulseRing.className = 'live-hud-pulse-ring ' + status.toLowerCase();
+    }
+
+    // PiP status & reactor ring
+    const pipState = document.getElementById('pip-hud-state');
+    if (pipState) {
+      pipState.textContent = status;
+      if (status === 'LISTENING') pipState.style.color = p.secondaryColor;
+      else if (status === 'SPEAKING') pipState.style.color = p.primaryColor;
+      else if (status === 'PROCESSING') pipState.style.color = '#f59e0b';
+      else pipState.style.color = '#94a3b8';
     }
   }
 
