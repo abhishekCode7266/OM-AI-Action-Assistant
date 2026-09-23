@@ -276,6 +276,16 @@ class OMVoiceEngine {
     this.synth.speak(this.currentUtterance);
   }
 
+  speakMessageById(msgId) {
+    if (!window.omChatStore) return;
+    const active = window.omChatStore.getActiveChat();
+    if (!active || !active.messages) return;
+    const msg = active.messages.find(m => m.id === msgId);
+    if (msg && msg.text) {
+      this.speakText(msg.text, msg.id);
+    }
+  }
+
   stopSpeaking() {
     if (this.synth) {
       this.synth.cancel();

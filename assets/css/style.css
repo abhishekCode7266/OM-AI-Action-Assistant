@@ -2995,3 +2995,268 @@ h1, h2, h3, h4, h5 {
   color: #030712 !important;
   font-weight: 700;
 }
+
+/* ==========================================================================
+   Gemini-Style Elements: Suggestions, Capsule Model Dropdown, Attach Menu, Toolbar
+   ========================================================================== */
+.gemini-suggestions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-width: 720px;
+  margin: 22px auto 6px auto;
+  padding: 0 10px;
+}
+
+.gemini-suggestion-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  color: #cbd5e1;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.gemini-suggestion-pill:hover {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(6, 182, 212, 0.2);
+}
+
+.gemini-suggestion-pill:active {
+  transform: scale(0.98);
+}
+
+.pill-arrow {
+  color: var(--om-cyan, #06b6d4);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.pill-label {
+  line-height: 1.2;
+}
+
+/* Capsule Model Dropdown */
+.capsule-model-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.capsule-model-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 4px 10px;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.18s ease;
+}
+
+.capsule-model-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.capsule-chevron {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  transition: transform 0.18s ease;
+}
+
+.capsule-model-dropdown {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  min-width: 230px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 1000;
+  backdrop-filter: blur(16px);
+  animation: dropdownPop 0.15s ease-out;
+}
+
+.capsule-model-dropdown.show {
+  display: flex;
+}
+
+.capsule-model-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background 0.15s ease;
+}
+
+.capsule-model-item:hover {
+  background: rgba(6, 182, 212, 0.14);
+}
+
+.capsule-model-item.active {
+  background: rgba(6, 182, 212, 0.22);
+  border-left: 3px solid var(--om-cyan, #06b6d4);
+}
+
+.capsule-model-item strong {
+  font-size: 0.82rem;
+  color: #f8fafc;
+}
+
+.capsule-model-item span {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Attach Popover Menu */
+.input-attach-popup {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 12px;
+  width: 270px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1000;
+  backdrop-filter: blur(16px);
+  animation: dropdownPop 0.15s ease-out;
+}
+
+.input-attach-popup.show {
+  display: flex;
+}
+
+.attach-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.attach-popup-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(2px);
+}
+
+.attach-item-icon {
+  font-size: 1.25rem;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attach-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.attach-item-text strong {
+  font-size: 0.82rem;
+  color: #f1f5f9;
+}
+
+.attach-item-text span {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Gemini Message Toolbar */
+.gemini-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 0.82;
+  transition: opacity 0.2s ease;
+}
+
+.message-bubble:hover .gemini-toolbar {
+  opacity: 1;
+}
+
+.gemini-tool-icon-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gemini-tool-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.gemini-tool-icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Lightbox Modal */
+.om-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.om-lightbox-content {
+  max-width: 90vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: default;
+}
+

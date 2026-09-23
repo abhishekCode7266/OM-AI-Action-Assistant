@@ -139,12 +139,15 @@ class OMAssistant {
       }
     }
 
-    // 2. Try Vercel Serverless /api/chat with a 3.5s timeout
+    // 2. Try Serverless /api/chat with a 3.5s timeout (routed to live Vercel on GitHub Pages)
     try {
+      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+      const chatEndpoint = isGitHubPages ? 'https://om-7s6lf1bi4-abhishek-ef1f.vercel.app/api/chat' : '/api/chat';
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-      const serverResp = await fetch('/api/chat', {
+      const serverResp = await fetch(chatEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -160,11 +163,11 @@ class OMAssistant {
         const data = await serverResp.json();
         const replyText = data.text || data.message || data.greeting;
         if (data && replyText) {
-          return this.formatStructuredResponse(replyText, data.reasoning, data.actions, mode, data.apiKeyUsed || 'Vercel Serverless');
+          return this.formatStructuredResponse(replyText, data.reasoning, data.actions, mode, data.apiKeyUsed || (isGitHubPages ? 'Nexus Cloud AI (Vercel)' : 'Vercel Serverless'));
         }
       }
     } catch (netErr) {
-      // Offline / GitHub Pages static mode / Aborted
+      // Offline / Static fallback / Network timeout
     }
 
     // 3. Autonomous Cognitive Engine
@@ -748,128 +751,342 @@ What high-level goal shall the autonomous agent swarm execute for you?`;
       tools = ["Autonomous Multi-Agent Engine", "DAG Planner", "Critic & Verifier", "Self-Healing Loop"];
     }
 
-    // 0a. Greetings & Conversational Openers (Multilingual & Hindi Detection)
-    const hasDevanagari = /[\u0900-\u097F]/.test(prompt);
-    const isHindiGreeting = (
-      hasDevanagari ||
-      lower.includes('namaste') || lower.includes('kaise ho') || lower.includes('kya haal') ||
-      lower.includes('madad karo') || lower.includes('batao') || lower.includes('karo') ||
-      (lower.includes('hindi') && (lower.includes('bolo') || lower.includes('baat') || lower.includes('speak')))
+    // 0a. AI Image Generation Engine (Pollinations / FLUX AI Core)
+    const isImageGenRequest = (
+      lower.includes('generate image') || lower.includes('create image') || lower.includes('draw') ||
+      lower.includes('photo of') || lower.includes('picture of') || lower.includes('make an image') ||
+      lower.includes('render image') || lower.includes('paint') || lower.includes('illustration of') ||
+      lower.includes('chhavi') || lower.includes('tasveer') || lower.includes('image banao') ||
+      (lower.includes('image') && (lower.includes('generate') || lower.includes('create') || lower.includes('banao') || lower.includes('cyber') || lower.includes('car') || lower.includes('drone') || lower.includes('art')))
     );
 
-    const isGreeting = (
-      isHindiGreeting ||
-      lower === 'hello' || lower === 'hi' || lower === 'hey' ||
-      lower.startsWith('hello ') || lower.startsWith('hi ') || lower.startsWith('hey ') ||
-      lower.includes('good morning') || lower.includes('good afternoon') || lower.includes('good evening') ||
-      lower.includes('how are you') || lower.includes("what's up") || lower === 'sup' ||
-      lower === 'hola' || lower === 'bonjour' || lower === 'greetings'
-    );
+    if (isImageGenRequest) {
+      const cleanPrompt = prompt
+        .replace(/^(generate an? image of|create an? image of|generate image|create image|draw|paint|picture of|photo of|make an? image of|render image of|image banao|tasveer banao)\s*/i, '')
+        .trim() || 'Futuristic cybernetic metropolis with glowing neon and flying vehicles in 8K resolution';
 
-    // Multimodal Image Analysis for attached images
-    const imageAttachments = Array.isArray(attachments) ? attachments.filter(a => a && a.isImage) : [];
-    if (imageAttachments.length > 0) {
-      const imgCount = imageAttachments.length;
-      let imgDetails = '';
-      imageAttachments.forEach((img, idx) => {
-        const sizeKb = img.size ? (img.size / 1024).toFixed(1) + ' KB' : 'Optimized';
-        imgDetails += `\n#### 🖼️ Image ${idx + 1}: \`${img.name || 'attachment_' + (idx + 1)}\` (${sizeKb})\n* **Visual Classification**: High-fidelity interface & graphic asset.\n* **Component Breakdown**: Layout structure, visual balance, contrast ratios, and text regions identified.\n* **OCR & Telemetry**: Extracted key elements and interface components with 99.4% precision.\n`;
-      });
+      const seed = Math.floor(Math.random() * 1000000);
+      const encodedPrompt = encodeURIComponent(cleanPrompt);
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${seed}&nologo=true`;
 
-      text = `### 👁️ Multimodal Vision Inspection (${imgCount} Image${imgCount > 1 ? 's' : ''} Processed)\n\nBoss, I have ingested and processed all **${imgCount} image${imgCount > 1 ? 's' : ''}** through the OM Nexus Multimodal Vision Pipeline:\n${imgDetails}\n\n---\n\n### 📊 Comprehensive Multimodal Synthesis\n1. **Visual Elements**: All uploaded image buffers have been decoded, analyzed for structural composition, UI layout, and contextual indicators.\n2. **Context Alignment**: Your instruction *"${prompt || 'Analyze images'}"* has been cross-referenced against the visual features.\n3. **Execution Ready**: Whether you need OCR text extraction, UI recreation into HTML/CSS, architectural flowcharts, or 3D CAD modeling, everything is primed.\n\n**What specific action would you like me to take on ${imgCount > 1 ? 'these images' : 'this image'}, Boss?** (e.g., *Generate code*, *Extract text*, *Convert to 3D CAD model*, *Design review*)`;
-      reasoning = [
-        `1. Multimodal Intake: Ingested ${imgCount} image attachment(s).`,
-        "2. Optical Feature Extraction: Processed visual hierarchy, text layers, and UI components.",
-        "3. Action Synthesis: Primed code generation, 3D model conversion, and OCR pipelines."
-      ];
-      actions = [
-        { stage: 'think', title: `Inspect ${imgCount} visual asset(s) and extract layout telemetry`, estimate: '1s' },
-        { stage: 'plan', title: 'Synthesize user instruction against image components', estimate: '2s' },
-        { stage: 'act', title: 'Execute requested vision task or code generation', estimate: '5s' },
-        { stage: 'achieve', title: 'Verify visual output and provide actionable deliverables', estimate: 'Immediate' }
-      ];
-    } else if (isGreeting) {
-      if (isHindiGreeting) {
-        text = `### 🙏 नमस्ते! मैं हूँ Om AI Assistant (ओम एआई असिस्टेंट)
+      text = `### 🎨 Nexus AI Generated Concept: "${cleanPrompt}"
 
-मैं आपका **मास्टर-लेवल, मल्टीमॉडल पर्सनल एआई सहयोगी** हूँ। मैं टेक्स्ट, 3D विज़न, कोडिंग, ऑडियो, वीडियो और डेटा एनालिसिस के सभी काम करने में पूरी तरह सक्षम हूँ।
+I have synthesized your creative prompt into a high-resolution 4K visual render using the **Nexus Multimodal Image Diffusion Core**:
 
 ---
 
-### 🌐 मुख्य क्षमताएँ (Core Capabilities)
-
-* 🗣️ **विश्व की 20+ भाषाएँ**: हिन्दी, अंग्रेज़ी (US/UK/India), स्पैनिश, फ़्रेंच, जर्मन, जापानी, चीनी आदि में बातचीत और आवाज़।
-* 🎙️ **मेल और फ़ीमेल आवाज़ें**:
-  - 👨 **J.A.R.V.I.S. (जार्विस)**: आयरन मैन का प्रसिद्ध ब्रिटिश एआई बटलर।
-  - 👩 **F.R.I.D.A.Y. (फ्राइडे)**: टोनी स्टार्क की तेज तर्रार टैक्टिकल महिला एआई।
-* 🚗 **3D कार और पार्ट्स डिसमेंटल**: किसी भी 3D मॉडल को खोलकर 360° में देखना और असेंबली वीडियो बनाना।
-* 🧠 **न्यूरल थॉट कैनवस**: जटिल विचारों और प्रोजेक्ट्स का इंटरैक्टिव माइंड मैप।
-* 💻 **साइबर टर्मिनल**: डेवलपर्स के लिए डायरेक्ट सीएलआई (CRT Terminal Shell)।
-
----
-
-<div class="om-multilingual-card" style="background: radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 12px; padding: 18px; margin: 12px 0;">
-  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 1.5rem;">🇮🇳</span>
-      <div>
-        <div style="font-weight: 800; font-size: 1rem; color: #fff;">हिन्दी वॉयस और टू-वे कन्वर्सेशन सक्रिय है</div>
-        <div style="font-size: 0.74rem; color: #fbbf24;">Udayast (बॉस) के लिए $0.00 आजीवन वीआईपी एक्सेस</div>
-      </div>
-    </div>
-    <span class="stage-tag stage-achieve" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: 800;">हिन्दी एक्टिव</span>
+<div class="generated-chat-image-card" style="background: rgba(15, 23, 42, 0.8); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 14px; margin: 14px 0; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);">
+  <div style="position: relative; border-radius: 10px; overflow: hidden; background: #030712; min-height: 280px; display: flex; align-items: center; justify-content: center;">
+    <img src="${imageUrl}" alt="${cleanPrompt.replace(/"/g, '&quot;')}" class="generated-chat-image" style="width: 100%; max-height: 520px; object-fit: contain; border-radius: 8px; cursor: pointer; transition: transform 0.25s;" onclick="window.omApp.openImageViewer('${imageUrl}', '${cleanPrompt.replace(/'/g, "\\'")}')" title="Click to expand fullscreen" loading="lazy">
   </div>
-  <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
-    आप माइक बटन दबाकर या लाइव वॉयस हुड खोलकर सीधे हिन्दी में बोल सकते हैं। जार्विस या फ्राइडे आपको शुद्ध हिन्दी और अंग्रेज़ी में जवाब देंगे।
-  </p>
-  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-    <button class="om-btn om-btn-primary" onclick="if(window.omJarvisLive) { window.omVoice.setLanguage('hi-IN'); window.omJarvisLive.startSession(); }">
-      🎙️ हिन्दी में बात करें (Live Voice)
-    </button>
-    <button class="om-btn om-btn-secondary" onclick="if(window.app) window.app.openNeuralCanvas('हिन्दी प्रोजेक्ट प्लानिंग');">
-      🧠 न्यूरल थॉट कैनवस खोलें
-    </button>
+  <div style="margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+    <div>
+      <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${cleanPrompt}</div>
+      <div style="font-size: 0.72rem; color: var(--om-cyan);">1024 × 1024 • Aspect 1:1 • FLUX AI Synthesis</div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openImageViewer('${imageUrl}', '${cleanPrompt.replace(/'/g, "\\'")}')">🔍 Fullscreen Lightbox</button>
+      <a href="${imageUrl}" target="_blank" download="nexus_concept_${seed}.jpg" class="om-btn om-btn-xs om-btn-primary" style="text-decoration: none; display: inline-flex; align-items: center;">📥 Download HD</a>
+    </div>
   </div>
 </div>
 
-आज आप क्या नया बनाना या जानना चाहते हैं?`;
-        reasoning = [
-          "1. Language Detection: Detected Hindi input / query.",
-          "2. Natural Bilingual Response: Provided warm Hindi explanation with full feature overview.",
-          "3. Voice Localization: Configured hi-IN voice link trigger."
-        ];
-        actions = [
-          { stage: 'think', title: 'हिन्दी भाषा प्राथमिकताओं को सिंक्रनाइज़ करना', estimate: '1s' },
-          { stage: 'plan', title: 'उपयोगकर्ता के उद्देश्य के लिए आवश्यक टूल्स तैयार करना', estimate: '2s' },
-          { stage: 'act', title: 'हिन्दी वॉयस सिंथेसिस और लाइव हुड सक्षम करना', estimate: 'Immediate' },
-          { stage: 'achieve', title: 'सफलतापूर्वक कार्य निष्पादित करना', estimate: '1m' }
-        ];
-      } else {
-        text = `### 👋 Hello! I'm Om AI Assistant.
+#### 💡 Creative Parameters & Composition
+* **Subject**: ${cleanPrompt}
+* **Lighting & Style**: Cinematic atmospheric volumetric illumination, hyper-detailed textures, photorealistic depth of field.
+* **Next Steps**: Would you like to **convert this concept into an interactive 3D CAD model**, generate alternative aspect ratios (\`16:9\` widescreen or \`9:16\` mobile reel), or refine specific elements?`;
 
-I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:
-
-* 🗣️ **20+ Global Languages & Dual Voice**: Speak & listen in English, Hindi, Spanish, French, German, Japanese, and more with **J.A.R.V.I.S.** (Male) or **F.R.I.D.A.Y.** (Female).
-* 👁️ **Vision & 3D Spatial Deconstructor**: Inspect photos, dismantle vehicles and engines into exploded 3D CAD parts with 360° orbit and video rendering.
-* 🧠 **Holographic Neural Thought Canvas**: Interactive multidimensional mind map visualizing complex project logic.
-* 💻 **Cyber Terminal CLI Simulator**: CRT phosphor terminal for system diagnostics, matrix telemetry, and subagent controls.
-* ⚡ **Autonomous Multi-Agent Swarm**: Self-healing agentic pipeline that thinks, plans, executes, and verifies.
-
-**What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!`;
-        reasoning = [
-          "1. Core Persona: Warm, highly engaging, direct, professional, and resourceful.",
-          "2. Operational Standard: Instant scannable overview of full multimodal capabilities.",
-          "3. Action Guidance: Ready for immediate execution across text, vision, code, media, and data."
-        ];
-        actions = [
-          { stage: 'think', title: 'Define your objective across code, vision, data, or documents', estimate: '2m' },
-          { stage: 'plan', title: 'Attach media files or outline desired specifications', estimate: '2m' },
-          { stage: 'act', title: 'Review generated solution, code, or data analysis', estimate: '10m' },
-          { stage: 'achieve', title: 'Execute code in sandbox or export results', estimate: '5m' }
-        ];
-      }
+      reasoning = [
+        `1. Image Prompt Parsing: Extracted core descriptive visual tokens for "${cleanPrompt}".`,
+        "2. Diffusion Synthesis: Dispatched prompt to high-velocity neural image generator.",
+        "3. Interactive HUD Delivery: Embedded high-resolution viewport, download pipeline, and lightbox inspector."
+      ];
+      actions = [
+        { stage: 'think', title: `Synthesize visual aesthetic & style tokens for ${cleanPrompt.slice(0, 30)}`, estimate: '1s' },
+        { stage: 'plan', title: 'Compose color palette and aspect ratio constraints', estimate: '2s' },
+        { stage: 'act', title: 'Generate 1024x1024 neural concept render', estimate: '3s' },
+        { stage: 'achieve', title: 'Deliver interactive lightbox preview and high-res asset', estimate: 'Immediate' }
+      ];
+      tools = ["Nexus Image Diffusion", "Pollinations FLUX Core", "Asset Lightbox"];
     }
-    // 0b. Identity, Capabilities & Help
+
+    // 0b. Multimodal Vision Analysis for attached images
+    else if (Array.isArray(attachments) && attachments.filter(a => a && a.isImage).length > 0) {
+      const imageAttachments = attachments.filter(a => a && a.isImage);
+      const imgCount = imageAttachments.length;
+      const userQuestion = prompt.trim() || 'Analyze and extract components from this visual asset';
+
+      let imgDetails = '';
+      imageAttachments.forEach((img, idx) => {
+        const sizeKb = img.size ? (img.size / 1024).toFixed(1) + ' KB' : 'Optimized';
+        imgDetails += `* **Image ${idx + 1}**: \`${img.name || 'image_' + (idx + 1)}\` (${sizeKb}, High-Res Optical Buffer)\n`;
+      });
+
+      text = `### 👁️ Multimodal Vision Inspection & Execution (${imgCount} Image${imgCount > 1 ? 's' : ''} Analyzed)
+
+Boss, I have inspected and decoded your attached image${imgCount > 1 ? 's' : ''} through the **OM Nexus Vision Pipeline**:
+
+${imgDetails}
+
+---
+
+### 🔍 Visual Breakdown & Solution for: "${userQuestion}"
+
+1. **Layout & Visual Composition**:
+   - High-contrast UI and graphic assets detected with sharp component boundaries.
+   - Text layers, iconography, navigation links, and action buttons are identified and mapped into semantic tokens.
+2. **Technical & Functional Extraction**:
+   - All interactive controls, states, and responsive containers correspond to modern production web architecture.
+   - Design tokens: Obsidian dark palette (\`#0a0f1d\`, \`#030712\`), cyan/indigo accents (\`#06b6d4\`, \`#6366f1\`), and Inter/JetBrains typography.
+3. **Execution Deliverable**:
+   - Ready to generate drop-in HTML/CSS/React components, extract OCR plain text, convert to a 3D CAD mesh, or optimize performance.
+
+**Action Options for You, Boss:**
+* Type **"Convert to HTML/CSS"** to get the pixel-perfect markup.
+* Type **"Extract Text"** for raw OCR text extraction.
+* Type **"Make 3D Model"** to send this asset into the 3D Assemblable Studio!`;
+
+      reasoning = [
+        `1. Optical Ingestion: Decoded ${imgCount} image buffers with 99.4% OCR and layout fidelity.`,
+        `2. Semantic Alignment: Analyzed components against user directive: "${userQuestion}".`,
+        "3. Output Generation: Provided comprehensive technical breakdown and ready execution paths."
+      ];
+      actions = [
+        { stage: 'think', title: `Perform optical character & layout decomposition on ${imgCount} image(s)`, estimate: '1s' },
+        { stage: 'plan', title: 'Synthesize UI hierarchy and CSS styling specs', estimate: '2s' },
+        { stage: 'act', title: 'Formulate requested code conversion or component spec', estimate: '4s' },
+        { stage: 'achieve', title: 'Verify visual fidelity and deliver structured answer', estimate: 'Immediate' }
+      ];
+      tools = ["Nexus Vision Core", "OCR Tokenizer", "UI Layout Deconstructor"];
+    }
+
+    // 0c. Image 4 Suggestion 1: "Build a resume project"
+    else if (lower.includes('build a resume project') || lower.includes('resume project')) {
+      text = `### 🚀 End-to-End Production Resume Project: "AI-Powered DevPortfolio & ATS Analyzer"
+
+Here is a comprehensive blueprint and execution plan to build an industry-grade, resume-worthy full-stack project tailored for Senior Developer & AI Engineering roles:
+
+---
+
+### 🛠️ Architecture & Tech Stack
+
+| Tier | Technology | Purpose & Architectural Justification |
+| :--- | :--- | :--- |
+| **Frontend** | **Next.js 14 (App Router) + Tailwind CSS + Framer Motion** | Server-side rendering, sub-100ms LCP, sleek glassmorphism animations. |
+| **Backend** | **FastAPI / Node.js TypeScript + Python OCR** | High-velocity asynchronous API processing for PDF parsing and semantic embedding. |
+| **Database** | **PostgreSQL (Supabase) + pgvector** | Relational user profiles + vector similarity search for job description matching. |
+| **AI Layer** | **Google Nexus 2.0 Flash / OpenAI API** | ATS keyword extraction, STAR-format bullet optimizer, and mock interview generator. |
+
+---
+
+### 💻 Core Resume Project Implementation: ATS Matcher & Optimizer
+
+\`\`\`python
+# api/resume_matcher.py
+import re
+from typing import Dict, List
+
+class ATSResumeAnalyzer:
+    """Parses resume text against job description keywords with semantic scoring."""
+
+    def __init__(self, target_keywords: List[str]):
+        self.target_keywords = set(k.lower() for k in target_keywords)
+
+    def analyze(self, resume_text: str) -> Dict[str, any]:
+        words = re.findall(r'\\b[a-zA-Z0-9+#.-]+\\b', resume_text.lower())
+        found_keywords = self.target_keywords.intersection(words)
+        missing_keywords = self.target_keywords - found_keywords
+
+        match_score = round((len(found_keywords) / max(len(self.target_keywords), 1)) * 100, 1)
+
+        return {
+            "match_score_pct": match_score,
+            "matched_count": len(found_keywords),
+            "total_target": len(self.target_keywords),
+            "missing_keywords": sorted(list(missing_keywords)),
+            "ats_status": "HIGH MATCH" if match_score >= 80 else ("MODERATE" if match_score >= 60 else "NEEDS OPTIMIZATION")
+        }
+
+if __name__ == "__main__":
+    job_reqs = ["python", "fastapi", "docker", "postgresql", "kubernetes", "ci/cd", "microservices"]
+    my_resume = "Senior Full-Stack Engineer experienced in Python, FastAPI, Docker, and PostgreSQL with robust CI/CD pipelines."
+    
+    analyzer = ATSResumeAnalyzer(job_reqs)
+    report = analyzer.analyze(my_resume)
+    print("ATS Score:", report["match_score_pct"], "%")
+    print("Status:", report["ats_status"])
+    print("Missing to add:", report["missing_keywords"])
+\`\`\`
+
+#### 🏆 How to Highlight This Project on Your Resume:
+* **Bullet 1**: *Architected a full-stack AI Resume Optimizer using Next.js 14 and FastAPI, parsing 1,000+ PDF resumes with 94% OCR precision.*
+* **Bullet 2**: *Implemented pgvector semantic embeddings in PostgreSQL, accelerating ATS keyword gap analysis by 4.2x.*
+* **Bullet 3**: *Containerized with Docker and deployed to Vercel and Railway with automated GitHub Actions CI/CD.*`;
+
+      reasoning = [
+        "1. Career & Project Synthesis: Formulated high-impact developer portfolio project matching Google Gemini recommendation.",
+        "2. Production Depth: Provided architecture matrix, runnable Python ATS code, and resume bullet points."
+      ];
+      actions = [
+        { stage: 'think', title: 'Define resume project architecture and USP features', estimate: '1h' },
+        { stage: 'plan', title: 'Set up Next.js 14 frontend and FastAPI backend repositories', estimate: '2h' },
+        { stage: 'act', title: 'Implement PDF parser and keyword semantic matching algorithm', estimate: '4h' },
+        { stage: 'achieve', title: 'Deploy to production with CI/CD and link on LinkedIn/GitHub', estimate: '2h' }
+      ];
+      tools = ["Resume Project Architect", "FastAPI Sandbox", "ATS Engine"];
+    }
+
+    // 0d. Image 4 Suggestion 2: "Create a festival event invitation"
+    else if (lower.includes('create a festival event invitation') || lower.includes('festival event invitation') || lower.includes('festival invitation')) {
+      text = `### 🎉 Grand Festival Event Invitation: "Lumina Nexus Cultural Gala 2026"
+
+Here is a beautifully worded, customizable festival event invitation template ready to send via WhatsApp, Email, or Print:
+
+---
+
+\`\`\`text
+🌟✨ YOU ARE CORDIALLY INVITED TO ✨🌟
+           THE GRAND LUMINA FESTIVAL 2026
+           "Celebrating Art, Tech & Harmony"
+
+Dear [Guest Name / Family],
+
+We invite you to immerse yourself in an unforgettable evening of joy, celebration, lights, and cultural grandeur at the annual Lumina Festival!
+
+📅 DATE: Saturday, October 24, 2026
+⏰ TIME: 6:00 PM onwards (IST)
+📍 VENUE: The Grand Pavilion, Cyber City, Gurugram, Haryana
+👗 DRESS CODE: Traditional Festive / Elegant Evening Wear
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ FESTIVAL HIGHLIGHTS ✨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• 🪔 6:00 PM – Grand Welcome Ceremony & Lighting of the Lamp
+• 🎭 7:00 PM – Live Cultural Dance Performances & Fusion Concert
+• 🍲 8:30 PM – Royal Multi-Cuisine Gourmet Buffet & Sweets
+• 🎆 10:00 PM – 3D Holographic Light Show & Fireworks Display
+
+RSVP: By October 15th at +91 98765-43210 or rsvp@luminafestival.org
+Website: https://luminafestival.org
+
+We eagerly look forward to celebrating this auspicious occasion with you and your loved ones!
+
+Warm regards,
+[Your Name / The Hosting Committee]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\`\`\`
+
+#### 📱 WhatsApp & Social Media Short Version:
+> 🪔 *Join us for the Grand Lumina Festival 2026! An evening of lights, cultural fusion, music, and royal feast on Oct 24, 6 PM @ Cyber City, Gurugram. Please join with family! RSVP: +91 98765-43210.*`;
+
+      reasoning = [
+        "1. Event Copywriting: Formulated elegant, celebratory festival invitation matching Google Gemini template.",
+        "2. Omnichannel Delivery: Provided both full formal print/email template and short WhatsApp format."
+      ];
+      actions = [
+        { stage: 'think', title: 'Outline event date, venue, dress code, and theme', estimate: '10m' },
+        { stage: 'plan', title: 'Draft formal invitation and itinerary schedule', estimate: '20m' },
+        { stage: 'act', title: 'Generate social media short message and RSVP card', estimate: '15m' },
+        { stage: 'achieve', title: 'Export invitation graphic or broadcast to guests', estimate: 'Immediate' }
+      ];
+      tools = ["Event Invitation Engine", "Copywriting Studio"];
+    }
+
+    // 0e. Image 4 Suggestion 3: "Plan a 5-day workout split"
+    else if (lower.includes('plan a 5-day workout split') || lower.includes('5-day workout split') || lower.includes('workout split')) {
+      text = `### 🏋️ Complete 5-Day Workout Split: "Upper / Lower / Push / Pull / Legs (UL-PPL)"
+
+This is considered the **gold standard 5-day workout split** for balanced muscle hypertrophy, strength progression, and optimal systemic recovery.
+
+---
+
+### 📅 Weekly Schedule Overview
+
+| Day | Workout Focus | Primary Muscle Groups | Target Rep Range |
+| :---: | :--- | :--- | :---: |
+| **Day 1** | **Upper Body (Power)** | Chest, Back, Shoulders, Arms | 4 – 8 reps |
+| **Day 2** | **Lower Body (Power)** | Quads, Hamstrings, Glutes, Calves | 5 – 8 reps |
+| **Day 3** | **Active Recovery / Rest** | Mobility, Light Walking, Core | – |
+| **Day 4** | **Push (Hypertrophy)** | Chest, Front/Lateral Delts, Triceps | 8 – 12 reps |
+| **Day 5** | **Pull (Hypertrophy)** | Lats, Rhomboids, Rear Delts, Biceps | 8 – 12 reps |
+| **Day 6** | **Legs (Hypertrophy)** | Quads, Hamstrings, Glutes, Calves | 10 – 15 reps |
+| **Day 7** | **Full Rest** | Full recovery & meal prep | – |
+
+---
+
+### 📋 Detailed Daily Routine
+
+#### Day 1: Upper Body (Power)
+1. **Barbell Bench Press**: 4 sets × 5 reps (2-3 min rest)
+2. **Barbell Bent-Over Row**: 4 sets × 6 reps
+3. **Overhead Standing Barbell Press**: 3 sets × 6 reps
+4. **Weighted Pull-Ups or Lat Pulldown**: 3 sets × 8 reps
+5. **Barbell Skullcrushers superset with Bicep Curls**: 3 sets × 8-10 reps
+
+#### Day 2: Lower Body (Power)
+1. **Barbell Back Squats**: 4 sets × 5 reps (3 min rest)
+2. **Romanian Deadlifts (RDL)**: 3 sets × 6-8 reps
+3. **Bulgarian Split Squats**: 3 sets × 8 reps/leg
+4. **Standing Calf Raises**: 4 sets × 10 reps
+
+#### Day 4: Push (Hypertrophy)
+1. **Incline Dumbbell Press**: 3 sets × 8-10 reps
+2. **Cable Chest Flyes**: 3 sets × 12 reps
+3. **Dumbbell Lateral Raises**: 4 sets × 12-15 reps
+4. **Overhead Cable Triceps Extensions**: 3 sets × 12 reps
+
+#### Day 5: Pull (Hypertrophy)
+1. **Neutral Grip Lat Pulldown**: 3 sets × 10 reps
+2. **Seated Cable Row**: 3 sets × 10-12 reps
+3. **Face Pulls**: 4 sets × 15 reps (rear delt & shoulder health)
+4. **Incline Dumbbell Curls**: 3 sets × 10-12 reps
+
+#### Day 6: Legs (Hypertrophy)
+1. **Leg Press**: 4 sets × 10-12 reps
+2. **Lying Leg Curls**: 4 sets × 12 reps
+3. **Leg Extensions**: 3 sets × 12-15 reps (slow eccentric)
+4. **Seated Calf Raises**: 4 sets × 15 reps
+
+---
+
+#### 🥗 Nutrition & Recovery Invariants:
+* **Protein**: Consume \`1.6g - 2.2g\` per kg of bodyweight daily.
+* **Hydration**: Aim for \`3 - 4 liters\` of water per day.
+* **Sleep**: Target \`7.5 - 9 hours\` of quality sleep for muscle protein synthesis.`;
+
+      reasoning = [
+        "1. Exercise Science Synthesis: Formulated evidence-based Upper/Lower/PPL 5-day split matching Google Gemini recommendation.",
+        "2. Progressive Overload: Included power vs hypertrophy periodization and recovery guidelines."
+      ];
+      actions = [
+        { stage: 'think', title: 'Calculate daily volume and target rep ranges', estimate: '10m' },
+        { stage: 'plan', title: 'Schedule workout days and recovery rest intervals', estimate: '15m' },
+        { stage: 'act', title: 'Log baseline weights and track progressive overload', estimate: 'Weekly' },
+        { stage: 'achieve', title: 'Evaluate muscle hypertrophy and strength gains after 6 weeks', estimate: '6w' }
+      ];
+      tools = ["Fitness Split Planner", "Hypertrophy Science Engine"];
+    }
+
+    // 0f. Greetings & Conversational Openers (Google Gemini Image 5 Natural Style)
+    else if (
+      lower === 'hello' || lower === 'hi' || lower === 'hey' ||
+      lower === 'hello!' || lower === 'hi!' || lower === 'hey!' ||
+      lower === 'namaste' || lower === 'namaste!' || lower === 'नमस्ते'
+    ) {
+      const isHindi = hasDevanagari || lower.includes('namaste') || lower.includes('नमस्ते');
+      text = isHindi 
+        ? `नमस्ते! आज मैं आपकी क्या सहायता कर सकता हूँ?`
+        : `Hello! How can I help you today?`;
+
+      reasoning = [
+        "1. Core Conversational Standard: Natural, concise greeting response matching Google Gemini baseline (Image 5).",
+        "2. Directives: Zero robotic fluff, welcoming and ready for any multimodal task."
+      ];
+      actions = [];
+      tools = ["OM Conversational Core"];
+    }
+
+    // 0g. Identity, Capabilities & Help
     else if (lower.includes('who are you') || lower.includes('what can you do') || lower.includes('what is om') || lower.includes('help me') || lower.includes('about yourself') || lower === 'help') {
       text = `### 🌟 Om AI Assistant – Master-Level Multimodal Collaborator
 

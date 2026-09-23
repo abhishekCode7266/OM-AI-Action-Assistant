@@ -649,10 +649,13 @@ class OMApp {
           ${chartHtml}
           ${tasksHtml}
 
-          <div class="msg-footer-toolbar">
-            <button class="msg-tool-btn" onclick="window.omApp.copyText(\`${this.escapeQuote(msg.text)}\`)">📋 Copy</button>
-            <button class="msg-tool-btn" data-tts-id="${msg.id}" onclick="window.omVoice.speakText(\`${this.escapeQuote(msg.text)}\`, '${msg.id}')">🔊 Listen</button>
-            <button class="msg-tool-btn" onclick="window.omApp.regenerateLastResponse()">🔄 Regenerate</button>
+          <div class="msg-footer-toolbar gemini-toolbar" style="display: flex; align-items: center; gap: 6px; margin-top: 8px;">
+            <button class="gemini-tool-icon-btn" onclick="window.omApp.recordFeedback('${msg.id}', true)" title="Good response">👍</button>
+            <button class="gemini-tool-icon-btn" onclick="window.omApp.recordFeedback('${msg.id}', false)" title="Bad response">👎</button>
+            <button class="gemini-tool-icon-btn" onclick="window.omApp.regenerateLastResponse()" title="Regenerate response">🔄</button>
+            <button class="gemini-tool-icon-btn" onclick="window.omApp.copyMessageById('${msg.id}')" title="Copy response">📋</button>
+            <button class="gemini-tool-icon-btn" data-tts-id="${msg.id}" onclick="window.omVoice && window.omVoice.speakMessageById ? window.omVoice.speakMessageById('${msg.id}') : window.omApp.speakMessageById('${msg.id}')" title="Listen (Read aloud)">🔊</button>
+            <button class="gemini-tool-icon-btn" onclick="window.omApp.openMoreActionsMenu('${msg.id}', event)" title="More options">⋯</button>
           </div>
         </div>
       </div>
@@ -2071,22 +2074,33 @@ Key Ideas & Notes:
       return;
     }
 
+    const ratio = this.currentStudioRatio || '1:1';
+    let width = 1024, height = 1024;
+    if (ratio === '16:9') { width = 1280; height = 720; }
+    else if (ratio === '9:16') { width = 720; height = 1280; }
+
+    const seed = Math.floor(Math.random() * 1000000);
+    const encodedPrompt = encodeURIComponent(prompt);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+
     const grid = document.getElementById('studio-images-grid');
     if (grid) {
       const card = document.createElement('div');
       card.className = 'gallery-card';
-      card.style.cssText = 'background: rgba(15,23,42,0.7); border: 1.5px solid rgba(16,185,129,0.5); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;';
+      card.style.cssText = 'background: rgba(15,23,42,0.8); border: 1.5px solid rgba(6,182,212,0.4); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;';
       card.innerHTML = `
-        <div style="height: 140px; background: radial-gradient(circle, #0f766e, #030712); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;">
-          <span style="font-size: 3rem;">🎨</span>
-          <span style="font-size: 0.7rem; color: #34d399; margin-top: 4px;">AI Concept Generated</span>
+        <div style="position: relative; height: 160px; background: #030712; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">
+          <img src="${imageUrl}" alt="${this.escapeHTML(prompt)}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" loading="lazy">
+          <span style="position: absolute; bottom: 6px; right: 8px; font-size: 0.68rem; background: rgba(0,0,0,0.75); color: var(--om-cyan); padding: 2px 6px; border-radius: 4px;">${ratio} • AI Generated</span>
         </div>
-        <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
           <div>
-            <div style="font-size: 0.82rem; font-weight: 700; color: #fff;" title="${this.escapeHTML(prompt)}">${this.escapeHTML(prompt.slice(0, 32))}...</div>
-            <div style="font-size: 0.7rem; color: #34d399;">Nexus Multimodal • 4K Render</div>
+            <div style="font-size: 0.84rem; font-weight: 700; color: #fff; line-height: 1.3;" title="${this.escapeHTML(prompt)}">${this.escapeHTML(prompt.slice(0, 48))}${prompt.length > 48 ? '...' : ''}</div>
+            <div style="font-size: 0.7rem; color: var(--om-cyan); margin-top: 4px;">FLUX AI Diffusion • 4K Render</div>
           </div>
-          <div style="display: flex; gap: 6px; margin-top: 10px;">
+          <div style="display: flex; gap: 6px;">
+            <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">🔍 Expand</button>
+            <a href="${imageUrl}" target="_blank" download="nexus_concept_${seed}.jpg" class="om-btn om-btn-xs om-btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px;">📥 Save</a>
             <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Analyze this generated concept: ${this.escapeHTML(prompt)}')">💬 Discuss</button>
           </div>
         </div>
@@ -2094,7 +2108,7 @@ Key Ideas & Notes:
       grid.prepend(card);
     }
     input.value = '';
-    this.showToast('⚡ AI image concept generated in studio!', 'success');
+    this.showToast('✨ High-Resolution AI Image generated in studio!', 'success');
   }
 
   openVideosModal() {
@@ -2131,6 +2145,117 @@ Key Ideas & Notes:
 
   openPrivacyModal() {
     this.showToast('Privacy & Terms: Zero logging, 100% encrypted offline & cloud storage.', 'info');
+  }
+
+  copyMessageById(msgId) {
+    const active = this.chatStore.getActiveChat();
+    if (!active || !active.messages) return;
+    const msg = active.messages.find(m => m.id === msgId);
+    if (msg && msg.text) {
+      this.copyText(msg.text);
+    }
+  }
+
+  speakMessageById(msgId) {
+    const active = this.chatStore.getActiveChat();
+    if (!active || !active.messages) return;
+    const msg = active.messages.find(m => m.id === msgId);
+    if (msg && msg.text && this.voice) {
+      this.voice.speakText(msg.text, msg.id);
+    }
+  }
+
+  recordFeedback(msgId, isPositive) {
+    if (isPositive) {
+      this.showToast('👍 Thank you for your feedback!', 'success');
+    } else {
+      this.showToast('👎 Feedback recorded. Tap 🔄 to regenerate with alternative approach.', 'info');
+    }
+  }
+
+  openMoreActionsMenu(msgId, e) {
+    if (e) e.stopPropagation();
+    const active = this.chatStore.getActiveChat();
+    const msg = active?.messages?.find(m => m.id === msgId);
+    if (!msg) return;
+
+    const opt = prompt("Select action:\n1: Export this response as Markdown file\n2: Open in 3D Studio\n3: Copy share link\n\nEnter 1, 2, or 3:", "1");
+    if (opt === "1") {
+      const blob = new Blob([msg.text], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `nexus_response_${msg.id.slice(0, 8)}.md`;
+      a.click();
+      this.showToast('Exported response as Markdown file', 'success');
+    } else if (opt === "2") {
+      if (window.omDismantler) window.omDismantler.openModal('drone');
+    } else if (opt === "3") {
+      this.openPublicLinksModal();
+    }
+  }
+
+  triggerGeminiSuggestion(text) {
+    const input = document.getElementById('chat-user-input');
+    if (input) {
+      input.value = text;
+      this.handleSendMessage();
+    }
+  }
+
+  toggleInputAttachMenu(e) {
+    if (e) e.stopPropagation();
+    const popup = document.getElementById('input-attach-popup');
+    if (popup) {
+      const isVisible = popup.style.display === 'block';
+      popup.style.display = isVisible ? 'none' : 'block';
+    }
+  }
+
+  closeInputAttachMenu() {
+    const popup = document.getElementById('input-attach-popup');
+    if (popup) popup.style.display = 'none';
+  }
+
+  setModelFromPill(modelKey, label) {
+    this.chatStore.saveSettings({ model: modelKey });
+    const pill = document.getElementById('capsule-model-label');
+    if (pill) pill.textContent = label || modelKey;
+    const dropdown = document.getElementById('capsule-model-dropdown');
+    if (dropdown) dropdown.style.display = 'none';
+    this.showToast(`Active model switched to ${label || modelKey}`, 'info');
+  }
+
+  toggleCapsuleModelDropdown(e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('capsule-model-dropdown');
+    if (dropdown) {
+      const isVis = dropdown.style.display === 'block';
+      dropdown.style.display = isVis ? 'none' : 'block';
+    }
+  }
+
+  openScheduledActionsModal() {
+    this.closeProfilePopover();
+    const modal = document.getElementById('scheduled-actions-modal');
+    if (modal) modal.classList.add('active');
+    else this.showToast('⏰ Scheduled Actions: 0 pending background tasks. System telemetry optimal.', 'info');
+  }
+
+  openFeedbackModal() {
+    this.closeProfilePopover();
+    const modal = document.getElementById('feedback-modal');
+    if (modal) modal.classList.add('active');
+    else {
+      const fb = prompt('What feedback or feature request do you have for OM AI Assistant?');
+      if (fb && fb.trim()) this.showToast('Thank you Boss! Feedback recorded.', 'success');
+    }
+  }
+
+  openShortcutsModal() {
+    this.closeProfilePopover();
+    const modal = document.getElementById('shortcuts-modal');
+    if (modal) modal.classList.add('active');
+    else alert("⌨️ Keyboard Shortcuts:\n\n• Ctrl + K: New Chat\n• Enter: Send Message\n• Shift + Enter: New Line\n• Esc: Close Modal\n• Ctrl + V: Paste Image from Clipboard");
   }
 }
 

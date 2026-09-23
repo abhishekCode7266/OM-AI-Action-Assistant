@@ -330,62 +330,39 @@
       <!-- Scrollable Chat Area -->
       <div class="om-chat-scroll-area" id="om-chat-scroll-area">
 
-        <!-- Welcome Hero Screen (Shown when no messages) -->
+        <!-- Welcome Hero Screen (Shown when no messages - Gemini Alignment) -->
         <div class="om-welcome-screen" id="om-welcome-screen">
           <div class="welcome-logo-box">
             <img src="assets/icons/logo.svg" alt="OM Logo" style="width: 36px; height: 36px;">
           </div>
-          <h1 class="welcome-heading">How can <span class="text-gradient">OM</span> help you today?</h1>
-          <p class="welcome-tagline">Master-Level Multimodal AI Collaborator • Think. Plan. Act. Achieve.</p>
+          <h1 class="welcome-heading">Where should we start?</h1>
+          <p class="welcome-tagline">How can <span class="text-gradient">OM</span> help you today? • Think. Plan. Act. Achieve.</p>
 
-          <!-- 8 Prompt Quick Action Cards -->
-          <div class="welcome-cards-grid">
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('coding'); document.getElementById('chat-user-input').value='Create a complete Python GUI calculator with dark mode and error handling'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">💻</span>
-              <span class="prompt-card-title">Write Code</span>
-              <span class="prompt-card-desc">Build a Python GUI calculator with dark mode</span>
+          <!-- Gemini Suggestion Pills (Image 4 Alignment) -->
+          <div class="gemini-suggestions-grid">
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('Build a resume project')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">Build a resume project</span>
             </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('data'); document.getElementById('chat-user-input').value='Explain how to perform exploratory data analysis and correlation matrix on a sales dataset using Pandas and Matplotlib'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">📊</span>
-              <span class="prompt-card-title">Analyze Data</span>
-              <span class="prompt-card-desc">Inspect CSV datasets, stats, and generate charts</span>
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('Create a festival event invitation')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">Create a festival event invitation</span>
             </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('project'); document.getElementById('chat-user-input').value='Architect an AI-powered career and mock interview preparation platform with React, Node.js, and PostgreSQL'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">🚀</span>
-              <span class="prompt-card-title">Build a Project</span>
-              <span class="prompt-card-desc">Deconstruct goal into tech stack, architecture & tasks</span>
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('Plan a 5-day workout split')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">Plan a 5-day workout split</span>
             </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('study'); document.getElementById('chat-user-input').value='Teach me how modern asynchronous execution and promises work in JavaScript using a clear real-world analogy'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">🎓</span>
-              <span class="prompt-card-title">Learn Something</span>
-              <span class="prompt-card-desc">Socratic explanations, analogies, and quizzes</span>
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('Generate an image of a futuristic flying cyber car in neon city')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">Generate a cyberpunk AI concept image</span>
             </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('career'); document.getElementById('chat-user-input').value='Prepare me for a Senior Full-Stack Developer interview with 3 complex STAR scenario questions'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">💼</span>
-              <span class="prompt-card-title">Career & Interview</span>
-              <span class="prompt-card-desc">Mock interview questions and resume optimization</span>
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('Create a complete Python GUI calculator with dark mode and error handling')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">Create a Python GUI calculator with dark mode</span>
             </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('research'); document.getElementById('chat-user-input').value='Compare PostgreSQL vs MongoDB: latency, transactional guarantees, and scalability for high-velocity apps'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">🔎</span>
-              <span class="prompt-card-title">Deep Research</span>
-              <span class="prompt-card-desc">Objective architectural and technical comparisons</span>
-            </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('writing'); document.getElementById('chat-user-input').value='Draft an executive product launch announcement and release notes for our v2.0 update'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">📝</span>
-              <span class="prompt-card-title">Professional Writing</span>
-              <span class="prompt-card-desc">Emails, proposals, PRDs, and documentation</span>
-            </div>
-
-            <div class="prompt-card" onclick="window.omApp.handleNewChat('general'); document.getElementById('chat-user-input').value='Formulate a 30-day execution roadmap to build and ship a high-velocity developer tool'; document.getElementById('btn-chat-send').click();">
-              <span class="prompt-card-icon">📋</span>
-              <span class="prompt-card-title">Create a Plan</span>
-              <span class="prompt-card-desc">Decompose goals into Think-Plan-Act-Achieve</span>
+            <div class="gemini-suggestion-pill" onclick="window.omApp.triggerGeminiSuggestion('3D Exploded CAD Deconstructor of Supercar')">
+              <span class="suggestion-arrow">↳</span>
+              <span class="suggestion-text">3D Exploded CAD Deconstructor of Supercar</span>
             </div>
           </div>
         </div>
@@ -417,14 +394,66 @@
           <input type="file" id="hidden-file-input" style="display: none;" accept=".txt,.md,.csv,.json,.pdf,.docx,.js,.py,.html,.css,.sql" multiple>
           <input type="file" id="hidden-image-input" style="display: none;" accept="image/*" multiple>
 
-          <!-- Floating Input Capsule -->
-          <div class="input-capsule">
-            <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
-            <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
-            <button class="input-tool-btn" id="btn-dock-3d-dismantle" onclick="window.omDismantler.openModal('drone')" title="3D Text-to-3D Assemblable Studio">📐</button>
-            <button class="input-tool-btn" id="btn-dock-nexus-live" onclick="window.omJarvisLive.startSession()" title="Nexus Live Voice Conversation Matrix">⚡</button>
+          <!-- Floating Input Capsule with Gemini-Style Plus Menu & Model Selector -->
+          <div class="input-capsule" style="position: relative;">
+            <!-- + Attach Popover Menu -->
+            <div class="input-attach-popup" id="input-attach-popup" style="display: none;">
+              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); document.getElementById('hidden-image-input').click();">
+                <span class="attach-item-icon">🖼️</span>
+                <div>
+                  <div class="attach-item-title">Upload Image / Screenshot</div>
+                  <div class="attach-item-desc">Multimodal OCR & Vision Analysis</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); document.getElementById('hidden-file-input').click();">
+                <span class="attach-item-icon">📎</span>
+                <div>
+                  <div class="attach-item-title">Attach Document</div>
+                  <div class="attach-item-desc">PDF, CSV, TXT, JSON, Code</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omApp.openImagesModal();">
+                <span class="attach-item-icon">🎨</span>
+                <div>
+                  <div class="attach-item-title">AI Image Studio</div>
+                  <div class="attach-item-desc">Text-to-Image 4K Diffusion</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omDismantler.openModal('drone');">
+                <span class="attach-item-icon">📐</span>
+                <div>
+                  <div class="attach-item-title">3D Assemblable Studio</div>
+                  <div class="attach-item-desc">Interactive CAD Deconstructor</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omJarvisLive.startSession();">
+                <span class="attach-item-icon">⚡</span>
+                <div>
+                  <div class="attach-item-title">Nexus Live Voice Matrix</div>
+                  <div class="attach-item-desc">9 Personas & Hands-free Conversation</div>
+                </div>
+              </div>
+            </div>
 
-            <textarea id="chat-user-input" class="chat-textarea" rows="1" placeholder="Ask OM anything, write code, analyze a CSV, or plan a goal..."></textarea>
+            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" onclick="window.omApp.toggleInputAttachMenu(event)" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
+            <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
+            <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
+
+            <textarea id="chat-user-input" class="chat-textarea" rows="1" placeholder="Ask OM anything, write code, analyze data, or generate images..."></textarea>
+
+            <!-- Inline Model Pill Selector (Image 4 & 5) -->
+            <div class="capsule-model-wrapper" style="position: relative; display: flex; align-items: center;">
+              <button class="capsule-model-pill" id="capsule-model-pill" onclick="window.omApp.toggleCapsuleModelDropdown(event)" title="Select Model">
+                <span id="capsule-model-label">Flash-Lite</span>
+                <span style="font-size: 0.65rem; opacity: 0.7;">▾</span>
+              </button>
+              <div class="capsule-model-dropdown" id="capsule-model-dropdown" style="display: none;">
+                <div class="model-opt-item" onclick="window.omApp.setModelFromPill('nexus-2.0-flash', 'Flash-Lite')">⚡ Flash-Lite (Fastest)</div>
+                <div class="model-opt-item" onclick="window.omApp.setModelFromPill('nexus-2.0-flash', 'Nexus 2.0 Flash')">🚀 Nexus 2.0 Flash</div>
+                <div class="model-opt-item" onclick="window.omApp.setModelFromPill('nexus-1.5-pro', 'Nexus 1.5 Pro')">🧠 Nexus 1.5 Pro (Deep Reasoning)</div>
+                <div class="model-opt-item" onclick="window.omApp.setModelFromPill('om-autonomous-engine', 'Thinking Mode')">💭 Thinking Mode</div>
+              </div>
+            </div>
 
             <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Dictate prompt)">🎙️</button>
             <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
@@ -1345,6 +1374,128 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
           <span style="font-size: 0.78rem; color: #94a3b8;">Saved locally across sessions</span>
           <button class="om-btn om-btn-primary" onclick="window.omApp.saveNotebookContent()">Save to Notebook</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Scheduled Actions Modal (Matching Image 3)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="scheduled-actions-modal">
+    <div class="om-modal-content" style="max-width: 620px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>⏰</span>
+          <span style="font-weight: 700; font-size: 1.05rem;">Scheduled Actions & Background Autonomous Tasks</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="pulse-dot" style="background: #10b981;"></span>
+            <span style="font-size: 0.85rem; color: #a7f3d0; font-weight: 600;">Autonomous Background Daemon: Active</span>
+          </div>
+          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace;">Zero Errors</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.86rem; font-weight: 700; color: #fff;">Daily Codebase & Diagnostics Scan</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Runs every morning at 09:00 IST • Checks invariants, token rates & latency</div>
+            </div>
+            <span class="stage-tag stage-achieve">ENABLED</span>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.86rem; font-weight: 700; color: #fff;">Memory & Personal Intelligence Sync</div>
+              <div style="font-size: 0.74rem; color: var(--om-text-muted);">Syncs user preferences, developer invariants & notebook updates</div>
+            </div>
+            <span class="stage-tag stage-plan">STANDBY</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="om-btn om-btn-sm om-btn-secondary" onclick="window.omApp.showToast('Triggered scheduled diagnostic run', 'info')">⚡ Run Scan Now</button>
+          <button class="om-btn om-btn-sm om-btn-primary" onclick="alert('Enter task title and cron time in prompt dock.')">+ New Scheduled Action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Send Feedback Modal (Matching Image 3)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="feedback-modal">
+    <div class="om-modal-content" style="max-width: 540px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>💬</span>
+          <span style="font-weight: 700; font-size: 1.05rem;">Send Feedback & Feature Request</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 12px;">
+          Help us elevate OM AI Assistant. Share feature requests, UI enhancements, or bug reports directly with our engineering team:
+        </p>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.75rem; color: var(--om-cyan); font-weight: 700; margin-bottom: 6px; text-transform: uppercase;">Category</label>
+          <select id="feedback-category-select" class="om-input" style="width: 100%; font-size: 0.84rem;">
+            <option value="feature">✨ New Feature Suggestion</option>
+            <option value="bug">🐛 Bug or Error Report</option>
+            <option value="ui">🎨 UI & Visual Experience</option>
+            <option value="voice">🎙️ Voice & Persona Quality</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.75rem; color: var(--om-cyan); font-weight: 700; margin-bottom: 6px; text-transform: uppercase;">Your Feedback</label>
+          <textarea id="feedback-content-text" class="om-input" rows="4" placeholder="Describe your experience or requested capability..." style="width: 100%; font-size: 0.84rem;"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="om-btn om-btn-sm om-btn-secondary modal-close-trigger">Cancel</button>
+          <button class="om-btn om-btn-sm om-btn-primary" onclick="const txt = document.getElementById('feedback-content-text').value; if(txt) { window.omApp.showToast('Thank you Boss! Feedback submitted successfully.', 'success'); document.getElementById('feedback-modal').classList.remove('active'); document.getElementById('feedback-content-text').value=''; } else { window.omApp.showToast('Please type your feedback first', 'info'); }">Submit Feedback</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Keyboard Shortcuts Modal (Matching Image 3)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="shortcuts-modal">
+    <div class="om-modal-content" style="max-width: 540px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>⌨️</span>
+          <span style="font-weight: 700; font-size: 1.05rem;">Keyboard Shortcuts & Navigation</span>
+        </div>
+        <button class="chat-action-btn modal-close-trigger">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem;">
+            <span style="color: #cbd5e1;">Create New Conversation</span>
+            <kbd style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; color: #fff;">Ctrl + K</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem;">
+            <span style="color: #cbd5e1;">Send Message / Prompt</span>
+            <kbd style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; color: #fff;">Enter</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem;">
+            <span style="color: #cbd5e1;">Insert New Line in Prompt</span>
+            <kbd style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; color: #fff;">Shift + Enter</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem;">
+            <span style="color: #cbd5e1;">Paste Screenshot / Image from Clipboard</span>
+            <kbd style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; color: #fff;">Ctrl + V</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem;">
+            <span style="color: #cbd5e1;">Close Active Modal or Popover</span>
+            <kbd style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; color: #fff;">Escape</kbd>
+          </div>
         </div>
       </div>
     </div>
