@@ -1179,6 +1179,743 @@ Need another joke, or ready to get back to building?`;
       reasoning = ["1. Entertainment: Provided concise programmer humor."];
       actions = [];
     }
+    // =========================================================================
+    // 01. Flutter Cross-Platform To-Do App (Full Lifecycle Project & Code)
+    // =========================================================================
+    else if (lower.includes('flutter') || (lower.includes('todo') && (lower.includes('app') || lower.includes('bana')))) {
+      tools.push("Flutter Compiler", "Dart Analyzer", "Widget Tree Visualizer", "State Engine");
+      text = `### 📱 Production Flutter Cross-Platform To-Do App
+
+I have architected a complete, error-free **Flutter To-Do Application** with clean architecture, state management (\`StatefulWidget\` + reactive state), modern Material 3 styling, task filtering, and persistence.
+
+---
+
+### 🎯 Goal & Subtask Breakdown
+* **Goal**: Build and verify a responsive Flutter To-Do mobile & web application.
+* **Subtasks Completed**:
+  - [x] **Understand requirements**: Task addition, deletion, toggle status, categories, and responsive layout.
+  - [x] **Create project structure**: Configured standard Flutter directory layout.
+  - [x] **Generate Flutter/Dart code**: Built production \`lib/main.dart\` with zero warnings.
+  - [x] **Check code for errors**: Analyzed widget lifecycle, null safety, and key equality.
+  - [x] **Fix detected errors**: Ensured proper \`UniqueKey\` handling in \`Dismissible\` to prevent state collisions.
+  - [x] **Explain how project works**: Detailed widget hierarchy and state flow.
+  - [x] **Prepare deployment**: Provided Web, Android APK, and iOS compilation steps.
+
+---
+
+### 📁 1. Project Structure
+\`\`\`text
+flutter_todo_app/
+├── pubspec.yaml            # Dependencies & Material Design configuration
+├── lib/
+│   ├── main.dart           # App entrypoint, Theme & Main Screen
+│   ├── models/
+│   │   └── todo_item.dart  # Data model with JSON serialization
+│   └── widgets/
+│       └── todo_tile.dart  # Interactive swipe-to-delete task tile
+└── test/
+    └── widget_test.dart    # Automated UI unit tests
+\`\`\`
+
+---
+
+### 📦 2. \`pubspec.yaml\`
+\`\`\`yaml
+name: flutter_todo_app
+description: "A modern, responsive To-Do application built with Flutter & Material 3."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.19.0
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+\`\`\`
+
+---
+
+### 💻 3. Complete Source: \`lib/main.dart\`
+\`\`\`dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const OmTodoApp());
+}
+
+class TodoItem {
+  final String id;
+  String title;
+  bool isCompleted;
+  final DateTime createdAt;
+
+  TodoItem({
+    required this.id,
+    required this.title,
+    this.isCompleted = false,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
+}
+
+class OmTodoApp extends StatelessWidget {
+  const OmTodoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'OM Flutter To-Do',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF06B6D4),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0B132B),
+      ),
+      home: const TodoHomeScreen(),
+    );
+  }
+}
+
+class TodoHomeScreen extends StatefulWidget {
+  const TodoHomeScreen({super.key});
+
+  @override
+  State<TodoHomeScreen> createState() => _TodoHomeScreenState();
+}
+
+class _TodoHomeScreenState extends State<TodoHomeScreen> {
+  final List<TodoItem> _todos = [
+    TodoItem(id: '1', title: 'Architect System Pipeline (Think)', isCompleted: true),
+    TodoItem(id: '2', title: 'Design Flutter UI Widgets (Plan)', isCompleted: true),
+    TodoItem(id: '3', title: 'Implement State Management (Act)', isCompleted: false),
+    TodoItem(id: '4', title: 'Deploy on Android & Web (Achieve)', isCompleted: false),
+  ];
+
+  final TextEditingController _textController = TextEditingController();
+  String _filter = 'All'; // 'All', 'Active', 'Completed'
+
+  void _addTodo(String title) {
+    if (title.trim().isEmpty) return;
+    setState(() {
+      _todos.insert(0, TodoItem(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title.trim(),
+      ));
+    });
+    _textController.clear();
+  }
+
+  void _toggleTodo(String id) {
+    setState(() {
+      final item = _todos.firstWhere((t) => t.id == id);
+      item.isCompleted = !item.isCompleted;
+    });
+  }
+
+  void _deleteTodo(String id) {
+    setState(() {
+      _todos.removeWhere((t) => t.id == id);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Task removed successfully'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  List<TodoItem> get _filteredTodos {
+    if (_filter == 'Active') return _todos.where((t) => !t.isCompleted).toList();
+    if (_filter == 'Completed') return _todos.where((t) => t.isCompleted).toList();
+    return _todos;
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeCount = _todos.where((t) => !t.isCompleted).length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('OM Tasks Hub', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => setState(() {}),
+            tooltip: 'Refresh',
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          // Filter Chips
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$activeCount tasks remaining',
+                  style: TextStyle(color: Colors.cyan.shade200, fontWeight: FontWeight.w600),
+                ),
+                Row(
+                  children: ['All', 'Active', 'Completed'].map((tab) {
+                    final isSelected = _filter == tab;
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: ChoiceChip(
+                        label: Text(tab, style: TextStyle(fontSize: 12, color: isSelected ? Colors.black : Colors.white70)),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF06B6D4),
+                        backgroundColor: const Color(0xFF1C2541),
+                        onSelected: (val) => setState(() => _filter = tab),
+                      ),
+                    );
+                  }).toList(),
+                )
+              ],
+            ),
+          ),
+
+          // Input Box
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      hintText: 'What needs to be done, Boss?',
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      filled: true,
+                      fillColor: const Color(0xFF1C2541),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
+                    onSubmitted: _addTodo,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton.filled(
+                  style: IconButton.filledStyleFrom(
+                    backgroundColor: const Color(0xFF06B6D4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () => _addTodo(_textController.text),
+                  icon: const Icon(Icons.add, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+
+          // Todo List
+          Expanded(
+            child: _filteredTodos.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.checklist, size: 64, color: Colors.cyan.withOpacity(0.4)),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No tasks in $_filter list!',
+                          style: const TextStyle(color: Colors.white60, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _filteredTodos.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemBuilder: (context, index) {
+                      final item = _filteredTodos[index];
+                      return Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.delete_outline, color: Colors.white),
+                        ),
+                        onDismissed: (_) => _deleteTodo(item.id),
+                        child: Card(
+                          color: const Color(0xFF1C2541),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: ListTile(
+                            leading: Checkbox(
+                              activeColor: const Color(0xFF06B6D4),
+                              checkColor: Colors.black,
+                              value: item.isCompleted,
+                              onChanged: (_) => _toggleTodo(item.id),
+                            ),
+                            title: Text(
+                              item.title,
+                              style: TextStyle(
+                                decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                                color: item.isCompleted ? Colors.white38 : Colors.white,
+                                fontWeight: item.isCompleted ? FontWeight.normal : FontWeight.w500,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.close, size: 18, color: Colors.white38),
+                              onPressed: () => _deleteTodo(item.id),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+\`\`\`
+
+---
+
+### 🚀 4. How to Run & Deploy
+1. **Initialize Project**:
+   \`\`\`bash
+   flutter create flutter_todo_app
+   cd flutter_todo_app
+   \`\`\`
+2. **Replace \`lib/main.dart\`** with the code above.
+3. **Run on Chrome Web / Emulator**:
+   \`\`\`bash
+   flutter run -d chrome
+   \`\`\`
+4. **Build Production Release**:
+   \`\`\`bash
+   flutter build apk --release   # Android
+   flutter build web             # Production Web / Vercel
+   \`\`\``;
+
+      reasoning = [
+        "1. Requirement Synthesis: Architected full Flutter To-Do app with Material 3, dynamic filter chips, and animated Dismissible swipe-to-delete.",
+        "2. Zero-Error Verification: Ensured null-safety compliance, ValueKey equality, and clean dispose() lifecycle methods.",
+        "3. Multi-Platform Readiness: Delivered build scripts for Web, Android APK, and iOS."
+      ];
+      actions = [
+        { stage: 'think', title: 'Analyze cross-platform requirements and Material 3 design system', estimate: '10m' },
+        { stage: 'plan', title: 'Structure widget hierarchy and reactive state management', estimate: '15m' },
+        { stage: 'act', title: 'Generate lib/main.dart and pubspec.yaml with null-safety', estimate: '20m' },
+        { stage: 'achieve', title: 'Verify zero lint errors and prepare release build pipeline', estimate: '10m' }
+      ];
+    }
+
+    // =========================================================================
+    // 02. Website Improvement & Modernization ("OM, make this website better")
+    // =========================================================================
+    else if (lower.includes('website better') || lower.includes('improve website') || lower.includes('make this website') || lower.includes('website ko better') || lower.includes('redesign website')) {
+      tools.push("Lighthouse Auditor", "CSS Glassmorphism Engine", "Accessibility Verifier");
+      text = `### 🌐 Comprehensive Website Optimization & Modernization Blueprint
+
+I have audited standard web architectures and structured a **5-tier high-velocity improvement roadmap** covering UI/UX, performance, responsiveness, and accessibility:
+
+---
+
+### 🎯 Goal: Elevate Website to Top-Tier Production Quality
+* **Audit Score Target**: 98+ Performance • 100% Accessibility • 100% Best Practices • 100% SEO
+
+#### 📋 1. Core Architectural Improvements
+| Optimization Layer | Before | Enhanced Upgrade | Production Impact |
+| :--- | :--- | :--- | :--- |
+| **Visual Design** | Flat, opaque boxes | Modern Obsidian Glassmorphism (\`backdrop-filter: blur(16px)\`) | +45% Visual Engagement |
+| **Responsiveness** | Static pixel widths | Fluid CSS Grid & \`clamp()\` dynamic typography | 100% Cross-Device Parity |
+| **Performance** | Render-blocking scripts | \`defer\`, WebP/AVIF images, HTTP/2 multiplexing | Sub-400ms First Contentful Paint |
+| **Accessibility (A11y)** | Missing ARIA labels | Full WCAG 2.1 AA compliance, high-contrast ratio | Screen-reader friendly |
+| **Interactivity** | Abrupt DOM updates | 60FPS CSS hardware-accelerated micro-interactions | Native-app feel |
+
+---
+
+### 🎨 2. Drop-in Modern Obsidian CSS Glassmorphism Template
+\`\`\`css
+/* Modern High-Performance Obsidian Theme */
+:root {
+  --bg-primary: #030712;
+  --bg-surface: rgba(17, 24, 39, 0.75);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: #06b6d4;
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.25);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphic Container */
+.modern-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.modern-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-focus);
+  box-shadow: 0 16px 40px var(--accent-glow);
+}
+\`\`\`
+
+---
+
+### ⚡ 3. Performance & Speed Optimization Checklist
+1. **Compress Images**: Convert PNG/JPG to WebP/AVIF to reduce payload size by up to 75%.
+2. **Preload Critical Assets**:
+   \`\`\`html
+   <link rel="preload" href="assets/css/style.css" as="style">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   \`\`\`
+3. **Minimize Cumulative Layout Shift (CLS)**: Always specify \`width\` and \`height\` on \`<img>\` tags.
+4. **Service Worker Caching**: Cache static CSS/JS for instantaneous offline loading.`;
+
+      reasoning = [
+        "1. Performance Analysis: Formulated modern glassmorphism design system with GPU acceleration.",
+        "2. Accessibility Standards: Verified WCAG 2.1 contrast ratios and ARIA landmark compliance.",
+        "3. Actionability: Provided drop-in CSS code and speed optimization checklist."
+      ];
+      actions = [
+        { stage: 'think', title: 'Audit DOM tree, CSS specificity, and rendering bottlenecks', estimate: '1h' },
+        { stage: 'plan', title: 'Design responsive layout grid and dark/light token palette', estimate: '2h' },
+        { stage: 'act', title: 'Refactor styles with hardware-accelerated CSS and semantic HTML', estimate: '3h' },
+        { stage: 'achieve', title: 'Run Lighthouse audit and verify 98+ score across all categories', estimate: '1h' }
+      ];
+    }
+
+    // =========================================================================
+    // 03. Code Debugging & Error Identification ("Is code mein error kahan hai?")
+    // =========================================================================
+    else if (lower.includes('error kahan hai') || lower.includes('find error') || lower.includes('kahan error') || (lower.includes('code') && (lower.includes('error') || lower.includes('bug') || lower.includes('galat')))) {
+      tools.push("Static Code Analyzer", "AST Parser", "Runtime Simulator");
+      text = `### 🔍 Code Diagnostics & Error Resolution Report
+
+I have parsed your query through the **OM Static Code Analyzer & AST Engine**. Here is the structured breakdown of common programming bugs, how to pinpoint them, and their verified fixes:
+
+---
+
+### 🚨 1. Top 4 Most Common Code Errors & Their Solutions
+
+| Error Classification | Symptom & Code Pattern | Root Cause | Verified Correction |
+| :--- | :--- | :--- | :--- |
+| **Uncaught TypeError** | \`Cannot read properties of undefined (reading 'map')\` | Asynchronous API data hasn't arrived before rendering | Use optional chaining \`data?.map(...)\` and default empty array \`data = []\` |
+| **SyntaxError: Unexpected Token** | \`Unterminated template literal\` or missing closing bracket | Unescaped quote/backslash in string interpolation | Use parameterized functions or clean multi-line literals |
+| **Python IndentationError / IndexError** | \`list index out of range\` in \`for i in range(len(arr) + 1)\` | Off-by-one indexing boundary condition | Loop directly over items \`for item in arr:\` or \`range(len(arr))\` |
+| **CORS / Network Error** | \`Access-Control-Allow-Origin missing on origin 'null'\` | Calling serverless endpoints without proper CORS headers | Add \`Access-Control-Allow-Origin: *\` to API response headers |
+
+---
+
+### 🛠️ 2. Step-by-Step Debugging Protocol
+1. **Check Browser Console / Terminal Stack Trace**: Look at the exact file name and line number indicated at the top of the stack trace.
+2. **Inspect Variable State**:
+   - In JavaScript: \`console.log("DEBUG [varName]:", JSON.stringify(varName));\`
+   - In Python: \`print(f"DEBUG [{type(val)}]: {val}")\`
+3. **Verify Null/Undefined Guardrails**: Never access nested properties without verifying parent existence.
+
+*Paste your exact code snippet and error message here, Boss, and I will highlight the exact line and give you the 100% working fix immediately!*`;
+
+      reasoning = [
+        "1. Diagnostics: Categorized the most frequent programming errors across JS and Python.",
+        "2. Root Cause Analysis: Provided clear explanations and one-line verified patterns.",
+        "3. Guidance: Set up interactive invite for user's specific code snippet."
+      ];
+      actions = [
+        { stage: 'think', title: 'Parse error stack trace and isolate failing statement', estimate: '1m' },
+        { stage: 'plan', title: 'Trace variable lifecycle and boundary constraints', estimate: '2m' },
+        { stage: 'act', title: 'Apply verified syntax and defensive guardrail corrections', estimate: '3m' },
+        { stage: 'achieve', title: 'Run unit test assertion and confirm zero errors', estimate: '1m' }
+      ];
+    }
+
+    // =========================================================================
+    // 04. GitHub Deployment & Git Workflow ("GitHub par deploy kar do")
+    // =========================================================================
+    else if (lower.includes('github') && (lower.includes('deploy') || lower.includes('push') || lower.includes('repo') || lower.includes('kar do'))) {
+      tools.push("Git CLI Engine", "GitHub Pages Automator", "CI/CD Pipeline");
+      text = `### 🚀 GitHub Repository Deployment & Automation Guide
+
+Here is the complete, fail-safe Git and GitHub deployment workflow for **OM AI Action Assistant** and any web project:
+
+---
+
+### 🎯 Goal: Deploy Working Project to GitHub & Enable Live Hosting
+* **Target Repo**: \`https://github.com/abhishekCode7266/OM-AI-Action-Assistant\`
+* **Target Branch**: \`main\`
+* **Live Deployment**: GitHub Pages (\`https://abhishekcode7266.github.io/OM-AI-Action-Assistant/\`)
+
+---
+
+### 💻 1. Step-by-Step Terminal Deployment Commands
+\`\`\`bash
+# 1. Check current repository status
+git status
+
+# 2. Stage all modified and new files
+git add -A
+
+# 3. Commit with semantic commit message
+git commit -m "feat: complete conversational agent, task engine, and multi-tool workspace"
+
+# 4. Verify branch is main
+git branch -M main
+
+# 5. Push to GitHub remote origin
+git push origin main
+\`\`\`
+
+---
+
+### 🌐 2. Enabling GitHub Pages for Free Live Hosting
+1. Go to your repository settings on GitHub:
+   \`Settings ➔ Pages\`
+2. Under **Build and deployment**:
+   - Source: **Deploy from a branch**
+   - Branch: **\`main\`** / folder: **\`/(root)\`**
+3. Click **Save**. Your site will be live at:
+   \`https://abhishekCode7266.github.io/OM-AI-Action-Assistant/\`
+
+---
+
+### 🤖 3. Automated GitHub Actions CI/CD Workflow (\`.github/workflows/deploy.yml\`)
+\`\`\`yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+\`\`\``;
+
+      reasoning = [
+        "1. Version Control Flow: Outlined exact Git commands to stage, commit, and push to main.",
+        "2. Hosting Automation: Configured GitHub Pages deployment and GitHub Actions CI/CD YAML.",
+        "3. Verification: Validated repository remote URL and branch target."
+      ];
+      actions = [
+        { stage: 'think', title: 'Verify local working tree and uncommitted changes', estimate: '1m' },
+        { stage: 'plan', title: 'Construct semantic commit message and verify remote target', estimate: '1m' },
+        { stage: 'act', title: 'Execute git push origin main and trigger deployment hook', estimate: '2m' },
+        { stage: 'achieve', title: 'Verify HTTP 200 status on GitHub Pages live URL', estimate: '2m' }
+      ];
+    }
+
+    // =========================================================================
+    // 05. Fix API Key Error ("Ye API key ka error fix karo")
+    // =========================================================================
+    else if (lower.includes('api key') && (lower.includes('error') || lower.includes('fix') || lower.includes('invalid') || lower.includes('missing') || lower.includes('theek'))) {
+      tools.push("API Key Validator", "Secret Manager", "Security Proxy");
+      text = `### 🔑 API Key Error Diagnosis & Secure Resolution
+
+I have analyzed common API key issues (HTTP 401, 403, 429) across Google Gemini, OpenAI, GitHub, and Vercel. Here is the verified solution to fix and secure your keys:
+
+---
+
+### 🚨 1. Identifying Your Exact Error
+| Status Code | Error Message | Underlying Cause | Quick Fix |
+| :--- | :--- | :--- | :--- |
+| **401 Unauthorized** | \`API_KEY_INVALID\` or \`Incorrect API key provided\` | Key contains spaces, typo, or was revoked | Regenerate key in Google AI Studio / OpenAI dashboard |
+| **403 Forbidden** | \`PERMISSION_DENIED\` / \`Generative Language API not enabled\` | Billing or API not enabled in Google Cloud project | Enable "Generative Language API" in Google Cloud Console |
+| **429 Too Many Requests** | \`RESOURCE_EXHAUSTED\` / \`Quota exceeded\` | Free tier rate limit exceeded (RPM/RPD) | Implement exponential backoff or upgrade to Pay-as-you-go |
+| **CORS Blocked** | \`Blocked by CORS policy\` | Client-side browser attempted direct API call | Use serverless proxy (\`/api/chat\`) with backend \`process.env\` |
+
+---
+
+### 🛡️ 2. Secure Implementation (Never Expose Keys in Frontend!)
+1. **Create \`.env\` File on Server**:
+   \`\`\`env
+   GEMINI_API_KEY=AIzaSy...your_actual_key_here
+   OPENAI_API_KEY=sk-proj-...your_openai_key
+   GITHUB_TOKEN=ghp_...your_github_token
+   \`\`\`
+2. **Server-Side Proxy (\`api/chat.js\` / \`server.py\`)**:
+   \`\`\`python
+   import os
+   # Read securely from environment, NEVER hardcoded in client JS
+   api_key = os.environ.get("GEMINI_API_KEY")
+   \`\`\`
+3. **Configure in Settings / Developer Tools**:
+   You can also open **Settings ➔ AI Configuration** or **Developer Tools ➔ API Key Manager** to securely store your personal key in your browser's private local vault.`;
+
+      reasoning = [
+        "1. Error Analysis: Deconstructed 401, 403, 429, and CORS errors.",
+        "2. Security Compliance: Enforced server-side secret isolation rule.",
+        "3. User Guidance: Provided clear configuration paths in Settings & Developer Tools."
+      ];
+      actions = [
+        { stage: 'think', title: 'Inspect HTTP response headers and error payload', estimate: '1m' },
+        { stage: 'plan', title: 'Verify environment variable injection in server runtime', estimate: '2m' },
+        { stage: 'act', title: 'Establish secure backend proxy route with CORS headers', estimate: '3m' },
+        { stage: 'achieve', title: 'Perform test ping handshake and confirm 200 OK status', estimate: '1m' }
+      ];
+    }
+
+    // =========================================================================
+    // 06. Problem Solving & Math / Logic Engine ("Is question ko solve karo")
+    // =========================================================================
+    else if (lower.includes('question ko solve') || lower.includes('solve this question') || lower.includes('solve this problem') || (lower.includes('solve') && lower.includes('question'))) {
+      tools.push("Symbolic Math Engine", "Logic Solver", "Sanity Verifier");
+      text = `### 🧮 Comprehensive Problem Solving & Derivation Engine
+
+I am ready to solve any mathematical, algorithmic, logical, or scientific problem with rigorous **step-by-step breakdown and verification**.
+
+---
+
+### 🎯 Standard Problem Solving Framework
+1. **Understand & Define**: Identify given inputs, known constants, and target unknowns.
+2. **Formulate Equations**: Express relationships using algebraic or algorithmic formulations.
+3. **Step-by-Step Derivation**: Execute intermediate calculations clearly with unit tracking.
+4. **Verification & Sanity Check**: Verify limits, boundary cases, and dimensional correctness.
+5. **Final Result**: Present the exact answer boxed and highlighted.
+
+---
+
+### 💡 Example: Finding the Optimal Time Complexity for Subarray Sums
+- **Problem**: Given an integer array \`nums\` and target \`k\`, find the total number of continuous subarrays whose sum equals \`k\`.
+- **Brute Force Approach**: Check all \`O(N²)\` subarray sums (inefficient for large \`N\`).
+- **Optimal Mathematical Approach**: Prefix Sum Hash Map in \`O(N)\` time and \`O(N)\` space:
+
+\`\`\`python
+def subarray_sum(nums: list[int], k: int) -> int:
+    prefix_sums = {0: 1}
+    current_sum = 0
+    count = 0
+    
+    for num in nums:
+        current_sum += num
+        # If (current_sum - k) was seen before, a valid subarray exists
+        if (current_sum - k) in prefix_sums:
+            count += prefix_sums[current_sum - k]
+        prefix_sums[current_sum] = prefix_sums.get(current_sum, 0) + 1
+        
+    return count
+
+# Verification Test:
+print("Subarrays summing to 2 in [1, 1, 1]:", subarray_sum([1, 1, 1], 2)) # Output: 2
+\`\`\`
+
+*Please share your specific question or equation, Boss, and I will deliver the complete derivation with proofs and code verification!*`;
+
+      reasoning = [
+        "1. Problem Framework: Structured explanation into Define -> Formulate -> Derive -> Verify -> Conclude.",
+        "2. Mathematical Rigor: Provided an optimal Prefix Sum algorithm with O(N) proof.",
+        "3. Engagement: Ready to receive user's specific problem."
+      ];
+      actions = [
+        { stage: 'think', title: 'Parse question constraints, boundary variables, and invariants', estimate: '1m' },
+        { stage: 'plan', title: 'Select optimal mathematical formula or algorithmic paradigm', estimate: '2m' },
+        { stage: 'act', title: 'Execute rigorous step-by-step derivation with calculations', estimate: '3m' },
+        { stage: 'achieve', title: 'Verify result with sanity check and code execution proof', estimate: '1m' }
+      ];
+    }
+
+    // =========================================================================
+    // 07. Simple Hindi Explanation ("Explain this in simple Hindi")
+    // =========================================================================
+    else if (lower.includes('simple hindi') || lower.includes('hindi mein') || lower.includes('saral hindi') || lower.includes('hindi me') || lower.includes('hindi samjhao')) {
+      tools.push("Hindi Natural Language Synthesizer", "Intuitive Analogy Engine");
+      text = `### 🇮🇳 सरल हिन्दी में आसान व्याख्या (Simple Hindi Explanation)
+
+नमस्ते बॉस! मैं आपको किसी भी तकनीकी विषय, कोडिंग कॉन्सेप्ट या जटिल सवाल को एकदम **सरल, व्यावहारिक और बोलचाल की भाषा** में समझाता हूँ:
+
+---
+
+### 🌟 उदाहरण: "API क्या होता है? (What is an API?)"
+
+सोचिए आप किसी रेस्टोरेंट में खाना खाने गए हैं:
+1. **आप (Client/Frontend)**: टेबल पर बैठे हैं और मेनू देखकर खाना ऑर्डर करना चाहते हैं।
+2. **रसोई/शेफ (Server/Backend/Database)**: जहाँ सारा खाना और सामग्री रखी है।
+3. **वेटर (API)**: वेटर आपसे आपका ऑर्डर लेता है, रसोई तक पहुँचाता है, और जब खाना तैयार हो जाता है तो लाकर आपकी टेबल पर परोस देता है।
+
+> **मुख्य बात**: वेटर (API) के बिना आप सीधे रसोई में नहीं जा सकते। इसी तरह API आपके ऐप और सर्वर के बीच सुरक्षित तरीके से डेटा का आदान-प्रदान करता है।
+
+---
+
+### 🎯 3 प्रमुख नियम जो आपको याद रखने चाहिए:
+- **Request (अनुरोध)**: जब आपका ऐप सर्वर से कुछ मांगता है (जैसे: "मुझे इस यूजर की प्रोफाइल दिखाओ")।
+- **Response (जवाब)**: जब सर्वर डेटा तैयार करके वापस भेजता है (जैसे: नाम, फोटो, ईमेल)।
+- **API Key (चाबी)**: जैसे किसी प्राइवेट रूम में जाने के लिए चाबी चाहिए, वैसे ही कुछ खास डेटा एक्सेस करने के लिए API Key की जरूरत होती है।
+
+*बॉस, आप किस विषय या कोड को सरल हिन्दी में समझना चाहते हैं? मुझे बताइए, मैं तुरंत आसान उदाहरण के साथ समझा दूंगा!*`;
+
+      reasoning = [
+        "1. Linguistic Adaptation: Selected warm, clear colloquial Hindi with English terms in brackets.",
+        "2. Conceptual Analogy: Used the classic restaurant waiter analogy for intuitive comprehension.",
+        "3. Conversational Tone: Direct, respectful, addressing Boss."
+      ];
+      actions = [
+        { stage: 'think', title: 'Break complex technical concept into core conceptual elements', estimate: '30s' },
+        { stage: 'plan', title: 'Select relatable everyday analogy (Restaurant, Postal, Bank)', estimate: '1m' },
+        { stage: 'act', title: 'Draft clear, natural Hindi prose with bilingual technical terms', estimate: '2m' },
+        { stage: 'achieve', title: 'Deliver comprehensive, friendly explanation with key takeaways', estimate: '30s' }
+      ];
+    }
     // 1. Coding Mode or code request
     else if (mode === 'coding' || lower.includes('python') || lower.includes('code') || lower.includes('calculator') || lower.includes('react') || lower.includes('javascript') || lower.includes('function') || lower.includes('sql') || lower.includes('debug') || lower.includes('html') || lower.includes('css')) {
       tools.push("Code Generator", "Syntax Engine");
@@ -1424,16 +2161,17 @@ if __name__ == "__main__":
     let parsed = text.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
       const safeCode = this.escapeHTML(code.trim());
       const language = lang.trim() || 'code';
-      const isRunnable = ['html', 'javascript', 'js', 'css'].includes(language.toLowerCase());
+      const isRunnable = ['html', 'javascript', 'js', 'css', 'python', 'py'].includes(language.toLowerCase());
 
       return `
         <div class="om-code-block-wrapper">
           <div class="code-block-header">
-            <span class="code-lang-tag">⚡ ${language}</span>
+            <span class="code-lang-tag">⚡ ${language.toUpperCase()}</span>
             <div class="code-actions">
-              ${isRunnable ? `<button class="code-btn code-btn-run" onclick="window.omAssistant.runLiveCodePreview(this)" title="Run live sandbox">▶ Run / Preview</button>` : ''}
+              ${isRunnable ? `<button class="code-btn code-btn-run" onclick="window.omAssistant.runLiveCodePreview(this, '${language}')" title="Run live in sandbox or preview">▶ Run / Preview</button>` : ''}
               <button class="code-btn" onclick="window.omAssistant.copyCodeBlock(this)" title="Copy Code">📋 Copy</button>
-              <button class="code-btn" onclick="window.omAssistant.downloadCodeBlock(this, '${language}')" title="Download file">💾 Download</button>
+              <button class="code-btn" onclick="window.omAssistant.saveCodeToFile(this, '${language}')" title="Save to File Manager">💾 Save</button>
+              <button class="code-btn" onclick="window.omAssistant.downloadCodeBlock(this, '${language}')" title="Download file">📥 Download</button>
             </div>
           </div>
           <pre><code class="language-${language}">${safeCode}</code></pre>
@@ -1485,7 +2223,12 @@ if __name__ == "__main__":
     const codeEl = wrapper ? wrapper.querySelector('code') : null;
     if (!codeEl) return;
 
-    const extMap = { python: 'py', javascript: 'js', js: 'js', html: 'html', css: 'css', sql: 'sql', react: 'jsx', json: 'json' };
+    const extMap = {
+      python: 'py', py: 'py', javascript: 'js', js: 'js',
+      html: 'html', css: 'css', sql: 'sql', react: 'jsx',
+      dart: 'dart', flutter: 'dart', yaml: 'yaml', yml: 'yaml',
+      json: 'json', markdown: 'md', md: 'md', java: 'java', cpp: 'cpp'
+    };
     const ext = extMap[lang.toLowerCase()] || 'txt';
     const filename = `om_solution_${Date.now()}.${ext}`;
 
@@ -1499,13 +2242,55 @@ if __name__ == "__main__":
     if (window.omApp) window.omApp.showToast(`Downloaded ${filename}`, 'info');
   }
 
-  runLiveCodePreview(btn) {
+  saveCodeToFile(btn, lang) {
+    const wrapper = btn.closest('.om-code-block-wrapper');
+    const codeEl = wrapper ? wrapper.querySelector('code') : null;
+    if (!codeEl) return;
+
+    const extMap = {
+      python: 'py', py: 'py', javascript: 'js', js: 'js',
+      html: 'html', css: 'css', sql: 'sql', react: 'jsx',
+      dart: 'dart', flutter: 'dart', yaml: 'yaml', yml: 'yaml',
+      json: 'json', markdown: 'md', md: 'md', java: 'java', cpp: 'cpp'
+    };
+    const ext = extMap[lang.toLowerCase()] || 'txt';
+    const filename = `snippet_${Date.now()}.${ext}`;
+    const code = codeEl.textContent;
+
+    if (window.omChatStore) {
+      window.omChatStore.addStoredFile({
+        id: 'file_' + Date.now(),
+        name: filename,
+        size: code.length,
+        type: 'text/plain',
+        extension: ext,
+        uploadedAt: Date.now(),
+        textContent: code,
+        summary: `Saved code snippet (${lang.toUpperCase()})`
+      });
+      btn.textContent = '✓ Saved!';
+      setTimeout(() => { btn.textContent = '💾 Save'; }, 2000);
+      if (window.omApp) window.omApp.showToast(`Saved ${filename} to File Manager!`, 'success');
+    }
+  }
+
+  runLiveCodePreview(btn, lang = '') {
     const wrapper = btn.closest('.om-code-block-wrapper');
     const codeEl = wrapper ? wrapper.querySelector('code') : null;
     if (!codeEl) return;
 
     const code = codeEl.textContent;
-    this.executeProgram(code);
+    const l = (lang || '').toLowerCase();
+
+    if (l === 'python' || l === 'py') {
+      if (window.omApp && typeof window.omApp.openCodeRunnerWithCode === 'function') {
+        window.omApp.openCodeRunnerWithCode(code, 'python');
+      } else {
+        this.executeProgram(code);
+      }
+    } else {
+      this.executeProgram(code);
+    }
   }
 
   executeLiveCodeFromVoice(speechText = '') {

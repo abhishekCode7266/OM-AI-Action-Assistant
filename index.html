@@ -145,9 +145,9 @@
         <button class="nexus-tab-pill" id="tab-pill-spark" onclick="window.omApp.switchAppTab('spark')">Spark</button>
       </div>
 
-      <!-- Controls: New Chat, Search, Images, Videos, Library (Matching Gemini Image 2) -->
+      <!-- Controls: New Chat, Search & 11 Core Navigation Items (Section 8 & 9) -->
       <div class="sidebar-controls">
-        <button class="btn-new-chat" id="btn-sidebar-new-chat" title="Create a new conversation">
+        <button class="btn-new-chat" id="btn-sidebar-new-chat" title="Create a new conversation (Ctrl+K)">
           <span style="display: flex; align-items: center; gap: 8px;">
             <span>✏️</span>
             <span>New chat</span>
@@ -160,7 +160,48 @@
           <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search chats...">
         </div>
 
-        <div class="sidebar-quick-nav-list">
+        <!-- 11 Core Functional Tools Suite (Section 8) -->
+        <div class="sidebar-core-nav-list" id="sidebar-core-nav-list">
+          <div class="sidebar-nav-item" onclick="window.omApp.focusChatHistory()" title="View and manage recent conversations">
+            <span class="nav-item-icon">💬</span>
+            <span class="nav-item-title">Chat History</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openProjectsModal()" title="Project Builder, Workspaces & Architecture">
+            <span class="nav-item-icon">🚀</span>
+            <span class="nav-item-title">Projects</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openFilesModal()" title="File Hub, Document Analysis (PDF, CSV, JSON, Code)">
+            <span class="nav-item-icon">📁</span>
+            <span class="nav-item-title">Files</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openCodingModal()" title="Coding Studio & Multi-Language Execution Sandbox">
+            <span class="nav-item-icon">💻</span>
+            <span class="nav-item-title">Coding</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openTasksModal()" title="Task & Goal Engine Dashboard (Think-Plan-Act-Achieve)">
+            <span class="nav-item-icon">📋</span>
+            <span class="nav-item-title">Tasks</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openVoiceModal()" title="Voice Assistant & Live Voice HUD">
+            <span class="nav-item-icon">🎙️</span>
+            <span class="nav-item-title">Voice</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openSettingsModal()" title="System Settings & Preferences">
+            <span class="nav-item-icon">⚙️</span>
+            <span class="nav-item-title">Settings</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openHelpModal()" title="Help, Capabilities Guide & Keyboard Shortcuts">
+            <span class="nav-item-icon">❓</span>
+            <span class="nav-item-title">Help</span>
+          </div>
+          <div class="sidebar-nav-item" onclick="window.omApp.openDeveloperToolsModal()" title="Developer Tools, Diagnostics, API Keys & Deployment">
+            <span class="nav-item-icon">🛠️</span>
+            <span class="nav-item-title">Developer Tools</span>
+          </div>
+        </div>
+
+        <!-- Quick Creative Tools (Images, Videos, Library) -->
+        <div class="sidebar-quick-nav-list" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
           <div class="sidebar-nav-item" onclick="window.omApp.openImagesModal()" title="AI Generated & Vision Images">
             <span class="nav-item-icon">🖼️</span>
             <span class="nav-item-title">Images</span>
@@ -457,6 +498,7 @@
 
             <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Dictate prompt)">🎙️</button>
             <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
+            <button class="btn-stop-message" id="btn-chat-stop" onclick="window.omApp.stopProcessing()" title="Stop Generation" style="display: none; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 0.85rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);">⏹</button>
           </div>
 
           <div class="dock-disclaimer">
@@ -1870,6 +1912,486 @@
       <div style="padding: 10px 16px; background: #0a0f1d; border-top: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 8px;">
         <span style="font-family: monospace; font-size: 0.82rem; color: #10b981; font-weight: bold;">om-ai@quantum:~$</span>
         <input type="text" id="cyber-terminal-input" placeholder="Type 'help', 'status', 'voice female', 'lang hi', 'dismantle car'..." autocomplete="off" spellcheck="false" style="flex: 1; background: transparent; border: none; outline: none; color: #e2e8f0; font-family: monospace; font-size: 0.82rem;">
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       1. Projects & Workspaces Modal (Section 8 & 9)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="projects-workspace-modal">
+    <div class="om-modal-content" style="max-width: 900px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">🚀</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Projects & Workspace Builder</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Manage multi-file applications, tech stacks, and execution architecture</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.promptCreateProject()">➕ New Project</button>
+          <button class="modal-close-btn" onclick="document.getElementById('projects-workspace-modal').classList.remove('active')">✕</button>
+        </div>
+      </div>
+      <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
+          <label style="font-size: 0.82rem; color: #94a3b8; font-weight: 600;">Active Project:</label>
+          <select id="project-workspace-selector" class="mode-select-pill" style="flex: 1; max-width: 320px;" onchange="window.omApp.switchActiveProject(this.value)">
+            <!-- Populated dynamically -->
+          </select>
+          <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.exportActiveProject()">📥 Export Project</button>
+        </div>
+
+        <div id="project-details-view" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Active project rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       2. File Manager & Knowledge Hub Modal (Section 10)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="files-manager-modal">
+    <div class="om-modal-content" style="max-width: 880px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">📁</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">File Manager & Knowledge Hub</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Upload, analyze, and query documents (PDF, CSV, JSON, TXT, Code, Images)</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('files-manager-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <!-- File Dropzone -->
+        <div class="file-hub-dropzone" id="file-hub-dropzone" onclick="document.getElementById('file-hub-picker').click()" style="border: 2px dashed rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; background: rgba(6, 182, 212, 0.04); margin-bottom: 20px; transition: all 0.2s ease;">
+          <input type="file" id="file-hub-picker" style="display: none;" multiple onchange="window.omApp.handleFileHubUpload(event)">
+          <div style="font-size: 2rem; margin-bottom: 8px;">📤</div>
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Drag & drop files here, or click to browse</div>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Supports PDF, DOCX, TXT, CSV, JSON, Images, Markdown, and Source Code</div>
+        </div>
+
+        <!-- Files List Table -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <span style="font-weight: 700; color: #f8fafc; font-size: 0.88rem;">Uploaded Documents & Datasets</span>
+          <span id="files-count-badge" style="font-size: 0.75rem; color: var(--om-cyan);">2 Files</span>
+        </div>
+        <div id="file-hub-list-container" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- File Preview / Inspection Drawer -->
+        <div id="file-hub-preview-pane" style="display: none; margin-top: 16px; padding: 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span id="file-preview-title" style="font-weight: 700; color: var(--om-cyan); font-size: 0.85rem;">File Preview</span>
+            <button class="om-btn om-btn-xs om-btn-ghost" onclick="document.getElementById('file-hub-preview-pane').style.display='none'">✕ Close</button>
+          </div>
+          <pre id="file-preview-body" style="max-height: 220px; overflow-y: auto; font-family: monospace; font-size: 0.78rem; color: #e2e8f0; white-space: pre-wrap; margin: 0;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       3. Coding Studio & Sandbox Modal (Section 6)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="coding-studio-modal">
+    <div class="om-modal-content" style="max-width: 960px; width: 96%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">💻</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Coding Studio & Multi-Language Sandbox</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Compile, debug, refactor, and preview Python, JavaScript, HTML/CSS & Flutter/Dart</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select id="coding-studio-lang" class="mode-select-pill" onchange="window.omApp.handleCodingLangChange(this.value)">
+            <option value="python">Python 3.12</option>
+            <option value="javascript">JavaScript (ES2024)</option>
+            <option value="html">HTML5 / CSS3 Live</option>
+            <option value="flutter">Flutter / Dart</option>
+            <option value="react">React / JSX</option>
+            <option value="sql">SQL / SQLite</option>
+          </select>
+          <button class="modal-close-btn" onclick="document.getElementById('coding-studio-modal').classList.remove('active')">✕</button>
+        </div>
+      </div>
+      <div class="om-modal-body" style="padding: 14px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px;">
+        <!-- Code Editor Toolbar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; gap: 6px;">
+            <button class="om-btn om-btn-primary om-btn-sm" id="btn-studio-run" onclick="window.omApp.executeCodingStudioCode()">▶ Run / Execute</button>
+            <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.debugCodingStudioCode()">🛠️ Debug & Fix</button>
+            <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.refactorCodingStudioCode()">✨ Refactor</button>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="om-btn om-btn-ghost om-btn-sm" onclick="window.omApp.copyCodingStudioCode()">📋 Copy</button>
+            <button class="om-btn om-btn-ghost om-btn-sm" onclick="window.omApp.saveCodingStudioToFile()">💾 Save to Files</button>
+            <button class="om-btn om-btn-ghost om-btn-sm" onclick="window.omApp.downloadCodingStudioCode()">📥 Download</button>
+          </div>
+        </div>
+
+        <!-- Editor Area -->
+        <textarea id="coding-studio-editor" class="chat-textarea" style="flex: 1; min-height: 240px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.84rem; background: #070d19; color: #38bdf8; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px; line-height: 1.5; resize: vertical;"></textarea>
+
+        <!-- Output / Preview Console -->
+        <div style="background: #020617; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden;">
+          <div style="padding: 6px 12px; background: rgba(255,255,255,0.04); font-size: 0.75rem; color: #94a3b8; font-weight: 700; display: flex; justify-content: space-between;">
+            <span>STDOUT & Execution Diagnostics</span>
+            <button class="om-btn om-btn-xs om-btn-ghost" onclick="document.getElementById('coding-studio-output').textContent='Ready.'">Clear</button>
+          </div>
+          <pre id="coding-studio-output" style="padding: 10px 14px; margin: 0; max-height: 160px; overflow-y: auto; font-family: monospace; font-size: 0.78rem; color: #10b981; white-space: pre-wrap; line-height: 1.45;">Ready.</pre>
+          <div id="coding-studio-iframe-wrap" style="display: none; height: 200px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <iframe id="coding-studio-preview-frame" style="width: 100%; height: 100%; border: none; background: #fff;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. Tasks & Goal Engine Dashboard Modal (Section 5)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="tasks-goal-modal">
+    <div class="om-modal-content" style="max-width: 880px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">📋</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Task & Goal Engine Dashboard</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Automated multi-stage breakdown: Think ➔ Plan ➔ Act ➔ Achieve</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('tasks-goal-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <!-- Metrics Row -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
+          <div class="status-metric-card" style="padding: 10px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div id="task-metric-total" style="font-size: 1.3rem; font-weight: 800; color: #38bdf8;">4</div>
+            <div style="font-size: 0.7rem; color: #94a3b8;">Active Goals</div>
+          </div>
+          <div class="status-metric-card" style="padding: 10px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div id="task-metric-subtasks" style="font-size: 1.3rem; font-weight: 800; color: #34d399;">12</div>
+            <div style="font-size: 0.7rem; color: #94a3b8;">Subtasks Completed</div>
+          </div>
+          <div class="status-metric-card" style="padding: 10px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 1.3rem; font-weight: 800; color: #a855f7;">100%</div>
+            <div style="font-size: 0.7rem; color: #94a3b8;">Verification Score</div>
+          </div>
+          <div class="status-metric-card" style="padding: 10px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 1.3rem; font-weight: 800; color: #f59e0b;">98.4</div>
+            <div style="font-size: 0.7rem; color: #94a3b8;">Velocity Index</div>
+          </div>
+        </div>
+
+        <!-- Add Goal Input -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <input type="text" id="new-task-goal-input" class="om-input" placeholder="Enter a new objective or goal (e.g. Build Flutter To-Do App)..." style="flex: 1;">
+          <button class="om-btn om-btn-primary" onclick="window.omApp.addNewGoalFromDashboard()">⚡ Deconstruct Goal</button>
+        </div>
+
+        <!-- Active Goals Container -->
+        <div id="dashboard-goals-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. Voice Assistant Mode Modal (Section 4)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="voice-assistant-modal">
+    <div class="om-modal-content" style="max-width: 580px; width: 92%; text-align: center; padding: 28px 24px;">
+      <div style="display: flex; justify-content: flex-end; margin-top: -12px; margin-right: -10px;">
+        <button class="modal-close-btn" onclick="document.getElementById('voice-assistant-modal').classList.remove('active'); if(window.omVoice) window.omVoice.stopRecording();">✕</button>
+      </div>
+
+      <div class="voice-modal-orb-wrap" style="position: relative; width: 120px; height: 120px; margin: 10px auto 20px auto;">
+        <div id="voice-modal-reactor-orb" style="width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #06b6d4 0%, #3b82f6 50%, #030712 100%); box-shadow: 0 0 35px rgba(6, 182, 212, 0.6); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; cursor: pointer; transition: transform 0.2s ease;" onclick="if(window.omVoice) window.omVoice.toggleRecording();" title="Click to Speak / Mute">
+          🎙️
+        </div>
+        <div style="position: absolute; inset: -8px; border: 2px dashed rgba(6, 182, 212, 0.4); border-radius: 50%; animation: spinSlow 12s linear infinite; pointer-events: none;"></div>
+      </div>
+
+      <h3 id="voice-modal-title" style="margin: 0; font-size: 1.3rem; color: #fff;">OM Voice Assistant Active</h3>
+      <p id="voice-modal-state-text" style="font-size: 0.82rem; color: var(--om-cyan); margin: 6px 0 16px 0;">Listening for natural human commands...</p>
+
+      <div id="voice-modal-live-ticker" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; min-height: 60px; font-size: 0.88rem; color: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        Say: "OM, create a Python calculator" or "Ek Flutter app bana do"
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 16px;">
+        <button class="om-btn om-btn-primary" onclick="if(window.omVoice) window.omVoice.startRecording();">🎙️ Start Listening</button>
+        <button class="om-btn om-btn-secondary" onclick="if(window.omVoice) window.omVoice.stopRecording();">⏹ Stop Listening</button>
+        <button class="om-btn om-btn-secondary" onclick="if(window.omApp) window.omApp.toggleVoiceGender();">Switch Persona</button>
+      </div>
+
+      <div style="font-size: 0.72rem; color: #94a3b8;">
+        Voice commands are automatically executed through the OM Task & Goal Engine.
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       6. Developer Tools, Diagnostics, API Keys & Deployments Modal (Section 11, 12, 13, 14)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="developer-tools-modal">
+    <div class="om-modal-content" style="max-width: 920px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">🛠️</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Developer Tools & System Diagnostics</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">API Key Vault, Errors & Diagnostics Center, GitHub Integration & Vercel Deploy</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('developer-tools-modal').classList.remove('active')">✕</button>
+      </div>
+
+      <!-- Dev Tabs Header -->
+      <div class="dev-tabs-header" style="display: flex; gap: 6px; padding: 10px 16px; background: rgba(0,0,0,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); overflow-x: auto;">
+        <button class="om-btn om-btn-sm om-btn-primary dev-tab-btn active" id="dev-tab-api" onclick="window.omApp.switchDevTab('api')">🔑 API Keys</button>
+        <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-errors" onclick="window.omApp.switchDevTab('errors')">🚨 Errors & Diagnostics</button>
+        <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-github" onclick="window.omApp.switchDevTab('github')">🐙 GitHub Integration</button>
+        <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-vercel" onclick="window.omApp.switchDevTab('vercel')">▲ Vercel Deployment</button>
+        <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-terminal" onclick="window.omApp.switchDevTab('terminal')">💻 System CLI</button>
+      </div>
+
+      <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <!-- TAB 1: API Key Vault (Section 13) -->
+        <div id="dev-pane-api" class="dev-tab-pane">
+          <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+            <div style="font-weight: 700; color: var(--om-cyan); font-size: 0.85rem;">🔒 Zero-Exposure Security Policy</div>
+            <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 2px;">
+              Keys are never hardcoded in client scripts. Stored securely in your private browser vault or loaded server-side via environment variables.
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="api-key-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-weight: 700; font-size: 0.84rem; color: #fff;">GEMINI_API_KEY (Nexus 2.0 Flash / Pro)</label>
+                <span id="badge-gemini-status" class="stage-tag stage-achieve">Active / Verified</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="input-key-gemini" class="om-input" placeholder="AIzaSy..." style="flex: 1;">
+                <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('GEMINI_API_KEY', 'input-key-gemini')">Save Key</button>
+              </div>
+            </div>
+
+            <div class="api-key-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-weight: 700; font-size: 0.84rem; color: #fff;">OPENAI_API_KEY (GPT-4o Fallback)</label>
+                <span id="badge-openai-status" class="stage-tag stage-plan">Optional</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="input-key-openai" class="om-input" placeholder="sk-proj-..." style="flex: 1;">
+                <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('OPENAI_API_KEY', 'input-key-openai')">Save Key</button>
+              </div>
+            </div>
+
+            <div class="api-key-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-weight: 700; font-size: 0.84rem; color: #fff;">GITHUB_TOKEN (Repo read/write & CI/CD)</label>
+                <span id="badge-github-status" class="stage-tag stage-act">Configured</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="input-key-github" class="om-input" placeholder="ghp_..." style="flex: 1;">
+                <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('GITHUB_TOKEN', 'input-key-github')">Save Key</button>
+              </div>
+            </div>
+
+            <div class="api-key-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-weight: 700; font-size: 0.84rem; color: #fff;">VERCEL_TOKEN (Serverless & Edge Deployment)</label>
+                <span id="badge-vercel-status" class="stage-tag stage-achieve">Active</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="input-key-vercel" class="om-input" placeholder="vercel_..." style="flex: 1;">
+                <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('VERCEL_TOKEN', 'input-key-vercel')">Save Key</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Errors & Diagnostics Center (Section 14) -->
+        <div id="dev-pane-errors" class="dev-tab-pane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 0.82rem; color: #94a3b8;">
+              System diagnostic log tracking Frontend, Backend, API, Auth, Network, Build, and Deployment events.
+            </div>
+            <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omApp.clearErrorLogs()">Clear Logs</button>
+          </div>
+          <div id="error-logs-table-container" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- TAB 3: GitHub Integration (Section 11) -->
+        <div id="dev-pane-github" class="dev-tab-pane" style="display: none;">
+          <div class="modern-card" style="margin-bottom: 14px; padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.5rem;">🐙</span>
+                <div>
+                  <div style="font-weight: 800; color: #fff;">Connected Repository: OM-AI-Action-Assistant</div>
+                  <div style="font-size: 0.74rem; color: #94a3b8;">Owner: abhishekCode7266 • Branch: main</div>
+                </div>
+              </div>
+              <span class="stage-tag stage-achieve">Synchronized</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.8rem; margin-bottom: 14px;">
+              <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">
+                <div style="color: #94a3b8; font-size: 0.7rem;">Latest Commit</div>
+                <div style="color: #38bdf8; font-family: monospace; font-weight: bold;">440f6b6</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">
+                <div style="color: #94a3b8; font-size: 0.7rem;">Active Branch</div>
+                <div style="color: #34d399; font-weight: bold;">main (default)</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">
+                <div style="color: #94a3b8; font-size: 0.7rem;">Hosting Target</div>
+                <div style="color: #a855f7; font-weight: bold;">GitHub Pages</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <a href="https://github.com/abhishekCode7266/OM-AI-Action-Assistant" target="_blank" class="om-btn om-btn-primary om-btn-sm" style="text-decoration: none;">🔗 Open on GitHub</a>
+              <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.showGitHubCommitDialog()">Create Commit</button>
+              <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.showGitHubBranchDialog()">New Branch</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: Vercel Deployment (Section 12) -->
+        <div id="dev-pane-vercel" class="dev-tab-pane" style="display: none;">
+          <div class="modern-card" style="padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.5rem;">▲</span>
+                <div>
+                  <div style="font-weight: 800; color: #fff;">Production Edge Deployment</div>
+                  <div style="font-size: 0.74rem; color: #94a3b8;">Project: om-ai-action-assistant • Region: Global Edge</div>
+                </div>
+              </div>
+              <span class="stage-tag stage-achieve">HTTP 200 OK</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-size: 0.78rem; color: #94a3b8;">Production URL:</div>
+              <a href="https://om-7s6lf1bi4-abhishek-ef1f.vercel.app" target="_blank" style="color: var(--om-cyan); font-weight: 700; font-size: 0.9rem; text-decoration: none;">https://om-7s6lf1bi4-abhishek-ef1f.vercel.app</a>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.runVercelDeployCheck()">🚀 Run Build & Health Check</button>
+              <a href="https://om-7s6lf1bi4-abhishek-ef1f.vercel.app" target="_blank" class="om-btn om-btn-secondary om-btn-sm" style="text-decoration: none;">View Live Site</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: System Telemetry & Terminal -->
+        <div id="dev-pane-terminal" class="dev-tab-pane" style="display: none;">
+          <div style="background: #020617; border: 1px solid #10b981; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.8rem; color: #10b981;">
+            <div>[OM AI QUANTUM KERNEL v2.5.0]</div>
+            <div>STATUS: ONLINE | INVARIANTS: 100% NOMINAL</div>
+            <div>OPERATOR: Udayast (Boss) | PASS: LIFETIME DEVELOPER UNLIMITED</div>
+            <div style="margin-top: 8px;">Type 'help' in Cyber Terminal for command list.</div>
+            <div style="margin-top: 12px;">
+              <button class="om-btn om-btn-primary om-btn-sm" onclick="document.getElementById('developer-tools-modal').classList.remove('active'); window.app.openCyberTerminal();">📟 Open Fullscreen CRT Terminal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. Help & Capabilities Guide Modal (Section 8)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="help-modal">
+    <div class="om-modal-content" style="max-width: 820px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">❓</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Help & Capabilities Guide</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Natural human language instructions, keyboard shortcuts & workflow capabilities</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('help-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <h4 style="color: #fff; margin-top: 0;">🗣️ Natural Human-Language Prompts Supported:</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"Create a Flutter To-Do app."</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Generates full multi-file Flutter project, Material 3 UI, and build steps.</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"OM, make this website better."</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Performs performance audit, CSS glassmorphism overhaul, and SEO checks.</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"Is code mein error kahan hai?"</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Pinpoints syntax, logic, and runtime errors with verified fixes.</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"GitHub par deploy kar do."</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Step-by-step Git workflow, Pages hosting, and CI/CD actions.</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"Explain this in simple Hindi."</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Conversational colloquial Hindi explanation with everyday analogies.</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: var(--om-cyan); font-weight: 700; font-size: 0.85rem;">"OM, create a Python calculator."</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">Generates modular CLI and Tkinter GUI calculator with error guardrails.</div>
+          </div>
+        </div>
+
+        <h4 style="color: #fff; margin-bottom: 8px;">⌨️ Keyboard Shortcuts Reference:</h4>
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; color: #cbd5e1;">
+          <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+            <span>Create New Chat</span>
+            <kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Ctrl + K</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+            <span>Send Message</span>
+            <kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Enter</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+            <span>Insert New Line in Prompt</span>
+            <kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Shift + Enter</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+            <span>Close Active Modal</span>
+            <kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: monospace;">Esc</kbd>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       8. Updates & Changelog Modal (Section 16)
+       ========================================================================= -->
+  <div class="om-modal-overlay" id="updates-modal">
+    <div class="om-modal-content" style="max-width: 780px; width: 95%; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="om-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.4rem;">📢</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">Updates & Release Notes</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Official changelog of OM AI Action Assistant releases</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('updates-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="om-modal-body" id="updates-changelog-container" style="padding: 16px; overflow-y: auto; flex: 1;">
+        <!-- Populated dynamically from chatStore.getChangelog() -->
       </div>
     </div>
   </div>

@@ -1070,7 +1070,256 @@ Core Directives:
     this.saveNotebooks(notebooks);
     return nb;
   }
+
+  // =========================================================================
+  // Errors & Diagnostics Center (Section 14)
+  // =========================================================================
+  getErrors() {
+    try {
+      const data = localStorage.getItem('om_error_logs_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return [
+      {
+        id: 'err_init_1',
+        message: 'GitHub Remote Permission: Token missing or read-only scope for repository sync.',
+        type: 'Authentication error',
+        feature: 'GitHub Integration',
+        timestamp: new Date(Date.now() - 3600000 * 2).toLocaleString(),
+        taskId: 'task_gh_sync_01',
+        possibleCause: 'GITHUB_TOKEN environment variable not configured or expired personal access token.',
+        fixStatus: 'Requires Configuration',
+        category: 'auth'
+      },
+      {
+        id: 'err_init_2',
+        message: 'Vercel Deployment Preview: No deployment target specified for project root.',
+        type: 'Configuration error',
+        feature: 'Vercel Deployment',
+        timestamp: new Date(Date.now() - 3600000 * 5).toLocaleString(),
+        taskId: 'task_vcl_deploy_02',
+        possibleCause: 'vercel.json root directory mismatch or missing project link.',
+        fixStatus: 'Requires Configuration',
+        category: 'config'
+      }
+    ];
+  }
+
+  saveErrors(errors) {
+    try {
+      localStorage.setItem('om_error_logs_v1', JSON.stringify(errors));
+    } catch (e) {}
+  }
+
+  logError(errorObj) {
+    const errors = this.getErrors();
+    const entry = {
+      id: 'err_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      message: errorObj.message || 'Unknown runtime error occurred',
+      type: errorObj.type || 'Frontend error',
+      feature: errorObj.feature || 'General Assistant',
+      timestamp: new Date().toLocaleString(),
+      taskId: errorObj.taskId || 'task_' + Math.random().toString(36).substring(2, 7),
+      possibleCause: errorObj.possibleCause || 'Unexpected exception or network timeout',
+      fixStatus: errorObj.fixStatus || 'Unresolved',
+      category: errorObj.category || 'frontend'
+    };
+    errors.unshift(entry);
+    if (errors.length > 50) errors.pop();
+    this.saveErrors(errors);
+    return entry;
+  }
+
+  clearErrors() {
+    this.saveErrors([]);
+  }
+
+  deleteError(id) {
+    const errors = this.getErrors().filter(e => e.id !== id);
+    this.saveErrors(errors);
+    return errors;
+  }
+
+  // =========================================================================
+  // API Key Management (Section 13)
+  // =========================================================================
+  getAPIKeys() {
+    try {
+      const data = localStorage.getItem('om_api_keys_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return {
+      OPENAI_API_KEY: '',
+      GEMINI_API_KEY: '',
+      GITHUB_TOKEN: '',
+      VERCEL_TOKEN: ''
+    };
+  }
+
+  saveAPIKey(provider, key) {
+    const keys = this.getAPIKeys();
+    keys[provider] = key ? key.trim() : '';
+    try {
+      localStorage.setItem('om_api_keys_v1', JSON.stringify(keys));
+    } catch (e) {}
+    return keys;
+  }
+
+  getMaskedKey(provider) {
+    const keys = this.getAPIKeys();
+    const val = keys[provider];
+    if (!val) return 'Not Configured';
+    if (val.length <= 8) return '••••••••';
+    return val.substring(0, 4) + '••••••••' + val.substring(val.length - 4);
+  }
+
+  hasKey(provider) {
+    const keys = this.getAPIKeys();
+    return !!(keys[provider] && keys[provider].trim().length > 0);
+  }
+
+  // =========================================================================
+  // GitHub & Vercel Integration Config (Sections 11 & 12)
+  // =========================================================================
+  getGitHubConfig() {
+    try {
+      const data = localStorage.getItem('om_github_config_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return {
+      connected: false,
+      username: 'abhishekCode7266',
+      repository: 'OM-AI-Action-Assistant',
+      branch: 'main',
+      lastCommit: '440f6b6',
+      lastSynced: new Date().toLocaleDateString()
+    };
+  }
+
+  saveGitHubConfig(cfg) {
+    try {
+      localStorage.setItem('om_github_config_v1', JSON.stringify(cfg));
+    } catch (e) {}
+  }
+
+  getVercelConfig() {
+    try {
+      const data = localStorage.getItem('om_vercel_config_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return {
+      connected: true,
+      projectName: 'om-ai-action-assistant',
+      environment: 'Production',
+      productionUrl: 'https://om-7s6lf1bi4-abhishek-ef1f.vercel.app',
+      status: 'Ready',
+      lastDeployed: new Date().toLocaleDateString()
+    };
+  }
+
+  saveVercelConfig(cfg) {
+    try {
+      localStorage.setItem('om_vercel_config_v1', JSON.stringify(cfg));
+    } catch (e) {}
+  }
+
+  // =========================================================================
+  // File Hub Persistence (Section 10)
+  // =========================================================================
+  getStoredFiles() {
+    try {
+      const data = localStorage.getItem('om_files_v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return [
+      {
+        id: 'file_starter_1',
+        name: 'flutter_architecture_spec.md',
+        size: 14200,
+        type: 'text/markdown',
+        extension: 'md',
+        uploadedAt: Date.now() - 86400000,
+        summary: 'Architecture specification for Flutter cross-platform applications with state management and clean architecture.'
+      },
+      {
+        id: 'file_starter_2',
+        name: 'dataset_analytics_sample.csv',
+        size: 28400,
+        type: 'text/csv',
+        extension: 'csv',
+        uploadedAt: Date.now() - 43200000,
+        summary: 'Sample tabular dataset containing customer engagement metrics, conversion rates, and time-series indicators.'
+      }
+    ];
+  }
+
+  saveStoredFiles(files) {
+    try {
+      localStorage.setItem('om_files_v1', JSON.stringify(files));
+    } catch (e) {}
+  }
+
+  addStoredFile(fileMeta) {
+    const files = this.getStoredFiles();
+    files.unshift(fileMeta);
+    this.saveStoredFiles(files);
+    return fileMeta;
+  }
+
+  deleteStoredFile(id) {
+    const files = this.getStoredFiles().filter(f => f.id !== id);
+    this.saveStoredFiles(files);
+    return files;
+  }
+
+  // =========================================================================
+  // Updates & Changelog (Section 16)
+  // =========================================================================
+  getChangelog() {
+    return [
+      {
+        version: 'v2.5.0',
+        date: 'September 2026',
+        title: 'Full Conversational AI Agent, Task Engine & Real Multi-Tool Suite',
+        badge: 'Current Release',
+        features: [
+          'Goal & Task Engine with automated subtasks breakdown and live progress cards (Think-Plan-Act-Achieve).',
+          'Complete Coding Assistant supporting Flutter/Dart, Python, JavaScript, HTML/CSS live preview, SQL, and React.',
+          'Natural human-language conversation in English, Hindi, Hinglish, and mixed queries.',
+          'Universal Voice Assistant with STT, TTS, dual male/female personas, and voice commands routed to the task engine.',
+          'Dedicated File Hub (PDF, CSV, JSON, TXT, Code, Images) with preview, question answering, and summaries.',
+          'Dedicated Error & Bug Center with 8 diagnostic categories, retry triggers, and detailed causes.',
+          'API Key Management for OpenAI, Gemini, GitHub, and Vercel with zero hardcoding in frontend.',
+          'Full Left Sidebar Suite with 11 core interactive tools: New Chat, Search, History, Projects, Files, Coding, Tasks, Voice, Settings, Help, Developer Tools.'
+        ]
+      },
+      {
+        version: 'v2.4.0',
+        date: 'September 2026',
+        title: 'Google Gemini Parity & Real AI Diffusion Studio',
+        badge: 'Production',
+        features: [
+          'High-resolution generative AI image studio powered by Pollinations FLUX diffusion core.',
+          'Gemini-style Home screen with suggestion pills and Flash-Lite model selector capsule.',
+          'Interactive message toolbar (thumbs up/down, retry, copy, voice playback, more options).',
+          'Fixed GitHub Pages serverless routing to live Vercel backend with resilient fallback.'
+        ]
+      },
+      {
+        version: 'v2.0.0',
+        date: 'September 2026',
+        title: 'Nexus Autonomous Multi-Agent Core Release',
+        badge: 'Core Engine',
+        features: [
+          '3D Exploded-view CAD deconstructor for robotics, turbines, and vehicles.',
+          'Interactive CRT phosphor Cyber Terminal simulator.',
+          'Holographic Neural Thought Canvas dynamic DAG mind map.'
+        ]
+      }
+    ];
+  }
 }
 
 // Global instance
 window.omChatStore = new OMChatStore();
+

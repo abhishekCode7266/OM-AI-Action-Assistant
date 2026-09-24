@@ -50,8 +50,11 @@ class OMVoiceEngine {
       this.recognition.interimResults = true;
       this.recognition.lang = this.currentLanguage;
 
+      this.lastSpokenText = '';
+
       this.recognition.onstart = () => {
         this.isRecording = true;
+        this.lastSpokenText = '';
         this.updateVisualState(true);
       };
 
@@ -66,16 +69,17 @@ class OMVoiceEngine {
           }
         }
 
-        const input = document.getElementById('chat-user-input');
-        if (input) {
-          if (finalTranscript) {
-            input.value = (input.value ? input.value + ' ' : '') + finalTranscript;
+        if (finalTranscript) {
+          this.lastSpokenText = (this.lastSpokenText ? this.lastSpokenText + ' ' : '') + finalTranscript.trim();
+          const input = document.getElementById('chat-user-input');
+          if (input) {
+            input.value = this.lastSpokenText;
           }
         }
 
         const pulseText = document.getElementById('voice-transcript-preview');
         if (pulseText) {
-          pulseText.textContent = interim || finalTranscript || `Listening in ${this.getLanguageDisplayName()}...`;
+          pulseText.textContent = interim || this.lastSpokenText || `Listening in ${this.getLanguageDisplayName()}...`;
         }
       };
 
@@ -85,7 +89,14 @@ class OMVoiceEngine {
       };
 
       this.recognition.onend = () => {
+        const spoken = (this.lastSpokenText || '').trim();
         this.stopRecording();
+        if (spoken.length > 0) {
+          this.lastSpokenText = '';
+          if (window.omApp && typeof window.omApp.sendVoiceCommand === 'function') {
+            window.omApp.sendVoiceCommand(spoken);
+          }
+        }
       };
     }
   }

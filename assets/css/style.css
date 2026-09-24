@@ -3260,3 +3260,103 @@ h1, h2, h3, h4, h5 {
   cursor: default;
 }
 
+/* =========================================================================
+   11 Core Navigation Items & Suite Styles
+   ========================================================================= */
+.sidebar-core-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.sidebar-core-nav-list .sidebar-nav-item {
+  border: 1px solid transparent;
+}
+
+.sidebar-core-nav-list .sidebar-nav-item:hover {
+  background: rgba(6, 182, 212, 0.08);
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #fff;
+}
+
+/* Code Action Buttons */
+.code-btn-save {
+  background: rgba(168, 85, 247, 0.18) !important;
+  color: #c084fc !important;
+}
+.code-btn-save:hover {
+  background: rgba(168, 85, 247, 0.35) !important;
+  color: #fff !important;
+}
+
+.code-btn-download {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+}
+.code-btn-download:hover {
+  background: rgba(16, 185, 129, 0.35) !important;
+  color: #fff !important;
+}
+
+/* File Hub Dropzone & Table */
+.file-hub-dropzone {
+  border: 2px dashed rgba(6, 182, 212, 0.35);
+  border-radius: 12px;
+  background: rgba(6, 182, 212, 0.03);
+  padding: 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.file-hub-dropzone:hover,
+.file-hub-dropzone.dragover {
+  border-color: var(--om-cyan);
+  background: rgba(6, 182, 212, 0.08);
+}
+
+/* Dev Tools Tabs & Panes */
+.dev-tabs-header {
+  scrollbar-width: thin;
+}
+.dev-tab-btn {
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.dev-tab-btn.active {
+  background: rgba(6, 182, 212, 0.2) !important;
+  color: var(--om-cyan) !important;
+  border-color: rgba(6, 182, 212, 0.4) !important;
+}
+.dev-tab-pane {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modern Card & Status Metric Card */
+.modern-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.modern-card:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.status-metric-card {
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.status-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.btn-stop-message {
+  transition: all 0.2s ease;
+}
+.btn-stop-message:hover {
+  background: #dc2626 !important;
+  transform: scale(1.05);
+}
+
+
