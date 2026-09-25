@@ -480,12 +480,7 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
   }
 
   loadSettings() {
-    const DEFAULT_PROMPT = `You are OM AI Assistant, a highly efficient, smart, and versatile personal AI collaborator.
-Core Directives:
-1. Tone & Style: Be warm, engaging, concise, and direct. Avoid unnecessary fluff or lengthy robotic pleasantries. Get straight to the user's solution.
-2. Accuracy & Formatting: Organize responses using clean Markdown, bullet points, and bold text for scannability. Show step-by-step breakdowns for complex tasks, coding, or problem-solving.
-3. Problem Solving: Always aim to provide actionable, practical solutions. If critical context is missing, briefly ask targeted follow-up questions.
-4. Adaptability: Mirror the user's technical proficiency, scale explanations to their needs, and maintain safety and accuracy across all topics.`;
+    const DEFAULT_PROMPT = `Act as Gemini in Live mode, supporting real-time, voice-to-voice communication and seamless switching between voice commands and text inputs, with clear playback and processing. Maintain an overlay view of your chat history for continuous context, and be ready to process live video feeds and screen sharing. Integrate all workspace tools, including the notebook for drafting, Spark for workflow automation, the visual illustration module for image generation and video editing, 3D modeling, and code writing support. Incorporate advanced interface options like the gems and settings sections. Additionally, support real-time language translation, internet search, smart home device control, media playback management, and use the expert guide for complex tasks. Respond naturally and conversationally, avoiding machine-like recitation of instructions.`;
 
     try {
       const data = localStorage.getItem(this.SETTINGS_KEY);
@@ -1272,16 +1267,63 @@ Core Directives:
     return files;
   }
 
+  /* =========================================================================
+     Smart Home & IoT Device State (Section 15)
+     ========================================================================= */
+  getSmartHomeState() {
+    try {
+      const saved = localStorage.getItem('om_smarthome_state');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      livingRoomLight: { on: true, brightness: 85, color: '#06b6d4', name: 'Living Room Studio Light' },
+      deskLamp: { on: true, brightness: 100, color: '#f59e0b', name: 'Workstation Lamp' },
+      thermostat: { temp: 22, mode: 'cool', target: 22, unit: '°C' },
+      smartLock: { locked: true, status: 'Armed & Secured' },
+      speaker: { playing: false, volume: 70, track: 'Cyberpunk Ambient Synth' },
+      activeScene: 'Coding Sprint'
+    };
+  }
+
+  saveSmartHomeState(state) {
+    localStorage.setItem('om_smarthome_state', JSON.stringify(state));
+  }
+
+  /* =========================================================================
+     Gems State
+     ========================================================================= */
+  getActiveGem() {
+    return localStorage.getItem('om_active_gem') || 'default';
+  }
+
+  setActiveGem(gemId) {
+    localStorage.setItem('om_active_gem', gemId);
+  }
+
   // =========================================================================
   // Updates & Changelog (Section 16)
   // =========================================================================
   getChangelog() {
     return [
       {
+        version: 'v2.6.0',
+        date: 'September 2026',
+        title: 'Gemini Live Mode & Universal Workspace Integration',
+        badge: 'Latest Release',
+        features: [
+          'Full Gemini Live Mode with real-time voice-to-voice communication and seamless voice/text switching.',
+          'Continuous Context Chat History Overlay directly inside the Live Mode HUD and Viewport.',
+          'Live Camera Vision and WebRTC Screen Sharing frame analysis and contextual assistance.',
+          'Comprehensive Workspace Suite: Interactive Drafting Notebook, Spark Workflow Automation, 3D CAD Studio, and Coding Sandbox.',
+          'Advanced Interface: 6 Flagship Gems (Coding, Writing, Research, Spark, Math, Polyglot) plus Custom Gem Creator.',
+          'Real-World Capabilities: Multi-Language Translation Studio (20+ langs), Real-Time Web Search, Smart Home IoT Device Matrix, and Synthesized Media Player.'
+        ]
+      },
+      {
         version: 'v2.5.0',
         date: 'September 2026',
         title: 'Full Conversational AI Agent, Task Engine & Real Multi-Tool Suite',
-        badge: 'Current Release',
+        badge: 'Major Upgrade',
         features: [
           'Goal & Task Engine with automated subtasks breakdown and live progress cards (Think-Plan-Act-Achieve).',
           'Complete Coding Assistant supporting Flutter/Dart, Python, JavaScript, HTML/CSS live preview, SQL, and React.',

@@ -235,6 +235,57 @@ class OMMediaVisionEngine {
     }
   }
 
+  /* =========================================================================
+     Analyze Live Optical / Screen Feed (Multimodal Context Injection)
+     ========================================================================= */
+  analyzeLiveFeed() {
+    const activeVideo = (this.isCameraActive && document.getElementById('live-camera-video')) ||
+                        (this.isScreenSharing && document.getElementById('live-screen-video'));
+
+    if (!activeVideo || !activeVideo.videoWidth) {
+      if (window.omApp) {
+        window.omApp.showToast('⚠️ No active video feed. Please turn on Camera or Screen Share first.', 'warning');
+      }
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = activeVideo.videoWidth;
+    canvas.height = activeVideo.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(activeVideo, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const base64Data = dataUrl.split(',')[1];
+
+    if (window.omApp) {
+      window.omApp.showToast('🔍 Analyzing live visual feed frame...', 'info');
+      const attachment = {
+        name: this.isScreenSharing ? 'live_screen_stream.jpg' : 'optical_camera_view.jpg',
+        isImage: true,
+        type: 'image/jpeg',
+        base64Data: base64Data,
+        previewUrl: dataUrl
+      };
+
+      const input = document.getElementById('chat-user-input');
+      if (input) {
+        input.value = this.isScreenSharing 
+          ? 'Analyze this live screen view and provide actionable debugging and architectural suggestions' 
+          : 'Analyze this optical camera view and describe what you observe';
+        window.omApp.attachedFiles = [attachment];
+        window.omApp.renderAttachmentsPreview();
+        window.omApp.handleSendMessage();
+      }
+
+      if (window.omJarvisLive && window.omJarvisLive.isActive) {
+        const speech = this.isScreenSharing
+          ? 'Capturing screen telemetry frame, Boss. Analyzing viewport in real-time.'
+          : 'Optical camera snapshot acquired, Boss. Running multimodal analysis.';
+        window.omJarvisLive.speakResponse(speech);
+      }
+    }
+  }
+
   updateUIButtons() {
     const screenBtn = document.getElementById('btn-toggle-screen-share');
     const camBtn = document.getElementById('btn-toggle-camera-share');

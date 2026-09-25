@@ -479,6 +479,7 @@ class OMJarvisLiveEngine {
           window.omApp.renderSidebar();
           window.omApp.renderChatMessages();
         }
+        this.updateChatHistoryOverlay();
       }
     }
 
@@ -792,6 +793,43 @@ class OMJarvisLiveEngine {
     };
 
     render();
+  }
+
+  /* =========================================================================
+     Continuous Context Chat History Overlay (Section 2)
+     ========================================================================= */
+  toggleChatHistoryOverlay() {
+    const overlay = document.getElementById('live-chat-history-overlay');
+    if (!overlay) return;
+    const isShowing = overlay.style.display === 'flex' || overlay.classList.contains('active');
+    if (isShowing) {
+      overlay.style.display = 'none';
+      overlay.classList.remove('active');
+    } else {
+      overlay.style.display = 'flex';
+      overlay.classList.add('active');
+      this.updateChatHistoryOverlay();
+    }
+  }
+
+  updateChatHistoryOverlay() {
+    const container = document.getElementById('live-overlay-messages-list');
+    if (!container || !window.omChatStore) return;
+    const active = window.omChatStore.getActiveChat();
+    const messages = (active && active.messages) ? active.messages : [];
+    if (messages.length === 0) {
+      container.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px; font-size: 0.8rem;">No messages in context yet. Speak or type to begin!</div>';
+      return;
+    }
+    container.innerHTML = messages.map(m => `
+      <div style="margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; line-height: 1.4; ${m.sender === 'user' ? 'background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); color: #fff; margin-left: 12%;' : 'background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; margin-right: 12%;'}">
+        <div style="font-weight: 700; font-size: 0.7rem; color: ${m.sender === 'user' ? 'var(--om-cyan)' : '#34d399'}; margin-bottom: 2px;">
+          ${m.sender === 'user' ? 'YOU' : 'OM ASSISTANT'}:
+        </div>
+        <div>${(m.text || '').replace(/<[^>]*>?/gm, '').slice(0, 220)}${(m.text || '').length > 220 ? '...' : ''}</div>
+      </div>
+    `).join('');
+    container.scrollTop = container.scrollHeight;
   }
 }
 
