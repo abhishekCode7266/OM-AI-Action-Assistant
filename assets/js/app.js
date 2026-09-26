@@ -145,6 +145,23 @@ class OMApp {
       }
     }
 
+    // Attach / Plus Button Popover Menu
+    const plusBtn = document.getElementById('btn-capsule-plus');
+    if (plusBtn) {
+      plusBtn.addEventListener('click', (e) => {
+        this.toggleInputAttachMenu(e);
+      });
+    }
+
+    // Click outside to dismiss attach popover menu
+    document.addEventListener('click', (e) => {
+      const popup = document.getElementById('input-attach-popup');
+      const plus = document.getElementById('btn-capsule-plus');
+      if (popup && (popup.classList.contains('show') || popup.style.display === 'flex') && !popup.contains(e.target) && (!plus || !plus.contains(e.target))) {
+        this.closeInputAttachMenu();
+      }
+    });
+
     // Voice Dictation Button
     const voiceBtn = document.getElementById('btn-voice-input');
     if (voiceBtn) {
@@ -2195,17 +2212,35 @@ Key Ideas & Notes:
   }
 
   toggleInputAttachMenu(e) {
-    if (e) e.stopPropagation();
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    }
+    const now = Date.now();
+    if (this._lastMenuToggle && (now - this._lastMenuToggle < 250)) {
+      return;
+    }
+    this._lastMenuToggle = now;
+
     const popup = document.getElementById('input-attach-popup');
     if (popup) {
-      const isVisible = popup.style.display === 'block';
-      popup.style.display = isVisible ? 'none' : 'block';
+      const isVisible = popup.classList.contains('show') || popup.style.display === 'flex' || popup.style.display === 'block';
+      if (isVisible) {
+        popup.classList.remove('show');
+        popup.style.display = 'none';
+      } else {
+        popup.classList.add('show');
+        popup.style.display = 'flex';
+      }
     }
   }
 
   closeInputAttachMenu() {
     const popup = document.getElementById('input-attach-popup');
-    if (popup) popup.style.display = 'none';
+    if (popup) {
+      popup.classList.remove('show');
+      popup.style.display = 'none';
+    }
   }
 
   setModelFromPill(modelKey, label) {

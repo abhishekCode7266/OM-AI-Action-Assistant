@@ -461,44 +461,58 @@
           <div class="input-capsule" style="position: relative;">
             <!-- + Attach Popover Menu -->
             <div class="input-attach-popup" id="input-attach-popup" style="display: none;">
-              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); document.getElementById('hidden-image-input').click();">
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omJarvisLive) window.omJarvisLive.startSession();">
+                <span class="attach-item-icon">🎙️</span>
+                <div>
+                  <div class="attach-item-title">Nexus Live Voice Matrix</div>
+                  <div class="attach-item-desc">Hands-free Natural Speech & Personas</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); var fi = document.getElementById('hidden-image-input'); if(fi) fi.click();">
                 <span class="attach-item-icon">🖼️</span>
                 <div>
                   <div class="attach-item-title">Upload Image / Screenshot</div>
                   <div class="attach-item-desc">Multimodal OCR & Vision Analysis</div>
                 </div>
               </div>
-              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); document.getElementById('hidden-file-input').click();">
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); var fi = document.getElementById('hidden-file-input'); if(fi) fi.click();">
                 <span class="attach-item-icon">📎</span>
                 <div>
                   <div class="attach-item-title">Attach Document</div>
                   <div class="attach-item-desc">PDF, CSV, TXT, JSON, Code</div>
                 </div>
               </div>
-              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omApp.openImagesModal();">
+              <div class="attach-popup-item" onclick="if(window.omApp) { window.omApp.closeInputAttachMenu(); window.omApp.openImagesModal(); }">
                 <span class="attach-item-icon">🎨</span>
                 <div>
                   <div class="attach-item-title">AI Image Studio</div>
                   <div class="attach-item-desc">Text-to-Image 4K Diffusion</div>
                 </div>
               </div>
-              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omDismantler.openModal('drone');">
+              <div class="attach-popup-item" onclick="if(window.omApp) { window.omApp.closeInputAttachMenu(); window.omApp.openCodingModal(); }">
+                <span class="attach-item-icon">💻</span>
+                <div>
+                  <div class="attach-item-title">Coding Sandbox Studio</div>
+                  <div class="attach-item-desc">Multi-Language Code Runner & Debugger</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omDismantler) window.omDismantler.openModal('drone');">
                 <span class="attach-item-icon">📐</span>
                 <div>
                   <div class="attach-item-title">3D Assemblable Studio</div>
                   <div class="attach-item-desc">Interactive CAD Deconstructor</div>
                 </div>
               </div>
-              <div class="attach-popup-item" onclick="window.omApp.closeInputAttachMenu(); window.omJarvisLive.startSession();">
-                <span class="attach-item-icon">⚡</span>
+              <div class="attach-popup-item" onclick="if(window.omApp) { window.omApp.closeInputAttachMenu(); window.omApp.openAllNotebooksModal(); }">
+                <span class="attach-item-icon">📝</span>
                 <div>
-                  <div class="attach-item-title">Nexus Live Voice Matrix</div>
-                  <div class="attach-item-desc">9 Personas & Hands-free Conversation</div>
+                  <div class="attach-item-title">AI Notebooks & Sources</div>
+                  <div class="attach-item-desc">Interactive Drafting & Research Vault</div>
                 </div>
               </div>
             </div>
 
-            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" onclick="window.omApp.toggleInputAttachMenu(event)" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
+            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" onclick="if(window.omApp) window.omApp.toggleInputAttachMenu(event)" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
             <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
             <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
 
