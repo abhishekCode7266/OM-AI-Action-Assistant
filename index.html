@@ -521,7 +521,7 @@
             </div>
 
             <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Dictate prompt)">🎙️</button>
-            <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
+            <button class="btn-send-message" id="btn-chat-send" onclick="window.omApp && window.omApp.handleSendMessage()" title="Send (Enter)">➔</button>
             <button class="btn-stop-message" id="btn-chat-stop" onclick="window.omApp.stopProcessing()" title="Stop Generation" style="display: none; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 0.85rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);">⏹</button>
           </div>
 

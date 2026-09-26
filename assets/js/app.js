@@ -1281,9 +1281,6 @@ Key Ideas & Notes:
     const modal = document.getElementById('notebook-modal');
     if (modal) modal.classList.remove('active');
   }
-    const modal = document.getElementById('notebook-modal');
-    if (modal) modal.classList.remove('active');
-  }
 
   openFeedbackModal() {
     this.closeProfilePopover();
@@ -3457,9 +3454,17 @@ class OMMediaPlayerEngine {
 
 window.omMediaPlayer = new OMMediaPlayerEngine();
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.omApp = new OMApp();
-  window.app = window.omApp;
-});
+function initOMApp() {
+  if (!window.omApp) {
+    window.omApp = new OMApp();
+    window.app = window.omApp;
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initOMApp);
+} else {
+  initOMApp();
+}
 
 

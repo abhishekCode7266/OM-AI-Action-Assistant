@@ -139,13 +139,13 @@ class OMAssistant {
       }
     }
 
-    // 2. Try Serverless /api/chat with a 3.5s timeout (routed to live Vercel on GitHub Pages)
+    // 2. Try Serverless /api/chat with a fast 1.8s timeout (routed to live Vercel on GitHub Pages)
     try {
       const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-      const chatEndpoint = isGitHubPages ? 'https://om-7s6lf1bi4-abhishek-ef1f.vercel.app/api/chat' : '/api/chat';
+      const chatEndpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/chat' : '/api/chat';
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 1800);
 
       const serverResp = await fetch(chatEndpoint, {
         method: 'POST',
@@ -1546,23 +1546,47 @@ This is considered the **gold standard 5-day workout split** for balanced muscle
       tools = ["Fitness Split Planner", "Hypertrophy Science Engine"];
     }
 
-    // 0f. Greetings & Conversational Openers (Google Gemini Image 5 Natural Style)
+    // 0f. Greetings & Conversational Openers (Google Gemini & ChatGPT Natural Style)
     else if (
       lower === 'hello' || lower === 'hi' || lower === 'hey' ||
+      lower.startsWith('hello ') || lower.startsWith('hi ') || lower.startsWith('hey ') ||
       lower === 'hello!' || lower === 'hi!' || lower === 'hey!' ||
-      lower === 'namaste' || lower === 'namaste!' || lower === 'नमस्ते'
+      lower === 'namaste' || lower === 'namaste!' || lower.includes('नमस्ते') ||
+      lower === 'good morning' || lower === 'good evening' || lower === 'good afternoon'
     ) {
       const isHindi = hasDevanagari || lower.includes('namaste') || lower.includes('नमस्ते');
       text = isHindi 
-        ? `नमस्ते! आज मैं आपकी क्या सहायता कर सकता हूँ?`
-        : `Hello! How can I help you today?`;
+        ? `### 🙏 नमस्ते बॉस! मैं आपकी किस प्रकार सहायता कर सकता हूँ?
+
+मैं आपकी सभी प्राथमिकताओं में सहयोग के लिए तैयार हूँ:
+- 💻 **कोडिंग व प्रोग्रामिंग**: पायथन, जावास्क्रिप्ट, डार्ट/फ्लटर, HTML/CSS लाइव सैंडबॉक्स।
+- 👁️ **इमेज व विज़न एनालिसिस**: चित्र, स्क्रीनशॉट या डेटा का तत्काल विश्लेषण।
+- 🎙️ **लाइव वॉइस असिस्टेंट**: रीयल-टाइम वॉइस-टू-वॉइस संवाद।
+- 🚗 **3D CAD डिसेम्बलर**: 3D मैकेनिकल मॉडल डीकंस्ट्रक्शन एवं ब्लूप्रिंट।
+
+आज आप क्या बनाना या हल करना चाहते हैं?`
+        : `### 👋 Hello Boss! How can I help you today?
+
+I am **OM AI Assistant**, your personal multimodal AI collaborator. Here is what we can do together right now:
+
+- 💻 **Code Writing & Execution**: Python, JavaScript, Dart/Flutter, and HTML/CSS sandboxes with real-time output and action buttons.
+- 🖼️ **Image & Multimodal Vision**: Upload screenshots, diagrams, photos, or live webcam/screen captures for deep visual inspection.
+- 🎙️ **Gemini Live Voice**: Real-time hands-free speech loop with 9 audio personas (*J.A.R.V.I.S., F.R.I.D.A.Y., Nova, Atlas*, etc.).
+- 🚗 **3D CAD Dismantler Studio**: Orbit, deconstruct, and generate 360° assembly animations and technical blueprints.
+- 🌐 **Translation Studio & Smart Home**: 20+ languages translation and IoT device automation matrix.
+
+What project or goal shall we tackle right now?`;
 
       reasoning = [
-        "1. Core Conversational Standard: Natural, concise greeting response matching Google Gemini baseline (Image 5).",
-        "2. Directives: Zero robotic fluff, welcoming and ready for any multimodal task."
+        "1. Core Conversational Standard: Natural, warm, highly capable greeting matching ChatGPT & Google Gemini baselines.",
+        "2. Directives: Zero robotic fluff, welcoming, action-oriented, and immediately ready for multimodal execution."
       ];
-      actions = [];
-      tools = ["OM Conversational Core"];
+      actions = [
+        { stage: 'think', title: 'Awaiting your goal or technical query', estimate: 'Ready' },
+        { stage: 'plan', title: 'Deconstruct objective into executable subtasks', estimate: '1m' },
+        { stage: 'act', title: 'Write, debug, execute code or render 3D visuals', estimate: 'Instant' }
+      ];
+      tools = ["OM Conversational Core", "Multimodal Engine"];
     }
 
     // 0g. Identity, Capabilities & Help
