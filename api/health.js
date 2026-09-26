@@ -25,29 +25,31 @@ export default function handler(req, res) {
     return res.status(200).end();
   }
 
+  const geminiConfigured = Boolean(process.env.GEMINI_API_KEY || process.env.NEXUS_API_KEY);
+  const openaiConfigured = Boolean(process.env.OPENAI_API_KEY);
+  const githubConfigured = Boolean(process.env.GITHUB_TOKEN);
+  const vercelConfigured = Boolean(process.env.VERCEL_TOKEN);
+  const imageConfigured = Boolean(process.env.IMAGE_API_KEY || process.env.OPENAI_API_KEY);
+  const videoConfigured = Boolean(process.env.VIDEO_API_KEY);
+
   return res.status(200).json({
+    status: "healthy",
+    connected: true,
+    service: "OM AI Action Assistant",
     brand: "OM",
-    name: "OM – AI Action Assistant",
     tagline: "Think. Plan. Act. Achieve.",
-    persona: "Master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.",
-    engine_version: "3.0.0",
-    ai_models_supported: ["gemini-1.5-flash", "gemini-2.0-flash", "gpt-4o-mini", "om-action-engine"],
-    multimodal_capabilities: [
-      "Vision & Image Analysis",
-      "Video & Audio Processing",
-      "Document & Library Search",
-      "Code & Technical Execution",
-      "Live Search & Data Lookup",
-      "Charts & Data Analytics (Sparks)",
-      "Notebook Workflows"
-    ],
-    operational_rules: [
-      "Clarity First",
-      "Step-by-Step Breakdown",
-      "Completeness"
-    ],
-    environment: "Vercel Serverless Function",
-    status: "online",
-    philosophy: "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
+    version: "3.0.0",
+    environment: "production",
+    ai_provider_configured: geminiConfigured || openaiConfigured,
+    providers: {
+      gemini: geminiConfigured,
+      openai: openaiConfigured,
+      ai_configured: geminiConfigured || openaiConfigured,
+      github: githubConfigured,
+      vercel: vercelConfigured,
+      image: imageConfigured,
+      video: videoConfigured
+    },
+    timestamp: new Date().toISOString()
   });
 }

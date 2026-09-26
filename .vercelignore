@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 .system_generated/
 data/*.json
+api/index.py
+server.py
+requirements.txt

@@ -162,7 +162,7 @@ class OMAssistant {
 
       if (serverResp.ok) {
         const data = await serverResp.json();
-        const replyText = data.text || data.message || data.greeting;
+        const replyText = data.text || data.message || data.error || data.greeting;
         if (data && replyText) {
           const providerLabel = data.apiKeyUsed || (window.location && window.location.hostname.includes('github.io') ? 'OM Backend (Live)' : 'OM Serverless');
           return this.formatStructuredResponse(replyText, data.reasoning, data.actions, mode, providerLabel);
@@ -170,18 +170,22 @@ class OMAssistant {
       } else {
         try {
           const errData = await serverResp.json();
-          if (errData && errData.error) {
-            console.warn("Backend chat warning:", errData.error);
-          }
-        } catch (_) {}
+          const errMsg = errData.error || errData.message || `Backend request failed with status ${serverResp.status}`;
+          return this.formatStructuredResponse(errMsg, "Backend Service Error", [], mode, 'OM Backend Error');
+        } catch (_) {
+          return this.formatStructuredResponse(`Backend request failed with status ${serverResp.status}`, "HTTP Error", [], mode, 'OM Backend Error');
+        }
       }
     } catch (netErr) {
-      // Offline / Static GitHub Pages fallback / Network timeout
-      console.warn("Backend fetch failed, routing to native cognitive engine:", netErr.message);
+      console.warn("Backend fetch error:", netErr);
+      return this.formatStructuredResponse(
+        `Unable to reach AI backend (${netErr.message || 'Network Error'}). Please verify that ${chatEndpoint} is online.`,
+        "Network Connectivity Issue",
+        [],
+        mode,
+        'Connection Error'
+      );
     }
-
-    // 3. Autonomous Cognitive Engine
-    return this.generateAutonomousFallback(prompt, history, mode, attachments);
   }
 
   /**

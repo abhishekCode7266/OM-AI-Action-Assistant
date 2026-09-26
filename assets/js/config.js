@@ -16,7 +16,9 @@
     
     // 1. User-customized backend URL from settings (if any)
     const custom = localStorage.getItem('om_custom_api_url');
-    if (custom && custom.trim().length > 0) {
+    if (custom && (custom.includes('om-ai-abhishek-ef1f') || custom.includes('om-7s6lf1bi4'))) {
+      localStorage.removeItem('om_custom_api_url');
+    } else if (custom && custom.trim().length > 0) {
       return custom.trim().replace(/\/+$/, '');
     }
 
@@ -57,10 +59,10 @@
     },
 
     async checkBackendHealth() {
-      const url = this.getApiUrl('status');
+      const url = this.getApiUrl('health');
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 4000);
+        const timeout = setTimeout(() => controller.abort(), 5000);
         const res = await fetch(url, { signal: controller.signal });
         clearTimeout(timeout);
         if (res.ok) {

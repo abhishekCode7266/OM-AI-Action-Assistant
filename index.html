@@ -1490,7 +1490,7 @@
             <span class="pulse-dot" style="background: #10b981;"></span>
             <span style="font-size: 0.85rem; color: #a7f3d0; font-weight: 600;">Autonomous Background Daemon: Active</span>
           </div>
-          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace;">Zero Errors</span>
+          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace;" id="autonomous-daemon-status">Active</span>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -2332,7 +2332,7 @@
                 Configure the backend endpoint that the frontend connects to. On GitHub Pages, defaults to Vercel production edge serverless API.
               </div>
               <div style="display: flex; gap: 8px;">
-                <input type="text" id="input-custom-api-url" class="om-input" placeholder="https://om-ai-abhishek-ef1f.vercel.app/api or /api" style="flex: 1; font-size: 0.82rem;">
+                <input type="text" id="input-custom-api-url" class="om-input" placeholder="https://om-ai-eight.vercel.app/api or /api" style="flex: 1; font-size: 0.82rem;">
                 <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.saveCustomApiUrl()">Save URL</button>
                 <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.checkBackendHealth()">Check Health</button>
               </div>
@@ -2443,15 +2443,15 @@
                   <div style="font-size: 0.74rem; color: #94a3b8;">Project: om-ai • Region: Global Edge Serverless</div>
                 </div>
               </div>
-              <span class="stage-tag stage-plan" id="vercel-status-pill">Backend Monitored</span>
+              <span class="stage-tag stage-plan" id="vercel-status-pill">Checking...</span>
             </div>
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
               <div style="font-size: 0.78rem; color: #94a3b8;">Production Domain:</div>
-              <a href="https://om-ai-abhishek-ef1f.vercel.app" target="_blank" style="color: var(--om-cyan); font-weight: 700; font-size: 0.9rem; text-decoration: none;">https://om-ai-abhishek-ef1f.vercel.app</a>
+              <a href="https://om-ai-eight.vercel.app" target="_blank" style="color: var(--om-cyan); font-weight: 700; font-size: 0.9rem; text-decoration: none;">https://om-ai-eight.vercel.app</a>
             </div>
             <div style="display: flex; gap: 10px;">
               <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.runVercelDeployCheck()">🚀 Check Deployment Telemetry</button>
-              <a href="https://om-ai-abhishek-ef1f.vercel.app" target="_blank" class="om-btn om-btn-secondary om-btn-sm" style="text-decoration: none;">View Live Site</a>
+              <a href="https://om-ai-eight.vercel.app" target="_blank" class="om-btn om-btn-secondary om-btn-sm" style="text-decoration: none;">View Live Site</a>
             </div>
           </div>
         </div>
@@ -2459,8 +2459,8 @@
         <!-- TAB 5: System Telemetry & Terminal -->
         <div id="dev-pane-terminal" class="dev-tab-pane" style="display: none;">
           <div style="background: #020617; border: 1px solid #10b981; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.8rem; color: #10b981;">
-            <div>[OM AI QUANTUM KERNEL v2.5.0]</div>
-            <div>STATUS: ONLINE | INVARIANTS: 100% NOMINAL</div>
+            <div>[OM AI QUANTUM KERNEL v3.0.0]</div>
+            <div id="telemetry-status-line">STATUS: CHECKING...</div>
             <div>OPERATOR: System Operator | STATUS: Standard Active</div>
             <div style="margin-top: 8px;">Type 'help' in Cyber Terminal for command list.</div>
             <div style="margin-top: 12px;">

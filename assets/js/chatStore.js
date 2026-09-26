@@ -1130,14 +1130,21 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
   getVercelConfig() {
     try {
       const data = localStorage.getItem('om_vercel_config_v1');
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed.productionUrl && (parsed.productionUrl.includes('om-7s6lf1bi4') || parsed.productionUrl.includes('om-ai-abhishek-ef1f'))) {
+          parsed.productionUrl = 'https://om-ai-eight.vercel.app';
+          localStorage.setItem('om_vercel_config_v1', JSON.stringify(parsed));
+        }
+        return parsed;
+      }
     } catch (e) {}
     return {
-      connected: true,
+      connected: false,
       projectName: 'om-ai-action-assistant',
       environment: 'Production',
-      productionUrl: 'https://om-7s6lf1bi4-abhishek-ef1f.vercel.app',
-      status: 'Ready',
+      productionUrl: 'https://om-ai-eight.vercel.app',
+      status: 'Checking',
       lastDeployed: new Date().toLocaleDateString()
     };
   }

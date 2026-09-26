@@ -1177,7 +1177,7 @@ class OMApp {
 
     if (btnTrial) {
       if (isDev) {
-        btnTrial.textContent = "Included in Developer VIP (Free)";
+        btnTrial.textContent = "Developer Mode Active";
         btnTrial.disabled = true;
         btnTrial.style.opacity = '0.7';
       } else if (trial.isTrial) {
@@ -1931,16 +1931,22 @@ Key Ideas & Notes:
       contentTextarea.value = nb.content || '';
       const words = (nb.content || '').trim().split(/\s+/).filter(Boolean).length;
       if (wordCount) wordCount.textContent = `${words} words`;
+      let saveDebounceTimer = null;
       contentTextarea.oninput = () => {
         const count = contentTextarea.value.trim().split(/\s+/).filter(Boolean).length;
         if (wordCount) wordCount.textContent = `${count} words`;
+        
+        clearTimeout(saveDebounceTimer);
+        saveDebounceTimer = setTimeout(() => {
+          this.saveActiveNotebook(true); // silent auto-save
+        }, 800);
       };
     }
 
     modal.classList.add('active');
   }
 
-  saveActiveNotebook() {
+  saveActiveNotebook(silent = false) {
     if (!this.activeNotebookId) return;
     const titleInput = document.getElementById('notebook-title-input');
     const contentTextarea = document.getElementById('notebook-content-textarea');
@@ -1949,9 +1955,12 @@ Key Ideas & Notes:
     if (nb) {
       if (titleInput) nb.title = titleInput.value.trim() || 'Untitled notebook';
       if (contentTextarea) nb.content = contentTextarea.value;
+      nb.updatedAt = new Date().toISOString();
       this.chatStore.saveNotebooks(nbs);
       this.renderNotebooks();
-      this.showToast('Notebook saved successfully', 'success');
+      if (!silent) {
+        this.showToast('Notebook saved successfully', 'success');
+      }
     }
   }
 
@@ -2845,18 +2854,47 @@ Key Ideas & Notes:
     if (window.OM_CONFIG) {
       const res = await window.OM_CONFIG.checkBackendHealth();
       const badge = document.getElementById('badge-api-backend-status');
-      if (res.online) {
+      const vercelPill = document.getElementById('vercel-status-pill');
+      const telemetryLine = document.getElementById('telemetry-status-line');
+      const geminiBadge = document.getElementById('badge-gemini-status');
+
+      if (res.online && res.data && res.data.status === 'healthy') {
         if (badge) {
-          badge.textContent = 'Online / HTTP 200';
+          badge.textContent = 'ONLINE / HEALTHY';
           badge.className = 'stage-tag stage-achieve';
         }
-        this.showToast(`✔ Backend is online and responding at: ${res.url}`, 'success');
+        if (vercelPill) {
+          vercelPill.textContent = 'ONLINE / API READY';
+          vercelPill.className = 'stage-tag stage-achieve';
+        }
+        if (telemetryLine) {
+          telemetryLine.textContent = `STATUS: ONLINE | HEALTHY | SERVICE: OM v3.0.0`;
+          telemetryLine.style.color = '#10b981';
+        }
+        if (geminiBadge) {
+          const aiReady = res.data.ai_provider_configured;
+          geminiBadge.textContent = aiReady ? 'AI Provider: Active' : 'Key Not Configured';
+          geminiBadge.className = aiReady ? 'stage-tag stage-achieve' : 'stage-tag stage-think';
+        }
+        this.showToast(`✔ Backend is ONLINE & HEALTHY at: ${res.url}`, 'success');
       } else {
         if (badge) {
-          badge.textContent = 'Offline / Error';
+          badge.textContent = 'OFFLINE';
           badge.className = 'stage-tag stage-think';
         }
-        this.showToast(`Backend check warning (${res.error}). Verify endpoint URL or deployment status.`, 'error');
+        if (vercelPill) {
+          vercelPill.textContent = 'OFFLINE / UNVERIFIED';
+          vercelPill.className = 'stage-tag stage-think';
+        }
+        if (telemetryLine) {
+          telemetryLine.textContent = `STATUS: OFFLINE | ${res.error || 'Connection Failed'}`;
+          telemetryLine.style.color = '#f87171';
+        }
+        if (geminiBadge) {
+          geminiBadge.textContent = 'Disconnected';
+          geminiBadge.className = 'stage-tag stage-think';
+        }
+        this.showToast(`Backend check warning (${res.error || 'Offline'}). Verify endpoint URL or deployment status.`, 'error');
       }
     }
   }
@@ -2960,18 +2998,31 @@ Key Ideas & Notes:
 
   async runVercelDeployCheck() {
     this.showToast('Querying Vercel deployment telemetry from backend...', 'info');
+    const pill = document.getElementById('vercel-status-pill');
     try {
       const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
         ? window.OM_CONFIG.getApiUrl('vercel/status')
         : '/api/vercel/status';
       const res = await fetch(endpoint);
       const data = await res.json();
-      if (res.ok && data.configured) {
-        this.showToast(`✔ Vercel Status: Active deployment confirmed for project '${data.project}'!`, 'success');
+      if (res.ok && data.configured && data.status === 'active') {
+        if (pill) {
+          pill.textContent = 'DEPLOYED / VERIFIED';
+          pill.className = 'stage-tag stage-achieve';
+        }
+        this.showToast(`✔ Vercel Status: Active deployment confirmed for '${data.project}' (${data.production_domain})!`, 'success');
       } else {
+        if (pill) {
+          pill.textContent = 'VERCEL_TOKEN NOT CONFIGURED';
+          pill.className = 'stage-tag stage-plan';
+        }
         this.showToast(data.error || 'VERCEL_TOKEN is not configured on the server.', 'info');
       }
     } catch (e) {
+      if (pill) {
+        pill.textContent = 'CHECK ERROR';
+        pill.className = 'stage-tag stage-think';
+      }
       this.showToast('Vercel check error: ' + e.message, 'error');
     }
   }

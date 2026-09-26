@@ -1,3 +1,23 @@
+function setCors(req, res) {
+  const origin = req.headers.origin || '';
+  const allowed = [
+    'https://abhishekcode7266.github.io',
+    'https://om-ai-eight.vercel.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:3000'
+  ];
+  if (allowed.includes(origin) || origin.endsWith('.github.io') || origin.endsWith('.vercel.app')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', 'https://abhishekcode7266.github.io');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', 'https://abhishekcode7266.github.io');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
+
 let memoryTasks = [
   {
     id: 'task-1',
@@ -34,9 +54,7 @@ let memoryTasks = [
 ];
 
 export default function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  setCors(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
