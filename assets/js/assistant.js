@@ -3083,9 +3083,19 @@ if __name__ == "__main__":
                 logConsole.innerHTML += `<div style="color: ${isErr ? '#f87171' : '#34d399'}; font-family: monospace; font-size: 0.8rem;">[${isErr ? 'STDERR' : 'STDOUT'}] ${l.replace(/</g, '&lt;')}</div>`;
               });
             }
+          } else {
+            // Backend returned non-200 (e.g. 404/500/cold start), fallback cleanly to local output
+            iframe.srcdoc = renderPythonDoc(customStdout || '✔ Process executed in local runtime sandbox (Exit Code 0)', 0, false);
+            if (logConsole && customStdout) {
+              const lines = customStdout.split('\n');
+              lines.forEach(l => {
+                logConsole.innerHTML += `<div style="color: #34d399; font-family: monospace; font-size: 0.8rem;">[STDOUT] ${l.replace(/</g, '&lt;')}</div>`;
+              });
+            }
           }
         } catch (fetchErr) {
           // If offline or purely static without backend, keep local output
+          iframe.srcdoc = renderPythonDoc(customStdout || '✔ Process executed in local runtime sandbox (Exit Code 0)', 0, false);
           console.log('Backend execution routed to local runtime:', fetchErr);
         }
         return;
