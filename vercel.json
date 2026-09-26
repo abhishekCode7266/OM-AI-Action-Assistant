@@ -3,36 +3,8 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/api/auth/(.*)",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/github/(.*)",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/vercel/(.*)",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/health",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/prompt",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/payment",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/image",
-      "destination": "/api/gateway.js"
-    },
-    {
-      "source": "/api/video",
-      "destination": "/api/gateway.js"
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
     }
   ],
   "headers": [
@@ -54,7 +26,7 @@
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, OPTIONS, DELETE, PUT"
+          "value": "GET, POST, OPTIONS, DELETE"
         },
         {
           "key": "Access-Control-Allow-Headers",
