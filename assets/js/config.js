@@ -30,7 +30,7 @@
   }
 
   const OM_CONFIG = {
-    VERSION: '2.5.0',
+    VERSION: '3.0.0',
     BRAND: 'OM',
     TAGLINE: 'Think. Plan. Act. Achieve.',
     DEFAULT_VERCEL_API: DEFAULT_VERCEL_API,

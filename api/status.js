@@ -11,9 +11,26 @@ export default function handler(req, res) {
     brand: "OM",
     name: "OM – AI Action Assistant",
     tagline: "Think. Plan. Act. Achieve.",
-    engine_version: "2.4.0",
+    persona: "Master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.",
+    engine_version: "3.0.0",
+    ai_models_supported: ["nexus-2.0-flash", "nexus-1.5-pro", "nexus-1.5-flash", "om-autonomous-engine"],
+    developer_mode: "unlimited_free",
+    multimodal_capabilities: [
+      "Vision & Image Analysis",
+      "Video & Audio Processing",
+      "Document & Library Search",
+      "Code & Technical Execution",
+      "Live Search & Data Lookup",
+      "Charts & Data Analytics (Sparks)",
+      "Notebook Workflows"
+    ],
+    operational_rules: [
+      "Clarity First",
+      "Step-by-Step Breakdown",
+      "Completeness"
+    ],
     environment: "Vercel Serverless Function",
     status: "online",
-    philosophy: "Intelligent, simple, and universal AI assistant helping users turn ideas into real actions."
+    philosophy: "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
   });
 }
