@@ -76,6 +76,70 @@ class TestVercelHandler(unittest.TestCase):
         self.assertEqual(req_sitemap.status, 200)
         self.assertIn("<urlset", req_sitemap.read().decode("utf-8"))
 
+    def test_vercel_health(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/health")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertEqual(data["status"], "healthy")
+        self.assertEqual(data["brand"], "OM")
+
+    def test_vercel_image_unconfigured(self):
+        payload = json.dumps({"prompt": "A modern cityscape"}).encode("utf-8")
+        req = urllib.request.Request(
+            f"{self.base_url}/api/image",
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+        try:
+            urllib.request.urlopen(req)
+            self.fail("Should have raised HTTPError 400")
+        except urllib.error.HTTPError as e:
+            self.assertEqual(e.code, 400)
+            data = json.loads(e.read().decode("utf-8"))
+            self.assertIn("Image generation API is not configured", data["error"])
+
+    def test_vercel_video_unconfigured(self):
+        payload = json.dumps({"prompt": "A drone shot"}).encode("utf-8")
+        req = urllib.request.Request(
+            f"{self.base_url}/api/video",
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+        try:
+            urllib.request.urlopen(req)
+            self.fail("Should have raised HTTPError 400")
+        except urllib.error.HTTPError as e:
+            self.assertEqual(e.code, 400)
+            data = json.loads(e.read().decode("utf-8"))
+            self.assertIn("Video generation requires a configured video provider", data["error"])
+
+    def test_vercel_github_status(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/github/status")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertFalse(data["configured"])
+
+    def test_vercel_vercel_status(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/vercel/status")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertFalse(data["configured"])
+
+    def test_vercel_auth_users(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/auth/users")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertEqual(data["status"], "success")
+        self.assertTrue(len(data["users"]) >= 1)
+
+    def test_vercel_prompt_endpoint(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/prompt")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(data["total_modules"], 65)
+
 
 if __name__ == "__main__":
     unittest.main()
+

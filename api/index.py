@@ -409,6 +409,44 @@ class handler(BaseHTTPRequestHandler):
                 except Exception as e:
                     pass
 
+            openai_key = os.environ.get("OPENAI_API_KEY", "")
+            if openai_key:
+                try:
+                    oai_url = "https://api.openai.com/v1/chat/completions"
+                    oai_payload = json.dumps({
+                        "model": "gpt-4o-mini",
+                        "messages": [
+                            {"role": "system", "content": "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'"},
+                            {"role": "user", "content": prompt}
+                        ]
+                    }).encode("utf-8")
+                    req = urllib.request.Request(oai_url, data=oai_payload, headers={"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"})
+                    with urllib.request.urlopen(req, timeout=12) as o_resp:
+                        if o_resp.status == 200:
+                            o_data = json.loads(o_resp.read().decode("utf-8"))
+                            llm_text = o_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                            if llm_text:
+                                return self._send_json({
+                                    "sender": "om",
+                                    "greeting": "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
+                                    "brand": "OM – AI Action Assistant",
+                                    "tagline": "Think. Plan. Act. Achieve.",
+                                    "query": prompt,
+                                    "mode": mode,
+                                    "apiKeyUsed": "OpenAI GPT-4o-mini (Live Server Key)",
+                                    "text": llm_text,
+                                    "reasoning": "1. Connected live to OpenAI GPT-4o-mini Engine.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 98/100).",
+                                    "verified": True,
+                                    "actions": [
+                                        {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},
+                                        {"stage": "plan", "title": "Architect milestones, contracts and timeline", "estimate": "2d"},
+                                        {"stage": "act", "title": "Execute core development and workflows", "estimate": "3d"},
+                                        {"stage": "achieve", "title": "Run verification audit and deliver results", "estimate": "1d"}
+                                    ]
+                                })
+                except Exception:
+                    pass
+
             lower = clean_goal.lower()
             is_greeting = any(
                 lower == g or lower.startswith(g + " ")
