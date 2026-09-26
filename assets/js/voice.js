@@ -316,6 +316,169 @@ class OMVoiceEngine {
       btn.classList.toggle('playing', isPlaying);
     }
   }
+
+  // =========================================================================
+  // Custom AI Voice Profiles System (Specification 34 & 35)
+  // =========================================================================
+  getDefaultVoiceProfiles() {
+    return [
+      {
+        id: 'voice-jarvis',
+        name: 'J.A.R.V.I.S.',
+        provider: 'Stark Neural Engine',
+        providerId: 'stark-jarvis-01',
+        language: 'en-GB',
+        style: 'Tactical Resonant Baritone',
+        gender: 'male',
+        pitch: 0.9,
+        rate: 1.05,
+        enabled: true
+      },
+      {
+        id: 'voice-friday',
+        name: 'F.R.I.D.A.Y.',
+        provider: 'Stark Tactical Intelligence',
+        providerId: 'stark-friday-02',
+        language: 'en-IE',
+        style: 'Crisp Analytical',
+        gender: 'female',
+        pitch: 1.15,
+        rate: 1.05,
+        enabled: true
+      },
+      {
+        id: 'voice-nova',
+        name: 'Nova',
+        provider: 'Google Neural Core',
+        providerId: 'google-nova-03',
+        language: 'en-US',
+        style: 'Warm Conversational',
+        gender: 'female',
+        pitch: 1.0,
+        rate: 1.0,
+        enabled: true
+      },
+      {
+        id: 'voice-atlas',
+        name: 'Atlas',
+        provider: 'Edge Neural Baritone',
+        providerId: 'edge-atlas-04',
+        language: 'en-US',
+        style: 'Deep Authoritative',
+        gender: 'male',
+        pitch: 0.85,
+        rate: 0.95,
+        enabled: true
+      },
+      {
+        id: 'voice-echo',
+        name: 'Echo',
+        provider: 'Natural Flow Engine',
+        providerId: 'flow-echo-05',
+        language: 'en-US',
+        style: 'Balanced Smooth',
+        gender: 'female',
+        pitch: 1.05,
+        rate: 1.0,
+        enabled: true
+      },
+      {
+        id: 'voice-onyx',
+        name: 'Onyx',
+        provider: 'Cyber Precision Core',
+        providerId: 'cyber-onyx-06',
+        language: 'en-US',
+        style: 'Technical Precision',
+        gender: 'male',
+        pitch: 0.95,
+        rate: 1.1,
+        enabled: true
+      },
+      {
+        id: 'voice-aarya',
+        name: 'Aarya',
+        provider: 'Indo-Neural Synth',
+        providerId: 'indo-aarya-07',
+        language: 'hi-IN',
+        style: 'Natural Hindi Cadence',
+        gender: 'female',
+        pitch: 1.1,
+        rate: 1.0,
+        enabled: true
+      }
+    ];
+  }
+
+  getVoiceProfiles() {
+    const raw = localStorage.getItem('om_custom_voice_profiles');
+    if (raw) {
+      try {
+        const parsed = jsonParse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {
+        try { return JSON.parse(raw); } catch (err) {}
+      }
+    }
+    const def = this.getDefaultVoiceProfiles();
+    localStorage.setItem('om_custom_voice_profiles', JSON.stringify(def));
+    return def;
+  }
+
+  saveVoiceProfiles(profiles) {
+    localStorage.setItem('om_custom_voice_profiles', JSON.stringify(profiles));
+  }
+
+  addCustomVoiceProfile(profile) {
+    const profiles = this.getVoiceProfiles();
+    const newId = profile.id || `voice-${Date.now()}`;
+    const newProfile = {
+      id: newId,
+      name: profile.name || 'Custom Voice',
+      provider: profile.provider || 'Neural Web TTS',
+      providerId: profile.providerId || `custom-${Date.now()}`,
+      language: profile.language || 'en-US',
+      style: profile.style || 'Natural Conversational',
+      gender: profile.gender || 'female',
+      pitch: parseFloat(profile.pitch) || 1.0,
+      rate: parseFloat(profile.rate) || 1.0,
+      enabled: profile.enabled !== false
+    };
+    profiles.push(newProfile);
+    this.saveVoiceProfiles(profiles);
+    return newProfile;
+  }
+
+  toggleVoiceProfile(profileId) {
+    const profiles = this.getVoiceProfiles();
+    const p = profiles.find(x => x.id === profileId);
+    if (p) {
+      p.enabled = !p.enabled;
+      this.saveVoiceProfiles(profiles);
+    }
+    return p;
+  }
+
+  getActiveVoiceProfile() {
+    const profiles = this.getVoiceProfiles();
+    const activeId = localStorage.getItem('om_active_voice_profile_id');
+    return profiles.find(p => p.id === activeId && p.enabled) || profiles.find(p => p.enabled) || profiles[0];
+  }
+
+  setActiveVoiceProfile(profileId) {
+    const profiles = this.getVoiceProfiles();
+    const target = profiles.find(p => p.id === profileId);
+    if (target) {
+      localStorage.setItem('om_active_voice_profile_id', target.id);
+      this.currentLanguage = target.language;
+      localStorage.setItem('om_voice_language', target.language);
+      this.voiceGender = target.gender;
+      localStorage.setItem('om_voice_gender', target.gender);
+      if (window.omApp) {
+        window.omApp.showToast(`Active AI Voice set to: ${target.name} (${target.style})`, 'success');
+      }
+    }
+  }
 }
 
 window.omVoice = new OMVoiceEngine();
+

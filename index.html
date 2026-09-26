@@ -2203,10 +2203,80 @@
         Say: "OM, create a Python calculator" or "Ek Flutter app bana do"
       </div>
 
-      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 16px;">
+      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 14px;">
         <button class="om-btn om-btn-primary" onclick="if(window.omVoice) window.omVoice.startRecording();">🎙️ Start Listening</button>
         <button class="om-btn om-btn-secondary" onclick="if(window.omVoice) window.omVoice.stopRecording();">⏹ Stop Listening</button>
-        <button class="om-btn om-btn-secondary" onclick="if(window.omApp) window.omApp.toggleVoiceGender();">Switch Persona</button>
+        <button class="om-btn om-btn-secondary" onclick="document.getElementById('voice-custom-profile-builder').style.display = document.getElementById('voice-custom-profile-builder').style.display === 'none' ? 'block' : 'none';">➕ Custom Voice Studio</button>
+      </div>
+
+      <!-- Selectable Voice Profiles Matrix (Spec 34 & 35) -->
+      <div style="text-align: left; margin-bottom: 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <span>🎙️ Selectable AI Voice Profiles</span>
+          <span style="font-size: 0.7rem; color: var(--om-cyan);">Natural Speech-to-Speech Flow</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px;" id="voice-profiles-selection-grid">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-jarvis')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>⚡ <strong>J.A.R.V.I.S.</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-friday')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>🛡️ <strong>F.R.I.D.A.Y.</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-nova')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>✨ <strong>Nova</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-atlas')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>🏛️ <strong>Atlas</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-echo')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>🌊 <strong>Echo</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-onyx')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>💎 <strong>Onyx</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-aarya')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+            <span>🇮🇳 <strong>Aarya (Hindi)</strong></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom AI Voice Profile Builder (Spec 34) -->
+      <div id="voice-custom-profile-builder" style="display: none; text-align: left; background: rgba(6, 182, 212, 0.06); border: 1.5px solid rgba(6, 182, 212, 0.35); border-radius: 10px; padding: 12px; margin-bottom: 14px;">
+        <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 8px;">➕ Create Bespoke AI Voice Profile</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <div>
+            <label style="font-size: 0.72rem; color: #94a3b8;">Voice Profile Name</label>
+            <input type="text" id="custom-voice-name" class="om-input" placeholder="e.g. Athena Tactical" style="font-size: 0.8rem; padding: 5px 8px;">
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; color: #94a3b8;">Provider (Engine)</label>
+            <input type="text" id="custom-voice-provider" class="om-input" placeholder="e.g. Stark Neural / ElevenLabs" style="font-size: 0.8rem; padding: 5px 8px;">
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; color: #94a3b8;">Provider ID</label>
+            <input type="text" id="custom-voice-id" class="om-input" placeholder="e.g. custom-athena-01" style="font-size: 0.8rem; padding: 5px 8px;">
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; color: #94a3b8;">Language Locale</label>
+            <select id="custom-voice-lang" class="om-select" style="font-size: 0.8rem; padding: 5px 8px;">
+              <option value="en-US">English (US)</option>
+              <option value="hi-IN">हिन्दी (Hindi)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="es-ES">Español</option>
+              <option value="fr-FR">Français</option>
+              <option value="de-DE">Deutsch</option>
+              <option value="ja-JP">日本語</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label style="font-size: 0.72rem; color: #94a3b8;">Voice Style & Timbre</label>
+          <input type="text" id="custom-voice-style" class="om-input" placeholder="e.g. Crisp Analytical Baritone" style="font-size: 0.8rem; padding: 5px 8px;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="document.getElementById('voice-custom-profile-builder').style.display='none'">Cancel</button>
+          <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp && window.omApp.createCustomVoiceProfile()">Save Voice to Library</button>
+        </div>
       </div>
 
       <div style="font-size: 0.72rem; color: #94a3b8;">
@@ -2238,6 +2308,7 @@
         <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-github" onclick="window.omApp.switchDevTab('github')">🐙 GitHub Integration</button>
         <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-vercel" onclick="window.omApp.switchDevTab('vercel')">▲ Vercel Deployment</button>
         <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-terminal" onclick="window.omApp.switchDevTab('terminal')">💻 System CLI</button>
+        <button class="om-btn om-btn-sm om-btn-ghost dev-tab-btn" id="dev-tab-owner" onclick="window.omApp.switchDevTab('owner')">👑 Owner Access Matrix</button>
       </div>
 
       <div class="om-modal-body" style="padding: 16px; overflow-y: auto; flex: 1;">
@@ -2379,6 +2450,59 @@
             <div style="margin-top: 12px;">
               <button class="om-btn om-btn-primary om-btn-sm" onclick="document.getElementById('developer-tools-modal').classList.remove('active'); window.app.openCyberTerminal();">📟 Open Fullscreen CRT Terminal</button>
             </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: Owner Access Matrix & Server-Side Security (Spec 23, 33, 56) -->
+        <div id="dev-pane-owner" class="dev-tab-pane" style="display: none;">
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.35); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+            <div style="font-weight: 800; color: #10b981; font-size: 0.9rem;">👑 Verified Owner & Superuser Governance: Abhishek Singh Yadav (Udayast)</div>
+            <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 2px;">
+              Zero subscription or credits required. As the platform owner, grant free access, assign full or limited tool access, set custom gems, and set optional expiration with 100% server-side enforcement.
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+            <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 10px;">User Authorization & Permission Override</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px;">
+              <div>
+                <label style="font-size: 0.72rem; color: #94a3b8;">Target User ID / Username</label>
+                <input type="text" id="owner-target-user" class="om-input" placeholder="e.g. usr-guest-002 or guest" value="usr-guest-002">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: #94a3b8;">Access Policy</label>
+                <select id="owner-target-access" class="om-select">
+                  <option value="full_free">🟢 100% Free Full Access (Zero Billing)</option>
+                  <option value="limited">🟡 Limited Access (Custom Subset)</option>
+                  <option value="revoked">🔴 Revoke Access</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: #94a3b8;">Tool Scope Allocation</label>
+                <select id="owner-target-tools" class="om-select">
+                  <option value="*">All 65 Tools & Modules (Full Suite)</option>
+                  <option value="coding,files,terminal">Coding & Terminal Only</option>
+                  <option value="voice,vision,chat">Voice & Vision Only</option>
+                  <option value="data,notebook,research">Research & Data Only</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: #94a3b8;">Gems / Compute Credits</label>
+                <input type="text" id="owner-target-gems" class="om-input" placeholder="unlimited" value="unlimited">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: #94a3b8;">Expiration Date (Optional)</label>
+                <input type="text" id="owner-target-expiry" class="om-input" placeholder="never or 2030-12-31" value="never">
+              </div>
+            </div>
+            <button class="om-btn om-btn-primary" onclick="window.omApp && window.omApp.grantOwnerAccess()">
+              ⚡ Enforce Server-Side Policy (/api/auth/grant)
+            </button>
+          </div>
+
+          <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 8px;">Active Server-Enforced User Directory</div>
+          <div id="owner-users-table-container" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow-x: auto; font-size: 0.78rem;">
+            <!-- Dynamically populated from /api/auth/users -->
           </div>
         </div>
       </div>

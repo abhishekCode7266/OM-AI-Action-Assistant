@@ -76,6 +76,54 @@ def save_tasks(tasks):
         pass
 
 
+SERVERLESS_USERS_FILE = os.path.join(TMP_DIR, "om_users.json")
+
+_DEFAULT_USERS = [
+    {
+        "id": "usr-owner-001",
+        "username": "Udayast",
+        "name": "Abhishek Singh Yadav",
+        "role": "owner",
+        "access": "unlimited",
+        "tools": ["*"],
+        "gems": "unlimited",
+        "expires_at": "never",
+        "is_developer": True
+    },
+    {
+        "id": "usr-guest-002",
+        "username": "Guest",
+        "name": "Public Guest User",
+        "role": "authorized_user",
+        "access": "full_free",
+        "tools": ["*"],
+        "gems": "unlimited",
+        "expires_at": "2030-12-31",
+        "is_developer": False
+    }
+]
+
+_MEMORY_USERS = list(_DEFAULT_USERS)
+
+def load_users():
+    if os.path.exists(SERVERLESS_USERS_FILE):
+        try:
+            with open(SERVERLESS_USERS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return list(_MEMORY_USERS)
+
+def save_users(users):
+    global _MEMORY_USERS
+    _MEMORY_USERS = users
+    try:
+        with open(SERVERLESS_USERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(users, f, indent=2)
+    except Exception:
+        pass
+
+
 class handler(BaseHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -194,6 +242,11 @@ class handler(BaseHTTPRequestHandler):
                 "total_modules": 65,
                 "prompt": prompt_content
             })
+
+        # 3c. Server-Side Users & Permissions API
+        if path == "/api/auth/users" or path == "/auth/users":
+            users = load_users()
+            return self._send_json({"status": "success", "users": users})
 
         # 4. Tasks API
         if path == "/api/tasks" or path == "/tasks":
@@ -376,5 +429,45 @@ class handler(BaseHTTPRequestHandler):
             tasks.append(new_task)
             save_tasks(tasks)
             return self._send_json({"success": True, "task": new_task}, 201)
+
+        # 4b. Server-Side Owner Access & Permissions Grant API
+        if path == "/api/auth/grant" or path == "/auth/grant":
+            target_user_id = body.get("userId", "usr-guest-002")
+            access_type = body.get("access", "full_free")
+            tools = body.get("tools", ["*"])
+            gems = body.get("gems", "unlimited")
+            expires_at = body.get("expires_at", "never")
+
+            users = load_users()
+            user_found = False
+            for u in users:
+                if u.get("id") == target_user_id or u.get("username") == target_user_id:
+                    u["access"] = access_type
+                    u["tools"] = tools
+                    u["gems"] = gems
+                    u["expires_at"] = expires_at
+                    user_found = True
+                    break
+
+            if not user_found:
+                new_u = {
+                    "id": target_user_id if target_user_id.startswith("usr-") else f"usr-{len(users)+1:03d}",
+                    "username": body.get("username", target_user_id),
+                    "name": body.get("name", "Authorized User"),
+                    "role": "authorized_user",
+                    "access": access_type,
+                    "tools": tools,
+                    "gems": gems,
+                    "expires_at": expires_at,
+                    "is_developer": False
+                }
+                users.append(new_u)
+
+            save_users(users)
+            return self._send_json({
+                "status": "success",
+                "message": f"Server-side access policy enforced for {target_user_id}.",
+                "users": users
+            })
 
         return self._send_json({"error": "Endpoint not found", "path": path}, 404)

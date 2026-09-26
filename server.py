@@ -15,13 +15,43 @@ PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
 
 os.makedirs(DATA_DIR, exist_ok=True)
+
+DEFAULT_USERS = [
+    {
+        "id": "usr-owner-001",
+        "username": "Udayast",
+        "name": "Abhishek Singh Yadav",
+        "role": "owner",
+        "access": "unlimited",
+        "tools": ["*"],
+        "gems": "unlimited",
+        "expires_at": "never",
+        "is_developer": True
+    },
+    {
+        "id": "usr-guest-002",
+        "username": "Guest",
+        "name": "Public Guest User",
+        "role": "authorized_user",
+        "access": "full_free",
+        "tools": ["*"],
+        "gems": "unlimited",
+        "expires_at": "2030-12-31",
+        "is_developer": False
+    }
+]
 
 # Initialize data store if missing
 if not os.path.exists(TASKS_FILE):
     with open(TASKS_FILE, "w", encoding="utf-8") as f:
         json.dump([], f)
+
+if not os.path.exists(USERS_FILE):
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(DEFAULT_USERS, f, indent=2)
 
 
 class OMRequestHandler(BaseHTTPRequestHandler):
@@ -88,6 +118,14 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "total_modules": 65,
                 "prompt": prompt_content
             })
+
+        if path == "/api/auth/users":
+            try:
+                with open(USERS_FILE, "r", encoding="utf-8") as f:
+                    users = json.load(f)
+            except Exception:
+                users = DEFAULT_USERS
+            return self._send_json({"status": "success", "users": users})
 
         if path == "/api/tasks":
             try:
@@ -243,6 +281,52 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 json.dump(tasks, f, indent=2)
 
             return self._send_json({"success": True, "task": new_task}, 201)
+
+        if path == "/api/auth/grant":
+            target_user_id = body.get("userId", "usr-guest-002")
+            access_type = body.get("access", "full_free")
+            tools = body.get("tools", ["*"])
+            gems = body.get("gems", "unlimited")
+            expires_at = body.get("expires_at", "never")
+
+            try:
+                with open(USERS_FILE, "r", encoding="utf-8") as f:
+                    users = json.load(f)
+            except Exception:
+                users = list(DEFAULT_USERS)
+
+            user_found = False
+            for u in users:
+                if u.get("id") == target_user_id or u.get("username") == target_user_id:
+                    u["access"] = access_type
+                    u["tools"] = tools
+                    u["gems"] = gems
+                    u["expires_at"] = expires_at
+                    user_found = True
+                    break
+
+            if not user_found:
+                new_u = {
+                    "id": target_user_id if target_user_id.startswith("usr-") else f"usr-{len(users)+1:03d}",
+                    "username": body.get("username", target_user_id),
+                    "name": body.get("name", "Authorized User"),
+                    "role": "authorized_user",
+                    "access": access_type,
+                    "tools": tools,
+                    "gems": gems,
+                    "expires_at": expires_at,
+                    "is_developer": False
+                }
+                users.append(new_u)
+
+            with open(USERS_FILE, "w", encoding="utf-8") as f:
+                json.dump(users, f, indent=2)
+
+            return self._send_json({
+                "status": "success",
+                "message": f"Server-side access policy enforced for {target_user_id}.",
+                "users": users
+            })
 
         self.send_error(404, "Endpoint not found")
 

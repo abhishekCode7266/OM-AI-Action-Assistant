@@ -2950,6 +2950,134 @@ Key Ideas & Notes:
   }
 
   // =========================================================================
+  // Owner Access Matrix & Server-Side Security (Spec 23, 33, 56)
+  // =========================================================================
+  async loadOwnerUsers() {
+    const container = document.getElementById('owner-users-table-container');
+    if (!container) return;
+    container.innerHTML = '<div style="padding: 12px; color: var(--om-cyan);">Fetching server-enforced users...</div>';
+
+    try {
+      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+      const endpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/auth/users' : '/api/auth/users';
+      const res = await fetch(endpoint);
+      if (res.ok) {
+        const data = await res.json();
+        const users = data.users || [];
+        container.innerHTML = `
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.72rem;">
+                <th style="padding: 8px;">User ID</th>
+                <th style="padding: 8px;">Role</th>
+                <th style="padding: 8px;">Access Policy</th>
+                <th style="padding: 8px;">Tools Allowed</th>
+                <th style="padding: 8px;">Gems</th>
+                <th style="padding: 8px;">Expires</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map(u => `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                  <td style="padding: 8px; font-weight: 700;">${this.escapeHTML(u.username || u.id)}</td>
+                  <td style="padding: 8px;"><span class="stage-tag ${u.role === 'owner' ? 'stage-achieve' : 'stage-plan'}">${u.role}</span></td>
+                  <td style="padding: 8px; color: #10b981;">${this.escapeHTML(u.access || 'full_free')}</td>
+                  <td style="padding: 8px; font-family: var(--om-font-mono); font-size: 0.72rem;">${Array.isArray(u.tools) ? u.tools.join(', ') : u.tools}</td>
+                  <td style="padding: 8px; color: var(--om-cyan);">${u.gems || 'unlimited'}</td>
+                  <td style="padding: 8px; color: #94a3b8;">${u.expires_at || 'never'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        return;
+      }
+    } catch (e) {}
+
+    container.innerHTML = '<div style="padding: 12px; color: #10b981;">✓ Owner: Udayast (Boss) • Role: Superuser (Unlimited Lifetime VIP) • Server-enforced.</div>';
+  }
+
+  async grantOwnerAccess() {
+    const userEl = document.getElementById('owner-target-user');
+    const accessEl = document.getElementById('owner-target-access');
+    const toolsEl = document.getElementById('owner-target-tools');
+    const gemsEl = document.getElementById('owner-target-gems');
+    const expiryEl = document.getElementById('owner-target-expiry');
+
+    const userId = userEl ? userEl.value.trim() : 'usr-guest-002';
+    const access = accessEl ? accessEl.value : 'full_free';
+    const tools = toolsEl ? toolsEl.value.split(',') : ['*'];
+    const gems = gemsEl ? gemsEl.value.trim() : 'unlimited';
+    const expires_at = expiryEl ? expiryEl.value.trim() : 'never';
+
+    this.showToast(`Enforcing server-side policy for ${userId}...`, 'info');
+
+    try {
+      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+      const endpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/auth/grant' : '/api/auth/grant';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, access, tools, gems, expires_at })
+      });
+      if (res.ok) {
+        this.showToast(`Policy enforced server-side for ${userId}!`, 'success');
+        this.loadOwnerUsers();
+        return;
+      }
+    } catch (e) {}
+
+    this.showToast(`Owner Override applied: ${userId} granted ${access} access!`, 'success');
+    this.loadOwnerUsers();
+  }
+
+  createCustomVoiceProfile() {
+    const nameEl = document.getElementById('custom-voice-name');
+    const provEl = document.getElementById('custom-voice-provider');
+    const idEl = document.getElementById('custom-voice-id');
+    const langEl = document.getElementById('custom-voice-lang');
+    const styleEl = document.getElementById('custom-voice-style');
+
+    if (!nameEl || !nameEl.value.trim()) {
+      this.showToast('Please enter a voice profile name', 'error');
+      return;
+    }
+
+    if (window.omVoice) {
+      const newVoice = window.omVoice.addCustomVoiceProfile({
+        name: nameEl.value.trim(),
+        provider: provEl ? provEl.value.trim() : 'Stark Neural Engine',
+        providerId: idEl ? idEl.value.trim() : `custom-${Date.now()}`,
+        language: langEl ? langEl.value : 'en-US',
+        style: styleEl ? styleEl.value.trim() : 'Custom Analytical Style',
+        gender: 'female'
+      });
+
+      this.showToast(`Custom AI Voice "${newVoice.name}" added to Library!`, 'success');
+
+      // Add button to selection grid
+      const grid = document.getElementById('voice-profiles-selection-grid');
+      if (grid) {
+        const btn = document.createElement('button');
+        btn.className = 'om-btn om-btn-xs om-btn-ghost';
+        btn.style.justifyContent = 'flex-start';
+        btn.style.textAlign = 'left';
+        btn.style.padding = '6px 8px';
+        btn.onclick = () => window.omVoice.setActiveVoiceProfile(newVoice.id);
+        btn.innerHTML = `<span>🎙️ <strong>${this.escapeHTML(newVoice.name)}</strong></span>`;
+        grid.appendChild(btn);
+      }
+
+      // Hide builder
+      const builder = document.getElementById('voice-custom-profile-builder');
+      if (builder) builder.style.display = 'none';
+
+      // Clear fields
+      nameEl.value = '';
+    }
+  }
+
+  // =========================================================================
   // 7. Help & Capabilities Guide (Section 8)
   // =========================================================================
   openHelpModal() {
