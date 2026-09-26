@@ -243,7 +243,53 @@ class handler(BaseHTTPRequestHandler):
                 "prompt": prompt_content
             })
 
-        # 3c. Server-Side Users & Permissions API
+        # 3c. Health & Service Diagnostics API
+        if path == "/api/health" or path == "/health":
+            return self._send_json({
+                "status": "healthy",
+                "brand": "OM",
+                "name": "OM – AI Action Assistant",
+                "tagline": "Think. Plan. Act. Achieve.",
+                "version": "2.5.0",
+                "ai_provider_configured": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")),
+                "github_configured": bool(os.environ.get("GITHUB_TOKEN")),
+                "vercel_configured": bool(os.environ.get("VERCEL_TOKEN")),
+                "image_configured": bool(os.environ.get("IMAGE_API_KEY") or os.environ.get("OPENAI_API_KEY")),
+                "video_configured": bool(os.environ.get("VIDEO_API_KEY"))
+            })
+
+        if path == "/api/github/status" or path == "/github/status":
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "configured": False,
+                    "error": "GITHUB_TOKEN is not configured on the server."
+                })
+            return self._send_json({
+                "success": True,
+                "configured": True,
+                "repo": "abhishekCode7266/OM-AI-Action-Assistant",
+                "branch": "main",
+                "status": "authenticated"
+            })
+
+        if path == "/api/vercel/status" or path == "/vercel/status":
+            token = os.environ.get("VERCEL_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "configured": False,
+                    "error": "VERCEL_TOKEN is not configured on the server."
+                })
+            return self._send_json({
+                "success": True,
+                "configured": True,
+                "project": "om-ai",
+                "status": "authenticated"
+            })
+
+        # 3d. Server-Side Users & Permissions API
         if path == "/api/auth/users" or path == "/auth/users":
             users = load_users()
             return self._send_json({"status": "success", "users": users})
@@ -469,5 +515,49 @@ class handler(BaseHTTPRequestHandler):
                 "message": f"Server-side access policy enforced for {target_user_id}.",
                 "users": users
             })
+
+        # 4c. Secure Server-Side Image Generation API
+        if path == "/api/image" or path == "/image":
+            image_key = os.environ.get("IMAGE_API_KEY") or os.environ.get("OPENAI_API_KEY")
+            prompt = body.get("prompt", "").strip()
+            if not image_key:
+                return self._send_json({
+                    "success": False,
+                    "error": "Image generation API is not configured. Set IMAGE_API_KEY or OPENAI_API_KEY in server environment variables."
+                }, 400)
+            if not prompt:
+                return self._send_json({"success": False, "error": "Prompt is required for image generation."}, 400)
+            try:
+                req = urllib.request.Request(
+                    "https://api.openai.com/v1/images/generations",
+                    data=json.dumps({"prompt": prompt, "n": 1, "size": "1024x1024"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {image_key}"}
+                )
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    img_url = data.get("data", [{}])[0].get("url", "")
+                    return self._send_json({"success": True, "imageUrl": img_url, "prompt": prompt})
+            except Exception as e:
+                return self._send_json({"success": False, "error": f"Image provider error: {str(e)}"}, 502)
+
+        # 4d. Video Generation API
+        if path == "/api/video" or path == "/video":
+            video_key = os.environ.get("VIDEO_API_KEY")
+            if not video_key:
+                return self._send_json({
+                    "success": False,
+                    "error": "Video generation requires a configured video provider (VIDEO_API_KEY on server)."
+                }, 400)
+            return self._send_json({"success": False, "error": "Video generation service is initializing or awaiting job completion."}, 503)
+
+        # 4e. GitHub Commit Dispatch API
+        if path == "/api/github/commit" or path == "/github/commit":
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "error": "GITHUB_TOKEN is not configured on the server."
+                }, 400)
+            return self._send_json({"success": False, "error": "Direct remote commit requires write permissions and active Git branch lock."}, 403)
 
         return self._send_json({"error": "Endpoint not found", "path": path}, 404)

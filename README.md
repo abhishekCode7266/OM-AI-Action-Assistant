@@ -8,7 +8,7 @@
 | :--- | :--- | :--- |
 | **GitHub Pages (Direct Web App)** | **[https://abhishekcode7266.github.io/OM-AI-Action-Assistant/](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)** | 🟢 **100% Live & Working** |
 | **Vercel Live Production** | **[https://om-f5y6z40i1-abhishek-ef1f.vercel.app](https://om-f5y6z40i1-abhishek-ef1f.vercel.app)** | 🟢 **Deployed on Vercel** |
-| **Vercel Production Domain** | **[https://om-ai.vercel.app](https://om-ai.vercel.app)** | 🟢 **Live Project Alias** |
+| **Vercel Production Domain** | **[https://om-ai-abhishek-ef1f.vercel.app](https://om-ai-abhishek-ef1f.vercel.app)** | 🟢 **Verified Live Production Domain** |
 | **Vercel Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | ⚙️ **Settings & Deployments** |
 | **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 📂 **Latest Source Code** |
 

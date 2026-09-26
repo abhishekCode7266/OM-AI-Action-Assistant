@@ -139,13 +139,14 @@ class OMAssistant {
       }
     }
 
-    // 2. Try Serverless /api/chat with a fast 1.8s timeout (routed to live Vercel on GitHub Pages)
+    // 2. Try Serverless / Backend /api/chat with reasonable timeout (configurable endpoint)
     try {
-      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-      const chatEndpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/chat' : '/api/chat';
+      const chatEndpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('chat')
+        : '/api/chat';
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1800);
+      const timeoutId = setTimeout(() => controller.abort(), 9000);
 
       const serverResp = await fetch(chatEndpoint, {
         method: 'POST',
@@ -163,11 +164,20 @@ class OMAssistant {
         const data = await serverResp.json();
         const replyText = data.text || data.message || data.greeting;
         if (data && replyText) {
-          return this.formatStructuredResponse(replyText, data.reasoning, data.actions, mode, data.apiKeyUsed || (isGitHubPages ? 'Nexus Cloud AI (Vercel)' : 'Vercel Serverless'));
+          const providerLabel = data.apiKeyUsed || (window.location && window.location.hostname.includes('github.io') ? 'OM Backend (Live)' : 'OM Serverless');
+          return this.formatStructuredResponse(replyText, data.reasoning, data.actions, mode, providerLabel);
         }
+      } else {
+        try {
+          const errData = await serverResp.json();
+          if (errData && errData.error) {
+            console.warn("Backend chat warning:", errData.error);
+          }
+        } catch (_) {}
       }
     } catch (netErr) {
-      // Offline / Static fallback / Network timeout
+      // Offline / Static GitHub Pages fallback / Network timeout
+      console.warn("Backend fetch failed, routing to native cognitive engine:", netErr.message);
     }
 
     // 3. Autonomous Cognitive Engine

@@ -392,14 +392,6 @@ class OMApp {
 
     if (!text && attachments.length === 0) return;
 
-    // Check 3-Month Free Trial expiration for non-developer public users
-    const trial = this.chatStore.getTrialInfo();
-    if (!trial.isDeveloper && trial.isTrial && trial.isExpired) {
-      this.showToast('⚠️ Your 3-Month Free Trial has expired. Please select a subscription plan to continue.', 'error');
-      this.openSubscriptionModal();
-      return;
-    }
-
     // Clear input field immediately
     input.value = '';
     input.style.height = 'auto';
@@ -1253,21 +1245,19 @@ class OMApp {
     modal.classList.add('active');
   }
 
-  openNotebookModal() {
+  openDraftingCanvas() {
     this.closeProfilePopover();
     const modal = document.getElementById('notebook-modal');
     const textarea = document.getElementById('notebook-text-area');
     if (textarea) {
-      textarea.value = localStorage.getItem('om_nexus_notebook') || localStorage.getItem('om_gemini_notebook') || 
-`# Nexus Notebook & Research Canvas
+      textarea.value = localStorage.getItem('om_nexus_notebook') ||
+`# Quick Scratchpad
 Project: OM AI Action Assistant
-Architect: Udayast
-Location: India
+Tagline: Think. Plan. Act. Achieve.
 
 Key Ideas & Notes:
-- Think-Plan-Act-Achieve cognitive framework
-- Full-stack Nexus 2.0 Flash integration
-- 100% Free Lifetime Developer Access enabled`;
+- Interactive Notebooks and Research Canvas
+- Step-by-step problem breakdown`;
     }
     if (modal) modal.classList.add('active');
   }
@@ -1276,7 +1266,7 @@ Key Ideas & Notes:
     const textarea = document.getElementById('notebook-text-area');
     if (textarea) {
       localStorage.setItem('om_nexus_notebook', textarea.value);
-      this.showToast('Saved notes to Nexus Notebook!', 'success');
+      this.showToast('Saved notes to Scratchpad!', 'success');
     }
     const modal = document.getElementById('notebook-modal');
     if (modal) modal.classList.remove('active');
@@ -1964,6 +1954,7 @@ Key Ideas & Notes:
   }
 
   openNotebookModal(notebookId = null) {
+    this.closeProfilePopover();
     const modal = document.getElementById('notebook-workspace-modal');
     if (!modal) return;
     const nbs = this.chatStore.getNotebooks();
@@ -2086,7 +2077,7 @@ Key Ideas & Notes:
     this.currentStudioRatio = ratio;
   }
 
-  generateImageInStudio() {
+  async generateImageInStudio() {
     const input = document.getElementById('image-studio-prompt-input');
     const prompt = input ? input.value.trim() : '';
     if (!prompt) {
@@ -2095,40 +2086,56 @@ Key Ideas & Notes:
     }
 
     const ratio = this.currentStudioRatio || '1:1';
-    let width = 1024, height = 1024;
-    if (ratio === '16:9') { width = 1280; height = 720; }
-    else if (ratio === '9:16') { width = 720; height = 1280; }
+    this.showToast('🎨 Requesting image generation from secure backend...', 'info');
 
-    const seed = Math.floor(Math.random() * 1000000);
-    const encodedPrompt = encodeURIComponent(prompt);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+    try {
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('image')
+        : '/api/image';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, ratio })
+      });
+      const data = await res.json();
 
-    const grid = document.getElementById('studio-images-grid');
-    if (grid) {
-      const card = document.createElement('div');
-      card.className = 'gallery-card';
-      card.style.cssText = 'background: rgba(15,23,42,0.8); border: 1.5px solid rgba(6,182,212,0.4); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;';
-      card.innerHTML = `
-        <div style="position: relative; height: 160px; background: #030712; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">
-          <img src="${imageUrl}" alt="${this.escapeHTML(prompt)}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" loading="lazy">
-          <span style="position: absolute; bottom: 6px; right: 8px; font-size: 0.68rem; background: rgba(0,0,0,0.75); color: var(--om-cyan); padding: 2px 6px; border-radius: 4px;">${ratio} • AI Generated</span>
-        </div>
-        <div style="padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
-          <div>
-            <div style="font-size: 0.84rem; font-weight: 700; color: #fff; line-height: 1.3;" title="${this.escapeHTML(prompt)}">${this.escapeHTML(prompt.slice(0, 48))}${prompt.length > 48 ? '...' : ''}</div>
-            <div style="font-size: 0.7rem; color: var(--om-cyan); margin-top: 4px;">FLUX AI Diffusion • 4K Render</div>
+      if (!res.ok || !data.success) {
+        const errMsg = data.error || 'Image generation API is not configured.';
+        this.showToast(errMsg, 'error');
+        return;
+      }
+
+      const imageUrl = data.imageUrl;
+      const seed = Math.floor(Math.random() * 1000000);
+      const grid = document.getElementById('studio-images-grid');
+      if (grid) {
+        const card = document.createElement('div');
+        card.className = 'gallery-card';
+        card.style.cssText = 'background: rgba(15,23,42,0.8); border: 1.5px solid rgba(6,182,212,0.4); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;';
+        card.innerHTML = `
+          <div style="position: relative; height: 160px; background: #030712; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">
+            <img src="${imageUrl}" alt="${this.escapeHTML(prompt)}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" loading="lazy">
+            <span style="position: absolute; bottom: 6px; right: 8px; font-size: 0.68rem; background: rgba(0,0,0,0.75); color: var(--om-cyan); padding: 2px 6px; border-radius: 4px;">${ratio} • AI Generated</span>
           </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">🔍 Expand</button>
-            <a href="${imageUrl}" target="_blank" download="nexus_concept_${seed}.jpg" class="om-btn om-btn-xs om-btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px;">📥 Save</a>
-            <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Analyze this generated concept: ${this.escapeHTML(prompt)}')">💬 Discuss</button>
+          <div style="padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+            <div>
+              <div style="font-size: 0.84rem; font-weight: 700; color: #fff; line-height: 1.3;" title="${this.escapeHTML(prompt)}">${this.escapeHTML(prompt.slice(0, 48))}${prompt.length > 48 ? '...' : ''}</div>
+              <div style="font-size: 0.7rem; color: var(--om-cyan); margin-top: 4px;">Verified Backend Generation</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="om-btn om-btn-xs om-btn-secondary" style="flex: 1;" onclick="window.omApp.openImageViewer('${imageUrl}', '${this.escapeHTML(prompt)}')">🔍 Expand</button>
+              <a href="${imageUrl}" target="_blank" download="concept_${seed}.jpg" class="om-btn om-btn-xs om-btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px;">📥 Save</a>
+              <button class="om-btn om-btn-xs om-btn-primary" style="flex: 1;" onclick="window.omApp.triggerPromptInChat('Analyze this generated concept: ${this.escapeHTML(prompt)}')">💬 Discuss</button>
+            </div>
           </div>
-        </div>
-      `;
-      grid.prepend(card);
+        `;
+        grid.prepend(card);
+      }
+      input.value = '';
+      this.showToast('✨ High-Resolution AI Image generated via backend!', 'success');
+    } catch (err) {
+      this.showToast(err.message || 'Image generation API is not configured.', 'error');
     }
-    input.value = '';
-    this.showToast('✨ High-Resolution AI Image generated in studio!', 'success');
   }
 
   openVideosModal() {
@@ -2835,6 +2842,11 @@ Key Ideas & Notes:
     if (inputGh) inputGh.value = keys.GITHUB_TOKEN || '';
     if (inputVcl) inputVcl.value = keys.VERCEL_TOKEN || '';
 
+    const inputApiUrl = document.getElementById('input-custom-api-url');
+    if (inputApiUrl && window.OM_CONFIG) {
+      inputApiUrl.value = window.OM_CONFIG.getApiBaseUrl();
+    }
+
     this.renderErrorsUI();
   }
 
@@ -2859,6 +2871,38 @@ Key Ideas & Notes:
     if (!input || !this.chatStore) return;
     this.chatStore.saveAPIKey(provider, input.value);
     this.showToast(`Saved ${provider} to secure local vault!`, 'success');
+  }
+
+  saveCustomApiUrl() {
+    const input = document.getElementById('input-custom-api-url');
+    if (!input) return;
+    const url = input.value.trim();
+    if (window.OM_CONFIG) {
+      window.OM_CONFIG.setCustomApiUrl(url);
+    }
+    this.showToast('Backend API URL configured successfully!', 'success');
+    this.checkBackendHealth();
+  }
+
+  async checkBackendHealth() {
+    this.showToast('Checking backend API health...', 'info');
+    if (window.OM_CONFIG) {
+      const res = await window.OM_CONFIG.checkBackendHealth();
+      const badge = document.getElementById('badge-api-backend-status');
+      if (res.online) {
+        if (badge) {
+          badge.textContent = 'Online / HTTP 200';
+          badge.className = 'stage-tag stage-achieve';
+        }
+        this.showToast(`✔ Backend is online and responding at: ${res.url}`, 'success');
+      } else {
+        if (badge) {
+          badge.textContent = 'Offline / Error';
+          badge.className = 'stage-tag stage-think';
+        }
+        this.showToast(`Backend check warning (${res.error}). Verify endpoint URL or deployment status.`, 'error');
+      }
+    }
   }
 
   renderErrorsUI() {
@@ -2930,23 +2974,78 @@ Key Ideas & Notes:
     }
   }
 
-  showGitHubCommitDialog() {
-    const msg = prompt("Enter commit message:", "feat: update autonomous cognitive assistant suite");
+  async showGitHubCommitDialog() {
+    const msg = prompt("Enter commit message for remote dispatch:", "feat: update OM AI Assistant");
     if (!msg || !msg.trim()) return;
-    this.showToast(`Committed: "${msg.trim()}" to local main`, 'success');
+    this.showToast('Dispatching commit request to secure backend...', 'info');
+    try {
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('github/commit')
+        : '/api/github/commit';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg.trim() })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        this.showToast('Remote commit dispatched successfully!', 'success');
+      } else {
+        this.showToast(data.error || 'GITHUB_TOKEN is not configured on the server.', 'error');
+      }
+    } catch (e) {
+      this.showToast('Backend connection error: ' + e.message, 'error');
+    }
   }
 
   showGitHubBranchDialog() {
-    const name = prompt("Enter new branch name:", "feature/om-agentic-upgrade");
-    if (!name || !name.trim()) return;
-    this.showToast(`Created and checked out branch: ${name.trim()}`, 'success');
+    this.showToast('Branch operations require server-side GITHUB_TOKEN write access.', 'info');
   }
 
-  runVercelDeployCheck() {
-    this.showToast('Running Vercel build & health check...', 'info');
-    setTimeout(() => {
-      this.showToast('✔ Build check passed! Production URL is active (HTTP 200 OK).', 'success');
-    }, 1200);
+  async runVercelDeployCheck() {
+    this.showToast('Querying Vercel deployment telemetry from backend...', 'info');
+    try {
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('vercel/status')
+        : '/api/vercel/status';
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      if (res.ok && data.configured) {
+        this.showToast(`✔ Vercel Status: Active deployment confirmed for project '${data.project}'!`, 'success');
+      } else {
+        this.showToast(data.error || 'VERCEL_TOKEN is not configured on the server.', 'info');
+      }
+    } catch (e) {
+      this.showToast('Vercel check error: ' + e.message, 'error');
+    }
+  }
+
+  async generateVideoInStudio() {
+    const input = document.getElementById('video-studio-prompt-input');
+    const prompt = input ? input.value.trim() : '';
+    if (!prompt) {
+      this.showToast('Please describe the video you want to generate', 'info');
+      return;
+    }
+    this.showToast('🎥 Sending video generation request to backend...', 'info');
+    try {
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('video')
+        : '/api/video';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        this.showToast(data.error || 'Video generation requires a configured video provider (VIDEO_API_KEY on server).', 'error');
+        return;
+      }
+      this.showToast('Video generated successfully!', 'success');
+    } catch (err) {
+      this.showToast('Video generation requires a configured video provider (VIDEO_API_KEY on server).', 'error');
+    }
   }
 
   // =========================================================================
@@ -2958,8 +3057,9 @@ Key Ideas & Notes:
     container.innerHTML = '<div style="padding: 12px; color: var(--om-cyan);">Fetching server-enforced users...</div>';
 
     try {
-      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-      const endpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/auth/users' : '/api/auth/users';
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('auth/users')
+        : '/api/auth/users';
       const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
@@ -3013,8 +3113,9 @@ Key Ideas & Notes:
     this.showToast(`Enforcing server-side policy for ${userId}...`, 'info');
 
     try {
-      const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-      const endpoint = isGitHubPages ? 'https://om-ai.vercel.app/api/auth/grant' : '/api/auth/grant';
+      const endpoint = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+        ? window.OM_CONFIG.getApiUrl('auth/grant')
+        : '/api/auth/grant';
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

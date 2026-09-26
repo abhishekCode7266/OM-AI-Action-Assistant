@@ -429,7 +429,16 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
 
   createNotebook(title = 'Untitled notebook') {
     const list = this.getNotebooks();
-    const nb = { id: 'nb-' + Date.now(), title, createdAt: Date.now(), entries: [] };
+    const cleanTitle = title.trim() || 'Untitled notebook';
+    const nb = {
+      id: 'nb-' + Date.now(),
+      title: cleanTitle,
+      createdAt: Date.now(),
+      sources: 0,
+      notes: 1,
+      content: `# ${cleanTitle}\n\nCreated on ${new Date().toLocaleDateString()}.\n\n### Research & Notes\nAdd sources, synthesis, and key insights here.`,
+      entries: []
+    };
     list.unshift(nb);
     this.saveNotebooks(list);
     return nb;
@@ -443,19 +452,23 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
 
   addChatToNotebook(notebookId, chat) {
     const list = this.getNotebooks();
-    const target = list.find(n => n.id === notebookId) || list[0];
-    if (target) {
-      target.entries = target.entries || [];
-      target.entries.push({
-        chatId: chat.id,
-        title: chat.title,
-        addedAt: Date.now(),
-        snippet: chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text.slice(0, 200) : ''
-      });
-      this.saveNotebooks(list);
-      return true;
+    let target = list.find(n => n.id === notebookId) || list[0];
+    if (!target) {
+      target = this.createNotebook('My Notebook');
     }
-    return false;
+    target.entries = target.entries || [];
+    target.sources = (target.sources || 0) + 1;
+    target.notes = (target.notes || 0) + 1;
+    const chatSnippet = chat.messages ? chat.messages.map(m => `**${m.sender === 'user' ? 'User' : 'OM'}**: ${m.text}`).join('\n\n') : '';
+    target.content = (target.content || '') + `\n\n---\n### Attached Conversation: ${chat.title}\n${chatSnippet}`;
+    target.entries.push({
+      chatId: chat.id,
+      title: chat.title,
+      addedAt: Date.now(),
+      snippet: chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text.slice(0, 200) : ''
+    });
+    this.saveNotebooks(list);
+    return target;
   }
 
   loadMemory() {
@@ -1010,60 +1023,6 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
     });
 
     return md;
-  }
-
-  // Notebook operations
-  getNotebooks() {
-    try {
-      const data = localStorage.getItem('om_notebooks_v1');
-      if (data) return JSON.parse(data);
-    } catch (e) {}
-    return [
-      { id: 'nb-1', title: 'Untitled notebook', createdAt: Date.now() - 86400000, sources: 2, notes: 5 },
-      { id: 'nb-2', title: 'Copy of Untitled notebook', createdAt: Date.now() - 43200000, sources: 1, notes: 3 }
-    ];
-  }
-
-  saveNotebooks(notebooks) {
-    try {
-      localStorage.setItem('om_notebooks_v1', JSON.stringify(notebooks));
-    } catch (e) {}
-  }
-
-  createNotebook(title = 'Untitled notebook') {
-    const notebooks = this.getNotebooks();
-    const newNb = {
-      id: 'nb-' + Date.now(),
-      title: title.trim() || 'Untitled notebook',
-      createdAt: Date.now(),
-      sources: 0,
-      notes: 1,
-      content: `# ${title}\n\nCreated on ${new Date().toLocaleDateString()}.\n\n### Research & Notes\nAdd sources, synthesis, and key insights here.`
-    };
-    notebooks.unshift(newNb);
-    this.saveNotebooks(notebooks);
-    return newNb;
-  }
-
-  deleteNotebook(notebookId) {
-    const notebooks = this.getNotebooks().filter(nb => nb.id !== notebookId);
-    this.saveNotebooks(notebooks);
-    return notebooks;
-  }
-
-  addChatToNotebook(notebookId, chat) {
-    const notebooks = this.getNotebooks();
-    let nb = notebooks.find(n => n.id === notebookId);
-    if (!nb) {
-      if (notebooks.length > 0) nb = notebooks[0];
-      else nb = this.createNotebook('My Notebook');
-    }
-    nb.sources = (nb.sources || 0) + 1;
-    nb.notes = (nb.notes || 0) + 1;
-    const chatSnippet = chat.messages ? chat.messages.map(m => `**${m.sender === 'user' ? 'User' : 'OM'}**: ${m.text}`).join('\n\n') : '';
-    nb.content = (nb.content || '') + `\n\n---\n### Attached Conversation: ${chat.title}\n${chatSnippet}`;
-    this.saveNotebooks(notebooks);
-    return nb;
   }
 
   // =========================================================================

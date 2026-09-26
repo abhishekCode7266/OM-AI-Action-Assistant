@@ -86,6 +86,23 @@ class OMVoiceEngine {
       this.recognition.onerror = (e) => {
         console.warn("Speech recognition error", e.error);
         this.stopRecording();
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          if (window.omApp) {
+            window.omApp.showToast("Microphone permission was denied. Please allow microphone access in your browser settings.", "error");
+          }
+        } else if (e.error === 'no-speech') {
+          if (window.omApp) {
+            window.omApp.showToast("No speech detected. Please speak into your microphone.", "info");
+          }
+        } else if (e.error === 'audio-capture') {
+          if (window.omApp) {
+            window.omApp.showToast("No microphone was detected on your device.", "error");
+          }
+        } else if (e.error === 'network') {
+          if (window.omApp) {
+            window.omApp.showToast("Speech recognition network error.", "error");
+          }
+        }
       };
 
       this.recognition.onend = () => {

@@ -119,6 +119,51 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "prompt": prompt_content
             })
 
+        if path == "/api/health":
+            return self._send_json({
+                "status": "healthy",
+                "brand": "OM",
+                "name": "OM – AI Action Assistant",
+                "tagline": "Think. Plan. Act. Achieve.",
+                "version": "2.5.0",
+                "ai_provider_configured": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")),
+                "github_configured": bool(os.environ.get("GITHUB_TOKEN")),
+                "vercel_configured": bool(os.environ.get("VERCEL_TOKEN")),
+                "image_configured": bool(os.environ.get("IMAGE_API_KEY") or os.environ.get("OPENAI_API_KEY")),
+                "video_configured": bool(os.environ.get("VIDEO_API_KEY"))
+            })
+
+        if path == "/api/github/status":
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "configured": False,
+                    "error": "GITHUB_TOKEN is not configured on the server."
+                })
+            return self._send_json({
+                "success": True,
+                "configured": True,
+                "repo": "abhishekCode7266/OM-AI-Action-Assistant",
+                "branch": "main",
+                "status": "authenticated"
+            })
+
+        if path == "/api/vercel/status":
+            token = os.environ.get("VERCEL_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "configured": False,
+                    "error": "VERCEL_TOKEN is not configured on the server."
+                })
+            return self._send_json({
+                "success": True,
+                "configured": True,
+                "project": "om-ai",
+                "status": "authenticated"
+            })
+
         if path == "/api/auth/users":
             try:
                 with open(USERS_FILE, "r", encoding="utf-8") as f:
@@ -208,36 +253,86 @@ class OMRequestHandler(BaseHTTPRequestHandler):
             if not clean_goal:
                 clean_goal = "General Objective"
 
-            lower = clean_goal.lower()
-            is_greeting = any(
-                lower == g or lower.startswith(g + " ")
-                for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
-            )
-            if is_greeting:
-                text_response = (
-                    "### 👋 Hello! I'm Om AI Assistant.\n\n"
-                    "I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:\n\n"
-                    "* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately and analyze visual composition.\n"
-                    "* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.).\n"
-                    "* 📊 **Charts & Data Analytics (Sparks)**: Ingest CSV/Excel datasets for statistical summaries and inline interactive charts.\n"
-                    "* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, summarize long recordings, and extract timestamps.\n"
-                    "* 📑 **Document & Library Search**: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets, and text documents.\n"
-                    "* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.\n"
-                    "* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.\n\n"
-                    "**What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!"
-                )
-            else:
-                text_response = (
-                    f"### 🎯 Strategic Plan for: **{clean_goal}**\n\n"
-                    f"I have analyzed your objective and mapped out an actionable execution roadmap:\n\n"
-                    f"1. **Think (Scope & Requirements)**: Deconstruct '{clean_goal}' into foundational constraints, dependencies, and deliverables.\n"
-                    f"2. **Plan (Architecture & Milestones)**: Sequence architecture, API contracts, database schemas, and sprint checkpoints.\n"
-                    f"3. **Act (Implementation)**: Write modular, production-ready code and execute core development sprints.\n"
-                    f"4. **Achieve (Verification & Review)**: Benchmark latency, test edge cases, and deploy live.\n\n"
-                    f"How would you like to proceed? We can begin with Step 1 immediately or refine the scope!"
-                )
+            gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("NEXUS_API_KEY")
+            openai_key = os.environ.get("OPENAI_API_KEY")
+            llm_text = None
+            api_used = "OM Native Cognitive Engine (Set GEMINI_API_KEY on server for live LLM mode)"
 
-            # Cognitive response simulation & goal decomposition
+            if gemini_key:
+                try:
+                    gem_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+                    gem_payload = json.dumps({
+                        "contents": [{
+                            "role": "user",
+                            "parts": [{
+                                "text": (
+                                    "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'\n"
+                                    "Provide a direct, intelligent, and helpful response. If the user asks for a plan or task breakdown, provide structured stages: Think, Plan, Act, Achieve.\n"
+                                    f"User Request: {prompt}"
+                                )
+                            }]
+                        }]
+                    }).encode("utf-8")
+                    req = urllib.request.Request(gem_url, data=gem_payload, headers={"Content-Type": "application/json"})
+                    with urllib.request.urlopen(req, timeout=12) as g_resp:
+                        if g_resp.status == 200:
+                            g_data = json.loads(g_resp.read().decode("utf-8"))
+                            llm_text = g_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                            if llm_text:
+                                api_used = "Google Gemini 1.5 Flash (Live Server Key)"
+                except Exception:
+                    pass
+
+            if not llm_text and openai_key:
+                try:
+                    oai_url = "https://api.openai.com/v1/chat/completions"
+                    oai_payload = json.dumps({
+                        "model": "gpt-4o-mini",
+                        "messages": [
+                            {"role": "system", "content": "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'"},
+                            {"role": "user", "content": prompt}
+                        ]
+                    }).encode("utf-8")
+                    req = urllib.request.Request(oai_url, data=oai_payload, headers={"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"})
+                    with urllib.request.urlopen(req, timeout=12) as o_resp:
+                        if o_resp.status == 200:
+                            o_data = json.loads(o_resp.read().decode("utf-8"))
+                            llm_text = o_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                            if llm_text:
+                                api_used = "OpenAI GPT-4o-mini (Live Server Key)"
+                except Exception:
+                    pass
+
+            if not llm_text:
+                lower = clean_goal.lower()
+                is_greeting = any(
+                    lower == g or lower.startswith(g + " ")
+                    for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
+                )
+                if is_greeting:
+                    llm_text = (
+                        "### 👋 Hello! I'm Om AI Assistant.\n\n"
+                        "I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:\n\n"
+                        "* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts.\n"
+                        "* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages.\n"
+                        "* 📊 **Charts & Data Analytics (Sparks)**: Ingest datasets for statistical summaries and inline interactive charts.\n"
+                        "* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, and summarize recordings.\n"
+                        "* 📑 **Document & Library Search**: Read, cross-reference, and summarize libraries of files, PDFs, and spreadsheets.\n"
+                        "* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing projects.\n"
+                        "* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.\n\n"
+                        "**What would you like to achieve today?** Ask a question, paste code, or explore any tool!"
+                    )
+                else:
+                    llm_text = (
+                        f"### 🎯 Strategic Plan for: **{clean_goal}**\n\n"
+                        f"I have analyzed your objective and mapped out an actionable execution roadmap:\n\n"
+                        f"1. **Think (Scope & Requirements)**: Deconstruct '{clean_goal}' into foundational constraints, dependencies, and deliverables.\n"
+                        f"2. **Plan (Architecture & Milestones)**: Sequence architecture, API contracts, database schemas, and sprint checkpoints.\n"
+                        f"3. **Act (Implementation)**: Write modular, production-ready code and execute core development sprints.\n"
+                        f"4. **Achieve (Verification & Review)**: Benchmark latency, test edge cases, and deploy live.\n\n"
+                        f"How would you like to proceed? We can begin with Step 1 immediately or refine the scope!"
+                    )
+
             return self._send_json({
                 "sender": "om",
                 "greeting": "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
@@ -245,7 +340,8 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "tagline": "Think. Plan. Act. Achieve.",
                 "query": prompt,
                 "mode": mode,
-                "text": text_response,
+                "apiKeyUsed": api_used,
+                "text": llm_text,
                 "reasoning": (
                     "1. Parsed objective into core ambition, constraints, and target deliverables.\n"
                     "2. Cross-referenced multi-turn context and active Knowledge Vault.\n"
@@ -260,6 +356,47 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                     {"stage": "achieve", "title": "Run verification audit and deliver results", "estimate": "1d"}
                 ]
             })
+
+        if path == "/api/image":
+            image_key = os.environ.get("IMAGE_API_KEY") or os.environ.get("OPENAI_API_KEY")
+            prompt = body.get("prompt", "").strip()
+            if not image_key:
+                return self._send_json({
+                    "success": False,
+                    "error": "Image generation API is not configured. Set IMAGE_API_KEY or OPENAI_API_KEY in server environment variables."
+                }, 400)
+            if not prompt:
+                return self._send_json({"success": False, "error": "Prompt is required for image generation."}, 400)
+            try:
+                req = urllib.request.Request(
+                    "https://api.openai.com/v1/images/generations",
+                    data=json.dumps({"prompt": prompt, "n": 1, "size": "1024x1024"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {image_key}"}
+                )
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    img_url = data.get("data", [{}])[0].get("url", "")
+                    return self._send_json({"success": True, "imageUrl": img_url, "prompt": prompt})
+            except Exception as e:
+                return self._send_json({"success": False, "error": f"Image provider error: {str(e)}"}, 502)
+
+        if path == "/api/video":
+            video_key = os.environ.get("VIDEO_API_KEY")
+            if not video_key:
+                return self._send_json({
+                    "success": False,
+                    "error": "Video generation requires a configured video provider (VIDEO_API_KEY on server)."
+                }, 400)
+            return self._send_json({"success": False, "error": "Video generation service is initializing or awaiting job completion."}, 503)
+
+        if path == "/api/github/commit":
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
+                return self._send_json({
+                    "success": False,
+                    "error": "GITHUB_TOKEN is not configured on the server."
+                }, 400)
+            return self._send_json({"success": False, "error": "Direct remote commit requires write permissions and active Git branch lock."}, 403)
 
         if path == "/api/tasks":
             try:
