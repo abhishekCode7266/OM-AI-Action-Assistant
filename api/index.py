@@ -180,6 +180,21 @@ class handler(BaseHTTPRequestHandler):
                 "philosophy": "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
             })
 
+        # 3b. Master Development Prompt API
+        if path == "/api/prompt" or path == "/prompt":
+            prompt_file = os.path.join(BASE_DIR, "docs", "OM_AI_AGENT_PROMPT.md")
+            prompt_content = ""
+            if os.path.exists(prompt_file):
+                with open(prompt_file, "r", encoding="utf-8") as f:
+                    prompt_content = f.read()
+            return self._send_json({
+                "status": "success",
+                "system_name": "OM AI Action Assistant",
+                "tagline": "Think. Plan. Act. Achieve.",
+                "total_modules": 65,
+                "prompt": prompt_content
+            })
+
         # 4. Tasks API
         if path == "/api/tasks" or path == "/tasks":
             tasks = load_tasks()

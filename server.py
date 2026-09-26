@@ -75,6 +75,20 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "philosophy": "Intelligent, simple, and universal AI collaborator helping users turn ideas into real actions."
             })
 
+        if path == "/api/prompt":
+            prompt_file = os.path.join(BASE_DIR, "docs", "OM_AI_AGENT_PROMPT.md")
+            prompt_content = ""
+            if os.path.exists(prompt_file):
+                with open(prompt_file, "r", encoding="utf-8") as f:
+                    prompt_content = f.read()
+            return self._send_json({
+                "status": "success",
+                "system_name": "OM AI Action Assistant",
+                "tagline": "Think. Plan. Act. Achieve.",
+                "total_modules": 65,
+                "prompt": prompt_content
+            })
+
         if path == "/api/tasks":
             try:
                 with open(TASKS_FILE, "r", encoding="utf-8") as f:
