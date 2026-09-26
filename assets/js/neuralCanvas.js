@@ -151,7 +151,7 @@ class OMNeuralCanvas {
         { id: 'multimodal', label: 'Vision & 3D Spatial Engine', subtext: 'Volumetric Disassembly', category: 'vision', x: -220, y: -120, radius: 28, color: '#10b981', status: 'complete', meta: 'Analyzes visual blueprints and exploded-view schematics.' },
         { id: 'voice', label: 'Dual Voice Telemetry (J.A.R.V.I.S. & F.R.I.D.A.Y.)', subtext: '20+ Global Languages', category: 'voice', x: -220, y: 130, radius: 28, color: '#f59e0b', status: 'complete', meta: 'Real-time two-way voice with male and female tactical personas.' },
         { id: 'agentic', label: 'Autonomous Agentic Swarm', subtext: 'Multi-Step Execution', category: 'agent', x: 230, y: -110, radius: 28, color: '#a855f7', status: 'active', meta: 'Parallel sub-agent workers for self-directed coding and analysis.' },
-        { id: 'security', label: 'Cryptographic Security & VIP Matrix', subtext: 'Free VIP Lifetime Access for Udayast (Boss)', category: 'security', x: 230, y: 130, radius: 28, color: '#ec4899', status: 'complete', meta: 'Enterprise-grade zero-cost authorization matrix.' },
+        { id: 'security', label: 'Cryptographic Security & Auth Matrix', subtext: 'Role-Based Access Control', category: 'security', x: 230, y: 130, radius: 28, color: '#ec4899', status: 'complete', meta: 'Enterprise-grade zero-trust authorization matrix.' },
         { id: 'cloud', label: 'Global Deployment (Vercel & GitHub Pages)', subtext: 'Zero-Downtime Edge CDN', category: 'devops', x: 0, y: 220, radius: 24, color: '#38bdf8', status: 'complete', meta: 'Production builds published to Vercel and GitHub edge nodes.' }
       ];
       this.links = [

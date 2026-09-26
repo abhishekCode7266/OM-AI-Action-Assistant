@@ -21,15 +21,15 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 DEFAULT_USERS = [
     {
-        "id": "usr-owner-001",
-        "username": "Udayast",
-        "name": "Abhishek Singh Yadav",
-        "role": "owner",
-        "access": "unlimited",
+        "id": "usr-admin-001",
+        "username": "Admin",
+        "name": "Administrator",
+        "role": "admin",
+        "access": "standard",
         "tools": ["*"],
-        "gems": "unlimited",
+        "gems": "standard",
         "expires_at": "never",
-        "is_developer": True
+        "is_developer": False
     },
     {
         "id": "usr-guest-002",
@@ -38,7 +38,7 @@ DEFAULT_USERS = [
         "role": "authorized_user",
         "access": "full_free",
         "tools": ["*"],
-        "gems": "unlimited",
+        "gems": "standard",
         "expires_at": "2030-12-31",
         "is_developer": False
     }
@@ -162,6 +162,13 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "configured": True,
                 "project": "om-ai",
                 "status": "authenticated"
+            })
+
+        if path == "/api/payment":
+            return self._send_json({
+                "success": False,
+                "configured": False,
+                "error": "Payment gateway is not configured."
             })
 
         if path == "/api/auth/users":
@@ -397,6 +404,13 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                     "error": "GITHUB_TOKEN is not configured on the server."
                 }, 400)
             return self._send_json({"success": False, "error": "Direct remote commit requires write permissions and active Git branch lock."}, 403)
+
+        if path == "/api/payment":
+            return self._send_json({
+                "success": False,
+                "configured": False,
+                "error": "Payment gateway is not configured."
+            }, 400)
 
         if path == "/api/tasks":
             try:

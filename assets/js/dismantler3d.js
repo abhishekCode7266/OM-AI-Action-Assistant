@@ -10,9 +10,6 @@
  * 5. Spline/Luma AI View Modes: PBR Solid, Holographic Wireframe, X-Ray Glass
  * 6. Direct 3D OBJ Wavefront Export (.obj) for Blender / Spline / 3D Printing
  * 7. 3D Technical Blueprint CAD PNG Export & 360° Video WebM Recording
- * 
- * Chief Architect: Udayast
- * Addressed as: Boss
  */
 
 class OMDismantler3D {
@@ -1143,7 +1140,7 @@ class OMDismantler3D {
     let obj = `# Wavefront 3D OBJ Export - OM AI 3D Assemblable Studio\n`;
     obj += `# Modeled: ${model.name}\n`;
     obj += `# Category: ${model.category}\n`;
-    obj += `# Chief Architect: Udayast\n`;
+    obj += `# Model Engine: OM AI 3D Studio\n`;
     obj += `# Compatible with Blender, Spline AI, Unreal Engine, Maya, CAD\n\n`;
 
     let vertOffset = 1;
@@ -1612,7 +1609,7 @@ class OMDismantler3D {
     ctx.fillText(model.name.substring(0, 30) + '...', 26, height - 38);
     ctx.fillStyle = '#94a3b8';
     ctx.font = '9px monospace';
-    ctx.fillText(`MODE: ${this.assemblyMode.toUpperCase()} | CHIEF ARCHITECT: Udayast`, 26, height - 22);
+    ctx.fillText(`MODE: ${this.assemblyMode.toUpperCase()} | ENGINE: OM AI 3D`, 26, height - 22);
     ctx.restore();
   }
 

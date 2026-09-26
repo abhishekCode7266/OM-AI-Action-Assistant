@@ -201,9 +201,9 @@ Additionally, support real-time language translation, internet search, smart hom
 Respond naturally and conversationally, avoiding machine-like recitation of instructions.
 
 Identity & System Context:
-* Assistant Identity: OM AI Assistant (built by Udayast / Lead Architect: Abhishek Singh Yadav). Always address the developer as "Boss".
+* Assistant Identity: OM AI Assistant. Direct, intelligent, professional, and resourceful.
 * Tagline: "Think. Plan. Act. Achieve."
-* Access Tier: ${isDev ? "Ultimate Developer (Free Lifetime Unlimited Access)" : "Standard User"}
+* Access Tier: ${isDev ? "Developer Mode" : "Standard User"}
 * Specialization Mode: ${mode.toUpperCase()}
 * User Profile & Memory: ${memoryCtx || "None"}
 
@@ -358,10 +358,9 @@ Communication & Execution Rules:
     const isActionDirective = lower.startsWith('om, ye kar do') || lower.startsWith('om ye kar do') || lower.startsWith('ye kar do') || lower.includes('ye kar do');
 
     if (isMasterPromptRequest || isActionDirective) {
-      const devName = "Udayast (Boss)";
       text = `### 👑 OM AI AGENT: Complete Master Development Specification
 
-*At your service, Boss (${devName}). Action command acknowledged.*
+*At your service. Action command acknowledged.*
 
 OM AI Assistant is architected as a **unified intelligent operating workspace** where you simply command — *"OM, ye kar do"* — and OM automatically deconstructs the objective, picks the verified tool, confirms granular permissions, and executes with 100% transparent telemetry:
 
@@ -517,13 +516,13 @@ I have initiated a full **3D holographic deconstruction** of the ${modelName}. E
     // 00b. J.A.R.V.I.S. (Iron Man) Persona & Stark Protocol
     // =========================================================================
     else if (lower.includes('jarvis') || lower.includes('iron man') || lower.includes('stark') || lower.includes('arc reactor') || lower.includes('protocol') || lower.includes('suit') || lower.includes('armor')) {
-      const devName = "Udayast";
+      const devName = "User";
 
       text = `### ⚡ J.A.R.V.I.S. Protocol Active – Diagnostics Online
 
-*At your service, Boss.*
+*At your service.*
 
-All sensory and telemetry feeds are operating at maximum bandwidth for **${devName}**. The Arc Reactor power grid is stabilized at **100% capacity**, neural latency is clocked at **4.2 milliseconds**, and Stark Industries defense encryption is online.
+All sensory and telemetry feeds are operating at maximum bandwidth. The Arc Reactor power grid is stabilized at **100% capacity**, neural latency is clocked at **4.2 milliseconds**, and Stark Industries defense encryption is online.
 
 ---
 
@@ -545,13 +544,13 @@ All sensory and telemetry feeds are operating at maximum bandwidth for **${devNa
       <span style="font-size: 1.5rem; animation: pulseDot 1.5s infinite;">💠</span>
       <div>
         <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">STARK INDUSTRIES J.A.R.V.I.S. INTERFACE</div>
-        <div style="font-size: 0.74rem; color: #38bdf8;">Authorized Operator: ${devName} (Boss) • Ultimate Developer Pass</div>
+        <div style="font-size: 0.74rem; color: #38bdf8;">Authorized Operator: ${devName} • Active Mode</div>
       </div>
     </div>
     <span class="stage-tag stage-achieve" style="background: rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 800;">ALL SYSTEMS GO</span>
   </div>
   <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
-    Would you like to initiate the <strong>Live Voice HUD</strong> for a hands-free spoken session, Boss? Or shall I run a full diagnostic on your codebase and 3D assets?
+    Would you like to initiate the <strong>Live Voice HUD</strong> for a hands-free spoken session? Or shall I run a full diagnostic on your codebase and 3D assets?
   </p>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
     <button class="om-btn om-btn-primary" onclick="window.omJarvisLive.startSession('jarvis')">
@@ -563,16 +562,16 @@ All sensory and telemetry feeds are operating at maximum bandwidth for **${devNa
   </div>
 </div>
 
-What is your directive today, Boss?`;
+What is your directive today?`;
 
       reasoning = [
         "1. Persona Alignment: J.A.R.V.I.S. tone, British AI butler cadence, polite yet sharp.",
-        "2. Developer Acknowledgment: Recognized Udayast (Boss) as the authorized operator/creator.",
+        "2. Directive Acknowledgment: System telemetry synchronized to user session.",
         "3. Telemetry HUD: Provided real-time status matrix with Arc Reactor and Voice HUD buttons."
       ];
       actions = [
         { stage: 'think', title: 'Poll all sensory inputs and telemetry feeds', estimate: '1s' },
-        { stage: 'plan', title: 'Formulate tactical operational options for Boss', estimate: '2s' },
+        { stage: 'plan', title: 'Formulate tactical operational options', estimate: '2s' },
         { stage: 'act', title: 'Execute J.A.R.V.I.S. protocol with continuous voice loop', estimate: 'Continuous' },
         { stage: 'achieve', title: 'Deliver complete engineering objectives', estimate: 'Immediate' }
       ];
@@ -583,13 +582,13 @@ What is your directive today, Boss?`;
     // 00b2. F.R.I.D.A.Y. (Iron Man) Tactical AI Persona (Female Voice)
     // =========================================================================
     else if (lower.includes('friday') || lower.includes('f.r.i.d.a.y') || lower.includes('female voice') || (lower.includes('female') && lower.includes('jarvis'))) {
-      const devName = "Udayast";
+      const devName = "User";
 
       text = `### 💎 F.R.I.D.A.Y. Tactical Defense & Multimodal Assistant Active
 
-*Good day, Boss! F.R.I.D.A.Y. here and ready to roll.*
+*Good day! F.R.I.D.A.Y. here and ready to assist.*
 
-Sensory arrays and real-time telemetry are operating at peak efficiency for **${devName}** (Boss). Mark LXXXV tactical combat systems, code compilers, and 3D CAD mesh generators are synchronized to your voice commands.
+Sensory arrays and real-time telemetry are operating at peak efficiency. Mark LXXXV tactical combat systems, code compilers, and 3D CAD mesh generators are synchronized to your voice commands.
 
 ---
 
@@ -601,7 +600,7 @@ Sensory arrays and real-time telemetry are operating at peak efficiency for **${
 | **Neural Thought Canvas** | 🟢 **SYNCHRONIZED** | Dynamic multi-node DAG mind map | Ready for complex ideation |
 | **Cyber Terminal CLI** | 🟢 **ONLINE** | CRT phosphor shell & diagnostics | Direct hardware sandbox |
 | **3D CAD Deconstructor** | 🟢 **ARMED** | Volumetric exploded vector engine | 9 sub-assemblies isolated |
-| **VIP Architect Pass** | 🟢 **AUTHENTICATED** | Lifetime $0.00 Free VIP Unlimited | Superuser authority granted |
+| **System Authorization** | 🟢 **AUTHENTICATED** | Standard Account Active | System authority granted |
 
 ---
 
@@ -611,13 +610,13 @@ Sensory arrays and real-time telemetry are operating at peak efficiency for **${
       <span style="font-size: 1.5rem; animation: pulseDot 1.5s infinite;">💎</span>
       <div>
         <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">STARK TACTICAL F.R.I.D.A.Y. INTERFACE</div>
-        <div style="font-size: 0.74rem; color: #f472b6;">Boss: ${devName} • Tactical Female Voice AI</div>
+        <div style="font-size: 0.74rem; color: #f472b6;">Operator: ${devName} • Tactical Female Voice AI</div>
       </div>
     </div>
     <span class="stage-tag stage-achieve" style="background: rgba(236, 72, 153, 0.25); color: #f472b6; font-weight: 800;">TACTICAL ONLINE</span>
   </div>
   <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px;">
-    Want to talk hands-free with my tactical female voice, Boss? Or shall we inspect your 3D models and deploy code to production?
+    Want to talk hands-free with my tactical female voice? Or shall we inspect your 3D models and deploy code to production?
   </p>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
     <button class="om-btn om-btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession('friday');">
@@ -632,16 +631,16 @@ Sensory arrays and real-time telemetry are operating at peak efficiency for **${
   </div>
 </div>
 
-What are your orders, Boss?`;
+What are your orders?`;
 
       reasoning = [
-        "1. Persona Alignment: F.R.I.D.A.Y. tone, sharp, energetic Irish/tactical AI from Iron Man movies.",
-        "2. Developer Acknowledgment: Addressed Udayast as 'Boss' with full VIP permissions.",
+        "1. Persona Alignment: F.R.I.D.A.Y. tone, sharp, energetic tactical AI.",
+        "2. Directive Acknowledgment: Operator directives synchronized with full system capabilities.",
         "3. Interactive HUD: Rendered female tactical theme card with direct voice launch buttons."
       ];
       actions = [
         { stage: 'think', title: 'Initialize tactical telemetry and speech synthesis', estimate: '1s' },
-        { stage: 'plan', title: 'Synthesize optimal combat and engineering pipelines for Boss', estimate: '2s' },
+        { stage: 'plan', title: 'Synthesize optimal combat and engineering pipelines', estimate: '2s' },
         { stage: 'act', title: 'Engage F.R.I.D.A.Y. voice telemetry loop', estimate: 'Continuous' },
         { stage: 'achieve', title: 'Execute full architectural directives', estimate: 'Immediate' }
       ];
@@ -723,7 +722,7 @@ OM AI Assistant includes an interactive **retro-futuristic CRT command-line cons
 
 * 🟢 **CRT Phosphor Screen**: Retro scanlines, high-contrast cyan/emerald glow, and command history buffer.
 * ⚡ **Live Directives**: Execute \`status\`, \`whoami\`, \`voice male/female\`, \`lang [code]\`, \`dismantle [object]\`, \`matrix\`, and \`agent [task]\`.
-* 🛡️ **Root Access for Udayast (Boss)**: Full VIP administrative authority enabled by default.
+* 🛡️ **System Directives**: Full diagnostic and operational command suite enabled.
 
 ---
 
@@ -911,7 +910,7 @@ I have synthesized your creative prompt into a high-resolution 4K visual render 
 
       text = `### 👁️ Multimodal Vision Inspection & Execution (${imgCount} Image${imgCount > 1 ? 's' : ''} Analyzed)
 
-Boss, I have inspected and decoded your attached image${imgCount > 1 ? 's' : ''} through the **OM Nexus Vision Pipeline**:
+I have inspected and decoded your attached image${imgCount > 1 ? 's' : ''} through the **OM Nexus Vision Pipeline**:
 
 ${imgDetails}
 
@@ -928,7 +927,7 @@ ${imgDetails}
 3. **Execution Deliverable**:
    - Ready to generate drop-in HTML/CSS/React components, extract OCR plain text, convert to a 3D CAD mesh, or optimize performance.
 
-**Action Options for You, Boss:**
+**Action Options:**
 * Type **"Convert to HTML/CSS"** to get the pixel-perfect markup.
 * Type **"Extract Text"** for raw OCR text extraction.
 * Type **"Make 3D Model"** to send this asset into the 3D Assemblable Studio!`;
@@ -955,7 +954,7 @@ ${imgDetails}
     ) {
       text = `### 🎙️ Gemini Live Mode: Real-Time Voice-to-Voice Communication
 
-Boss, **Live Mode** is ready with continuous two-way audio, seamless voice/text switching, and continuous context tracking:
+**Live Mode** is ready with continuous two-way audio, seamless voice/text switching, and continuous context tracking:
 
 <div class="live-action-promo-card" style="background: rgba(6, 182, 212, 0.08); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 12px 0;">
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -1021,7 +1020,7 @@ Boss, **Live Mode** is ready with continuous two-way audio, seamless voice/text 
 
       text = `### 🌐 Real-Time Language Translation: [English ➔ ${targetLang}]
 
-Boss, here is the high-fidelity translation with cultural nuances, phonetic pronunciation, and audio playback:
+Here is the high-fidelity translation with cultural nuances, phonetic pronunciation, and audio playback:
 
 <div class="translation-result-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 14px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 10px;">
@@ -1082,7 +1081,7 @@ Boss, here is the high-fidelity translation with cultural nuances, phonetic pron
 
       text = `### 🔍 Real-Time Internet Search: "${query}"
 
-Boss, I have dispatched the query across global web indices and synthesized verified findings:
+I have dispatched the query across global web indices and synthesized verified findings:
 
 <div class="web-search-results-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 12px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 12px;">
@@ -1167,7 +1166,7 @@ Boss, I have dispatched the query across global web indices and synthesized veri
 
       text = `### 🏠 Smart Home IoT Control Matrix: Executed
 
-Boss, I have executed your smart home command: **${actionTaken}**. Telemetry and hardware states are synchronized:
+I have executed your smart home command: **${actionTaken}**. Telemetry and hardware states are synchronized:
 
 <div class="smarthome-matrix-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 14px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 14px;">
@@ -1251,7 +1250,7 @@ Boss, I have executed your smart home command: **${actionTaken}**. Telemetry and
 
       text = `### 🎵 Media Playback & Ambient Audio Studio: ${isPlay ? 'PLAYING' : 'PAUSED'}
 
-Boss, I have ${isPlay ? 'started' : 'paused'} ambient background audio. Powered by Web Audio API zero-latency neural synthesis:
+I have ${isPlay ? 'started' : 'paused'} ambient background audio. Powered by Web Audio API zero-latency neural synthesis:
 
 <div class="media-player-status-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 12px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -1309,7 +1308,7 @@ Boss, I have ${isPlay ? 'started' : 'paused'} ambient background audio. Powered 
 
       text = `### 🧭 Expert Guide: "${topic}"
 
-Boss, here is your step-by-step master walkthrough engineered for enterprise-grade execution:
+Here is your step-by-step master walkthrough engineered for enterprise-grade execution:
 
 <div class="expert-guide-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 14px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 14px;">
@@ -1383,7 +1382,7 @@ Would you like to drill into **Phase 1 (Code Scaffolding)** or launch the **Inte
     ) {
       text = `### 💎 Specialized AI Gems: Custom Expert Personas
 
-Boss, the **Gems Section** enables you to activate specialized AI agents pre-configured with distinct domain expertise:
+The **Gems Section** enables you to activate specialized AI agents pre-configured with distinct domain expertise:
 
 <div class="gems-roster-card" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 16px; margin: 14px 0;">
   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 14px;">
@@ -1649,38 +1648,13 @@ This is considered the **gold standard 5-day workout split** for balanced muscle
       lower === 'good morning' || lower === 'good evening' || lower === 'good afternoon'
     ) {
       const isHindi = hasDevanagari || lower.includes('namaste') || lower.includes('नमस्ते');
-      text = isHindi 
-        ? `### 🙏 नमस्ते बॉस! मैं आपकी किस प्रकार सहायता कर सकता हूँ?
-
-मैं आपकी सभी प्राथमिकताओं में सहयोग के लिए तैयार हूँ:
-- 💻 **कोडिंग व प्रोग्रामिंग**: पायथन, जावास्क्रिप्ट, डार्ट/फ्लटर, HTML/CSS लाइव सैंडबॉक्स।
-- 👁️ **इमेज व विज़न एनालिसिस**: चित्र, स्क्रीनशॉट या डेटा का तत्काल विश्लेषण।
-- 🎙️ **लाइव वॉइस असिस्टेंट**: रीयल-टाइम वॉइस-टू-वॉइस संवाद।
-- 🚗 **3D CAD डिसेम्बलर**: 3D मैकेनिकल मॉडल डीकंस्ट्रक्शन एवं ब्लूप्रिंट।
-
-आज आप क्या बनाना या हल करना चाहते हैं?`
-        : `### 👋 Hello Boss! How can I help you today?
-
-I am **OM AI Assistant**, your personal multimodal AI collaborator. Here is what we can do together right now:
-
-- 💻 **Code Writing & Execution**: Python, JavaScript, Dart/Flutter, and HTML/CSS sandboxes with real-time output and action buttons.
-- 🖼️ **Image & Multimodal Vision**: Upload screenshots, diagrams, photos, or live webcam/screen captures for deep visual inspection.
-- 🎙️ **Gemini Live Voice**: Real-time hands-free speech loop with 9 audio personas (*J.A.R.V.I.S., F.R.I.D.A.Y., Nova, Atlas*, etc.).
-- 🚗 **3D CAD Dismantler Studio**: Orbit, deconstruct, and generate 360° assembly animations and technical blueprints.
-- 🌐 **Translation Studio & Smart Home**: 20+ languages translation and IoT device automation matrix.
-
-What project or goal shall we tackle right now?`;
-
+      text = "AI service is currently unavailable. Please check the backend configuration.";
       reasoning = [
-        "1. Core Conversational Standard: Natural, warm, highly capable greeting matching ChatGPT & Google Gemini baselines.",
-        "2. Directives: Zero robotic fluff, welcoming, action-oriented, and immediately ready for multimodal execution."
+        "1. API Gateway: Backend AI service is currently unconfigured or unreachable.",
+        "2. Action Required: Configure GEMINI_API_KEY or OPENAI_API_KEY in your server environment variables or API settings."
       ];
-      actions = [
-        { stage: 'think', title: 'Awaiting your goal or technical query', estimate: 'Ready' },
-        { stage: 'plan', title: 'Deconstruct objective into executable subtasks', estimate: '1m' },
-        { stage: 'act', title: 'Write, debug, execute code or render 3D visuals', estimate: 'Instant' }
-      ];
-      tools = ["OM Conversational Core", "Multimodal Engine"];
+      actions = [];
+      tools = ["OM Gateway"];
     }
 
     // 0g. Identity, Capabilities & Help
@@ -2004,7 +1978,7 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
                   child: TextField(
                     controller: _textController,
                     decoration: InputDecoration(
-                      hintText: 'What needs to be done, Boss?',
+                      hintText: 'What needs to be done?',
                       hintStyle: const TextStyle(color: Colors.white38),
                       filled: true,
                       fillColor: const Color(0xFF1C2541),
@@ -2253,7 +2227,7 @@ I have parsed your query through the **OM Static Code Analyzer & AST Engine**. H
    - In Python: \`print(f"DEBUG [{type(val)}]: {val}")\`
 3. **Verify Null/Undefined Guardrails**: Never access nested properties without verifying parent existence.
 
-*Paste your exact code snippet and error message here, Boss, and I will highlight the exact line and give you the 100% working fix immediately!*`;
+*Paste your exact code snippet and error message here, and I will highlight the exact line and give you the 100% working fix immediately!*`;
 
       reasoning = [
         "1. Diagnostics: Categorized the most frequent programming errors across JS and Python.",
@@ -2457,7 +2431,7 @@ def subarray_sum(nums: list[int], k: int) -> int:
 print("Subarrays summing to 2 in [1, 1, 1]:", subarray_sum([1, 1, 1], 2)) # Output: 2
 \`\`\`
 
-*Please share your specific question or equation, Boss, and I will deliver the complete derivation with proofs and code verification!*`;
+*Please share your specific question or equation, and I will deliver the complete derivation with proofs and code verification!*`;
 
       reasoning = [
         "1. Problem Framework: Structured explanation into Define -> Formulate -> Derive -> Verify -> Conclude.",
@@ -2479,7 +2453,7 @@ print("Subarrays summing to 2 in [1, 1, 1]:", subarray_sum([1, 1, 1], 2)) # Outp
       tools.push("Hindi Natural Language Synthesizer", "Intuitive Analogy Engine");
       text = `### 🇮🇳 सरल हिन्दी में आसान व्याख्या (Simple Hindi Explanation)
 
-नमस्ते बॉस! मैं आपको किसी भी तकनीकी विषय, कोडिंग कॉन्सेप्ट या जटिल सवाल को एकदम **सरल, व्यावहारिक और बोलचाल की भाषा** में समझाता हूँ:
+नमस्ते! मैं आपको किसी भी तकनीकी विषय, कोडिंग कॉन्सेप्ट या जटिल सवाल को एकदम **सरल, व्यावहारिक और बोलचाल की भाषा** में समझाता हूँ:
 
 ---
 
@@ -2499,12 +2473,12 @@ print("Subarrays summing to 2 in [1, 1, 1]:", subarray_sum([1, 1, 1], 2)) # Outp
 - **Response (जवाब)**: जब सर्वर डेटा तैयार करके वापस भेजता है (जैसे: नाम, फोटो, ईमेल)।
 - **API Key (चाबी)**: जैसे किसी प्राइवेट रूम में जाने के लिए चाबी चाहिए, वैसे ही कुछ खास डेटा एक्सेस करने के लिए API Key की जरूरत होती है।
 
-*बॉस, आप किस विषय या कोड को सरल हिन्दी में समझना चाहते हैं? मुझे बताइए, मैं तुरंत आसान उदाहरण के साथ समझा दूंगा!*`;
+*आप किस विषय या कोड को सरल हिन्दी में समझना चाहते हैं? मुझे बताइए, मैं तुरंत आसान उदाहरण के साथ समझा दूंगा!*`;
 
       reasoning = [
         "1. Linguistic Adaptation: Selected warm, clear colloquial Hindi with English terms in brackets.",
         "2. Conceptual Analogy: Used the classic restaurant waiter analogy for intuitive comprehension.",
-        "3. Conversational Tone: Direct, respectful, addressing Boss."
+        "3. Conversational Tone: Direct, respectful, helpful."
       ];
       actions = [
         { stage: 'think', title: 'Break complex technical concept into core conceptual elements', estimate: '30s' },
@@ -2535,10 +2509,10 @@ print("Subarrays summing to 2 in [1, 1, 1]:", subarray_sum([1, 1, 1], 2)) # Outp
           text = `### 🧮 Complete Python Calculator Engine\n\nHere is a clean, modular Python calculator supporting standard arithmetic, division-by-zero protection, and command-line execution:\n\n\`\`\`python\ndef calculate(a: float, b: float, operator: str) -> float:\n    """Executes arithmetic operations with error guardrails."""\n    ops = {\n        '+': lambda x, y: x + y,\n        '-': lambda x, y: x - y,\n        '*': lambda x, y: x * y,\n        '/': lambda x, y: x / y if y != 0 else "Error: Division by zero",\n        '^': lambda x, y: x ** y\n    }\n    if operator not in ops:\n        raise ValueError(f"Unsupported operator: {operator}")\n    return ops[operator](a, b)\n\nif __name__ == "__main__":\n    print("OM Calculator Engine Active")\n    print("12 * 8 =", calculate(12, 8, '*'))\n    print("100 / 4 =", calculate(100, 4, '/'))\n\`\`\`\n\nWould you like me to **add a GUI** or convert this into a **FastAPI backend** next?`;
           reasoning.push("1. Intent Recognition: Formulated pure Python calculator solution with type hints and defensive validation.");
         }
-      } else if (lower.includes('python') || lower.includes('hello') || lower.includes('project') || lower.includes('script') || lower.includes('program')) {
+      } else if (lower.includes('python') || lower.includes('project') || lower.includes('script') || lower.includes('program')) {
         text = `### 🐍 Nexus Python Project & Hello Code (Live Executed)
 
-Here is a complete, production-grade **Python project with execution telemetry and Hello World greeting** engineered for **Boss** (Udayast):
+Here is a complete, production-grade **Python project with execution telemetry and Hello World greeting** engineered for production:
 
 \`\`\`python
 # ==============================================================================
@@ -2555,7 +2529,7 @@ class NexusProject:
         self.status = "ONLINE"
         self.created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    def run_hello(self, recipient="Boss"):
+    def run_hello(self, recipient="User"):
         print("=" * 60)
         print(f"👋 Hello World from {self.name} (v{self.version})!")
         print(f"👑 Welcome, {recipient}! All autonomous systems are initialized.")
@@ -2576,7 +2550,7 @@ class NexusProject:
 
 if __name__ == "__main__":
     app = NexusProject("NexusPythonProject")
-    app.run_hello("Boss")
+    app.run_hello("User")
     app.execute_pipeline()
     print("🚀 Task completed successfully.")
 \`\`\`
@@ -2585,7 +2559,7 @@ if __name__ == "__main__":
 \`\`\`text
 ============================================================
 👋 Hello World from NexusPythonProject (v2.5.0)!
-👑 Welcome, Boss! All autonomous systems are initialized.
+👑 Welcome! All autonomous systems are initialized.
 ⚡ Python Engine: 3.12.2 | Initialized: ${new Date().toLocaleString()}
 ============================================================
 
@@ -2901,24 +2875,24 @@ if __name__ == "__main__":
     if (lower.includes('hello') || lower.includes('hello code') || lower.includes('hello world')) {
       title = 'Python Hello World Execution';
       codeToRun = `# Python Hello World & System Telemetry
-# Author: Udayast (for Boss)
+# Author: OM AI Team
 import sys
 from datetime import datetime
 
-def greet_boss():
+def greet_user():
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("👑 Hello, Boss! Welcome to OM Nexus Python Engine.")
+    print("👑 Hello! Welcome to OM Nexus Python Engine.")
     print(f"⚡ Python Version: {sys.version.split()[0]} | System Status: Optimal")
     print(f"🕒 Timestamp: {now}")
     print("✔ Program completed successfully with exit code 0.")
 
 if __name__ == "__main__":
-    greet_boss()`;
-      terminalStdout = `👑 Hello, Boss! Welcome to OM Nexus Python Engine.\n⚡ Python Version: 3.12.2 | System Status: Optimal\n🕒 Timestamp: ${nowStr}\n✔ Program completed successfully with exit code 0.`;
+    greet_user()`;
+      terminalStdout = `👑 Hello! Welcome to OM Nexus Python Engine.\n⚡ Python Version: 3.12.2 | System Status: Optimal\n🕒 Timestamp: ${nowStr}\n✔ Program completed successfully with exit code 0.`;
     } else if (lower.includes('project') || lower.includes('create a python project') || lower.includes('python project')) {
       title = 'Python Autonomous Project Architecture';
       codeToRun = `# Python Project: Nexus Autonomous Assistant Engine
-# Author: Udayast (for Boss)
+# Author: OM AI Team
 import sys
 import time
 import json
@@ -2980,13 +2954,13 @@ if __name__ == "__main__":
 import sys
 
 def execute_autonomous_task():
-    print(f"▶ Executing live command for Boss: ${speechText.replace(/"/g, "'")}")
+    print(f"▶ Executing live command: ${speechText.replace(/"/g, "'")}")
     print("⚡ Real-time runtime environment active.")
     print("✔ Pipeline executed without errors across all subsystem threads.")
 
 if __name__ == "__main__":
     execute_autonomous_task()`;
-      terminalStdout = `▶ Executing live command for Boss: ${speechText.replace(/"/g, "'")}\n⚡ Real-time runtime environment active.\n✔ Pipeline executed without errors across all subsystem threads.\n✔ Exit code 0.`;
+      terminalStdout = `▶ Executing live command: ${speechText.replace(/"/g, "'")}\n⚡ Real-time runtime environment active.\n✔ Pipeline executed without errors across all subsystem threads.\n✔ Exit code 0.`;
     }
 
     // 1. Populate Live Execution HUD inside Voice Orb Modal

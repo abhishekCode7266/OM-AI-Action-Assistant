@@ -428,9 +428,15 @@ class OMApp {
       // Process through Cognitive Engine
       let assistantResponse = await this.assistant.processUserMessage(text, attachments);
       
-      // Guaranteed response fallback if null or empty
+      // Display clean message if backend response is null or empty
       if (!assistantResponse || !assistantResponse.text) {
-        assistantResponse = this.assistant.generateAutonomousFallback(text, [], activeChat.mode || 'general', attachments);
+        assistantResponse = {
+          sender: 'om',
+          text: "AI service is currently unavailable. Please check the backend configuration.",
+          reasoning: "The backend AI service did not return a response. Please verify backend environment variables (GEMINI_API_KEY / OPENAI_API_KEY) or configure your API key in Settings.",
+          verified: false,
+          actions: []
+        };
       }
 
       this.removeTypingIndicator();
@@ -447,7 +453,7 @@ class OMApp {
         }
       }
     } catch (err) {
-      console.warn("Message synthesis handled via fallback:", err);
+      console.warn("Message synthesis error:", err);
       this.chatStore.logError({
         message: err.message || 'Error processing message',
         type: 'Frontend error',
@@ -457,7 +463,13 @@ class OMApp {
       });
       this.removeTypingIndicator();
 
-      const fallbackResp = this.assistant.generateAutonomousFallback(text, [], activeChat.mode || 'general', attachments);
+      const fallbackResp = {
+        sender: 'om',
+        text: "AI service is currently unavailable. Please check the backend configuration.",
+        reasoning: `Inference error: ${err.message || 'Network request failed'}. Please check backend configuration or API key in Settings.`,
+        verified: false,
+        actions: []
+      };
       this.chatStore.addMessage(activeChat.id, fallbackResp);
       this.renderChatMessages();
 
@@ -906,7 +918,7 @@ class OMApp {
   updateDeveloperTierBadge() {
     const isDev = this.chatStore.isDeveloper();
     const plan = this.chatStore.getUserPlan();
-    const user = this.chatStore.currentUser || { name: 'Udayast', location: 'India', isDeveloper: true };
+    const user = this.chatStore.currentUser || { name: 'User', location: 'Global', isDeveloper: false };
 
     const planLabel = document.getElementById('sidebar-user-plan-label');
     const tierLabel = document.getElementById('sidebar-user-tier-label');
@@ -920,11 +932,11 @@ class OMApp {
     const popoverAuthLabel = document.getElementById('popover-auth-label');
     const devVipCard = document.getElementById('developer-vip-badge-card');
 
-    if (nameEl) nameEl.textContent = user.name || 'Udayast';
-    if (locationEl) locationEl.textContent = user.location || 'India';
+    if (nameEl) nameEl.textContent = user.name || 'User';
+    if (locationEl) locationEl.textContent = user.location || 'Global';
     
     if (avatarInitialsEl) {
-      const parts = (user.name || 'Udayast').trim().split(/\s+/);
+      const parts = (user.name || 'User').trim().split(/\s+/);
       const initials = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0][0] || 'U').toUpperCase();
       avatarInitialsEl.textContent = initials;
     }
@@ -933,60 +945,54 @@ class OMApp {
 
     if (tierBadgeEl) {
       if (isDev) {
-        tierBadgeEl.textContent = 'VIP';
-        tierBadgeEl.className = 'sidebar-tier-badge vip';
-        tierBadgeEl.title = 'Ultimate Developer Free Lifetime Access ($0.00 Unlimited)';
+        tierBadgeEl.textContent = 'Dev';
+        tierBadgeEl.className = 'sidebar-tier-badge';
+        tierBadgeEl.title = 'Developer Account';
       } else if (plan === 'ultra') {
         tierBadgeEl.textContent = 'Ultra';
         tierBadgeEl.className = 'sidebar-tier-badge';
       } else if (plan === 'pro') {
         tierBadgeEl.textContent = 'Pro';
         tierBadgeEl.className = 'sidebar-tier-badge';
-      } else if (trial.isTrial) {
-        tierBadgeEl.textContent = trial.isExpired ? 'Expired' : 'Trial';
-        tierBadgeEl.className = `sidebar-tier-badge ${trial.isExpired ? 'expired' : 'trial'}`;
-        tierBadgeEl.title = trial.label;
       } else {
-        tierBadgeEl.textContent = 'Guest';
+        tierBadgeEl.textContent = 'Free';
         tierBadgeEl.className = 'sidebar-tier-badge';
+        tierBadgeEl.title = 'Standard Free Tier';
       }
     }
 
     if (popoverAuthLabel) {
-      popoverAuthLabel.textContent = (user.id && user.id !== 'guest') ? 'Sign Out' : 'Sign In / Register';
+      popoverAuthLabel.textContent = (user.id && user.id !== 'usr-guest') ? 'Sign Out' : 'Sign In / Register';
     }
 
     if (devVipCard) {
-      devVipCard.style.display = isDev ? 'block' : 'none';
+      devVipCard.style.display = 'none';
     }
 
     if (planLabel) {
       if (isDev) {
-        planLabel.textContent = "👑 Ultimate Developer (Free Lifetime VIP)";
+        planLabel.textContent = "Developer Mode";
       } else if (plan === 'ultra') {
         planLabel.textContent = "Google AI Ultra";
       } else if (plan === 'pro') {
-        planLabel.textContent = "Gemini Pro";
-      } else if (trial.isTrial) {
-        planLabel.textContent = trial.label;
+        planLabel.textContent = "Pro Plan";
       } else {
-        planLabel.textContent = "Public Guest (Start 3-Month Trial)";
+        planLabel.textContent = "Standard Plan";
       }
     }
+
     if (tierLabel) {
       if (isDev) {
-        tierLabel.textContent = "Free Unlimited Access ($0.00 Forever)";
+        tierLabel.textContent = "Developer Mode Active";
       } else if (plan === 'ultra' || plan === 'pro') {
-        tierLabel.textContent = "Active Paid Subscription";
-      } else if (trial.isTrial) {
-        tierLabel.textContent = trial.isExpired ? "Trial Expired (Please Upgrade)" : `3-Month Free Trial (${trial.daysRemaining}d left)`;
+        tierLabel.textContent = "Active Subscription";
       } else {
-        tierLabel.textContent = "Start 3-Month Free Trial";
+        tierLabel.textContent = "Standard Free Tier";
       }
     }
     if (avatarBadge) {
-      avatarBadge.textContent = isDev ? "👑" : (trial.isTrial ? "🎁" : "OM");
-      avatarBadge.style.background = isDev ? "linear-gradient(135deg, #10b981, #06b6d4)" : (trial.isTrial ? "linear-gradient(135deg, #f59e0b, #ec4899)" : "var(--om-card-bg)");
+      avatarBadge.textContent = isDev ? "DEV" : "OM";
+      avatarBadge.style.background = isDev ? "linear-gradient(135deg, #10b981, #06b6d4)" : "var(--om-card-bg)";
     }
   }
 
@@ -1069,9 +1075,8 @@ class OMApp {
   openImportMemoryModal() {
     this.closeProfilePopover();
     const sampleFacts = [
-      "Udayast prefers structured, test-verified clean code.",
-      "Primary engineering stack: Python, JavaScript, Nexus 2.0 Flash, DSA algorithms.",
-      "Developer location: India.",
+      "User prefers structured, test-verified clean code.",
+      "Primary engineering stack: Python, JavaScript, Full-Stack, AI integration.",
       "Cognitive process follows Think-Plan-Act-Achieve."
     ];
     let added = 0;
@@ -1082,17 +1087,17 @@ class OMApp {
         added++;
       }
     });
-    this.showToast(`Imported ${added} memory items into Nexus Memory Intelligence`, 'success');
+    this.showToast(`Imported ${added} memory items into Memory Intelligence`, 'success');
   }
 
   openAvatarModal() {
     this.closeProfilePopover();
-    const currentName = this.chatStore.currentUser ? this.chatStore.currentUser.name : 'Udayast';
-    const newName = prompt('Enter profile name / initials for your Nexus Avatar:', currentName);
+    const currentName = this.chatStore.currentUser ? this.chatStore.currentUser.name : 'User';
+    const newName = prompt('Enter profile name / initials for your Avatar:', currentName);
     if (newName && newName.trim()) {
       if (this.chatStore.currentUser) {
         this.chatStore.currentUser.name = newName.trim();
-        this.chatStore.saveUser();
+        this.chatStore.saveUser(this.chatStore.currentUser);
       }
       this.updateDeveloperTierBadge();
       this.showToast('Avatar profile updated', 'success');
@@ -1204,42 +1209,18 @@ class OMApp {
     const trial = this.chatStore.getTrialInfo();
 
     if (content) {
-      if (isDev) {
-        content.innerHTML = `
-          <div style="background: rgba(16, 185, 129, 0.12); border: 1.5px solid rgba(16, 185, 129, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="font-weight: 800; color: #10b981; font-size: 0.95rem;">👑 Ultimate Developer VIP Access (Active)</div>
-            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Assigned to: <strong>Udayast</strong> (Boss) • Lifetime $0.00 Exemption</div>
-          </div>
-          <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
-            <li>✓ <strong style="color: #fff;">Queries & Tokens:</strong> UNLIMITED (Infinite compute)</li>
-            <li>✓ <strong style="color: #fff;">Rate Limits:</strong> NONE (Zero throttling)</li>
-            <li>✓ <strong style="color: #fff;">Full Toolset:</strong> Nexus 2.0 Flash, 1.5 Pro, Vision, Audio/Video, 3D CAD Assembler, Swarm</li>
-            <li>✓ <strong style="color: #fff;">Cost & Expiry:</strong> $0.00 / NEVER (Free Forever)</li>
-          </ul>
-          <p style="font-size: 0.8rem; color: #64748b;">You hold lead architect superuser status across all OM AI subsystems.</p>
-        `;
-      } else if (trial.isTrial) {
-        content.innerHTML = `
-          <div style="background: rgba(245, 158, 11, 0.12); border: 1.5px solid rgba(245, 158, 11, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="font-weight: 800; color: #fbbf24; font-size: 0.95rem;">🎁 3-Month Free Trial (${trial.isExpired ? 'Expired' : trial.daysRemaining + ' Days Remaining'})</div>
-            <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Introductory 90-day trial for public users</div>
-          </div>
-          <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
-            <li>✓ <strong style="color: #fff;">Trial Duration:</strong> 90 Days Total (${trial.daysRemaining} days remaining)</li>
-            <li>✓ <strong style="color: #fff;">Included:</strong> Nexus 2.0 Flash, 3D CAD Assembler, 9 Voice Personas (F.R.I.D.A.Y., J.A.R.V.I.S., etc.)</li>
-            <li>✓ <strong style="color: #fff;">Status:</strong> ${trial.isExpired ? '<span style="color:#ef4444; font-weight:bold;">EXPIRED (Please Upgrade)</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVE</span>'}</li>
-          </ul>
-          <button class="om-btn om-btn-primary" style="width: 100%; margin-top: 8px;" onclick="window.omApp.openSubscriptionModal()">Upgrade to Pro Plans</button>
-        `;
-      } else {
-        content.innerHTML = `
-          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="font-weight: 700; color: var(--om-cyan); font-size: 0.95rem;">⚡ Active Paid Subscription</div>
-            <div style="font-size: 0.82rem; margin-top: 4px;">High-speed priority compute enabled</div>
-          </div>
-          <p>You have full access to high-speed compute and features across OM AI Assistant.</p>
-        `;
-      }
+      const planName = (this.chatStore.currentUser && this.chatStore.currentUser.tier) || 'Standard Free Tier';
+      content.innerHTML = `
+        <div style="background: rgba(6, 182, 212, 0.1); border: 1.5px solid rgba(6, 182, 212, 0.4); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+          <div style="font-weight: 800; color: var(--om-cyan); font-size: 0.95rem;">Current Plan: ${this.escapeHTML(planName)}</div>
+          <div style="font-size: 0.82rem; margin-top: 4px; color: #cbd5e1;">Account allocation for conversational AI, notebook drafting, and code runner sandbox.</div>
+        </div>
+        <ul style="list-style: none; padding: 0; margin: 0 0 12px 0; font-size: 0.84rem; line-height: 1.8; color: #94a3b8;">
+          <li>✓ <strong style="color: #fff;">Conversational AI:</strong> Active with configured backend keys</li>
+          <li>✓ <strong style="color: #fff;">Client Tools:</strong> Notebooks, Voice Recognition, Code Sandbox</li>
+          <li>✓ <strong style="color: #fff;">Server Tools:</strong> Image Synthesis, Video Generation, Git integration (requires server environment variables)</li>
+        </ul>
+      `;
     }
 
     modal.classList.add('active');
@@ -1276,7 +1257,7 @@ Key Ideas & Notes:
     this.closeProfilePopover();
     const fb = prompt('What feedback or feature request do you have for OM AI Assistant?');
     if (fb && fb.trim()) {
-      this.showToast('Thank you Boss! Feedback submitted to product team.', 'success');
+      this.showToast('Thank you! Feedback submitted to product team.', 'success');
     }
   }
 
@@ -1336,18 +1317,18 @@ Key Ideas & Notes:
   }
 
   authAsDeveloper() {
-    this.chatStore.signIn('udayast.lead@om.ai', 'password123', true);
+    this.chatStore.signIn('developer@om.ai', 'password123', true);
     this.updateDeveloperTierBadge();
     const modal = document.getElementById('auth-modal');
     if (modal) modal.classList.remove('active');
-    this.showToast('⚡ Welcome back, Boss! Ultimate Developer Lifetime Pass active.', 'success');
+    this.showToast('Signed in with developer mode enabled.', 'success');
   }
 
   submitSignIn(e) {
     if (e) e.preventDefault();
     const email = document.getElementById('signin-email')?.value || '';
     const pass = document.getElementById('signin-password')?.value || '';
-    this.chatStore.signIn(email, pass, email.includes('udayast') || email.includes('abhishek') || email.includes('dev') || email.includes('boss'));
+    this.chatStore.signIn(email, pass, false);
     this.updateDeveloperTierBadge();
     const modal = document.getElementById('auth-modal');
     if (modal) modal.classList.remove('active');
@@ -1356,42 +1337,21 @@ Key Ideas & Notes:
 
   submitRegister(e) {
     if (e) e.preventDefault();
-    const name = document.getElementById('reg-name')?.value || 'Guest User';
+    const name = document.getElementById('reg-name')?.value || 'User';
     const email = document.getElementById('reg-email')?.value || '';
     const pass = document.getElementById('reg-password')?.value || '';
     this.chatStore.register(name, email, pass);
     this.updateDeveloperTierBadge();
     const modal = document.getElementById('auth-modal');
     if (modal) modal.classList.remove('active');
-    this.showToast(`Account created! Welcome to OM, ${name}.`, 'success');
+    this.showToast(`Account created! Welcome, ${name}.`, 'success');
   }
 
   /* =========================================================================
      Subscription Checkout & Payment Flow
      ========================================================================= */
   selectSubscriptionPlan(tierId) {
-    if (this.chatStore.isDeveloper()) {
-      this.showToast('👑 You have Lifetime Free Developer VIP Access ($0.00 Unlimited)', 'info');
-      const modal = document.getElementById('subscription-plans-modal');
-      if (modal) modal.classList.remove('active');
-      return;
-    }
-
-    if (tierId === 'trial_0' || tierId === 'free') {
-      this.chatStore.upgradePlan('trial_0');
-      this.updateDeveloperTierBadge();
-      this.showToast('🎉 Free Trial activated! Enjoy standard starter access.', 'success');
-      const modal = document.getElementById('subscription-plans-modal');
-      if (modal) modal.classList.remove('active');
-    } else if (tierId === 'trial_3month' || tierId === 'trial') {
-      this.chatStore.upgradePlan('trial_3month');
-      this.updateDeveloperTierBadge();
-      this.showToast('🎉 3-Month Free Trial Active! Enjoy 90 days of complete multimodal access.', 'success');
-      const modal = document.getElementById('subscription-plans-modal');
-      if (modal) modal.classList.remove('active');
-    } else {
-      this.startCheckout(tierId);
-    }
+    this.startCheckout(tierId);
   }
 
   startCheckout(tierId) {
@@ -1404,13 +1364,12 @@ Key Ideas & Notes:
     const priceEl = document.getElementById('checkout-plan-price');
 
     const planDetails = {
-      trial_0: { name: '₹0 Free Trial', price: '₹0 / Starter' },
-      trial_3month: { name: '3-Month Free Trial', price: '₹0 / for 90 days' },
-      plan_3month: { name: 'Nexus 3-Month Plan', price: '₹199 / 3 Months' },
-      plan_1year: { name: 'Nexus 1-Year Standard', price: '₹399 / 1 Year' },
-      plan_1year_pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' },
-      pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' },
-      ultra: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year' }
+      trial_0: { name: '₹0 Free Plan', price: '₹0 / Starter' },
+      plan_3month: { name: '3-Month Plan', price: '₹199 / 3 Months' },
+      plan_1year: { name: '1-Year Standard', price: '₹399 / 1 Year' },
+      plan_1year_pro: { name: '1-Year Pro (All Tools)', price: '₹699 / 1 Year' },
+      pro: { name: 'Pro Plan', price: '₹699 / 1 Year' },
+      ultra: { name: 'Ultra Plan', price: '₹999 / 1 Year' }
     };
 
     const details = planDetails[tierId] || planDetails.plan_1year_pro;
@@ -1422,16 +1381,9 @@ Key Ideas & Notes:
   }
 
   completeCheckout() {
-    const tier = this._checkoutTierId || 'plan_1year_pro';
-    this.chatStore.upgradePlan(tier);
-    this.updateDeveloperTierBadge();
-
+    this.showToast('Payment gateway is not configured.', 'error');
     const checkoutModal = document.getElementById('checkout-modal');
     if (checkoutModal) checkoutModal.classList.remove('active');
-
-    const user = this.chatStore.currentUser;
-    const planName = user ? user.tier : 'Nexus Pro';
-    this.showToast(`🎉 Subscription Active! Upgraded to ${planName}. Enjoy uncapped high-speed AI tools.`, 'success');
   }
 
   /* =========================================================================
@@ -1556,7 +1508,7 @@ Key Ideas & Notes:
         this.updateDeveloperTierBadge();
         devBtn.textContent = "⚡ Developer Active";
         devBtn.className = "om-btn om-btn-xs om-btn-primary";
-        this.showToast('⚡ Ultimate Developer Mode active! Free unlimited access enabled.', 'success');
+        this.showToast('Developer Mode enabled.', 'success');
       });
     }
 
@@ -2274,7 +2226,7 @@ Key Ideas & Notes:
     if (modal) modal.classList.add('active');
     else {
       const fb = prompt('What feedback or feature request do you have for OM AI Assistant?');
-      if (fb && fb.trim()) this.showToast('Thank you Boss! Feedback recorded.', 'success');
+      if (fb && fb.trim()) this.showToast('Thank you! Feedback recorded.', 'success');
     }
   }
 
@@ -2588,7 +2540,7 @@ Key Ideas & Notes:
       if (optionalCode) {
         editor.value = optionalCode;
       } else if (!editor.value.trim()) {
-        editor.value = `# OM Python 3.12 Interactive Sandbox\ndef greet(name="Boss"):\n    print(f"🚀 Hello {name}! All systems operational.")\n    return [x**2 for x in range(1, 6)]\n\nif __name__ == "__main__":\n    result = greet()\n    print("Squared array:", result)`;
+        editor.value = `# OM Python 3.12 Interactive Sandbox\ndef greet(name="User"):\n    print(f"🚀 Hello {name}! All systems operational.")\n    return [x**2 for x in range(1, 6)]\n\nif __name__ == "__main__":\n    result = greet()\n    print("Squared array:", result)`;
       }
     }
     if (modal) modal.classList.add('active');
@@ -2603,11 +2555,11 @@ Key Ideas & Notes:
     const editor = document.getElementById('coding-studio-editor');
     if (!editor) return;
     if (lang === 'html') {
-      editor.value = `<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { background: #0b132b; color: #fff; font-family: sans-serif; text-align: center; padding: 40px; }\n    h1 { color: #06b6d4; }\n    button { background: #06b6d4; color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }\n  </style>\n</head>\n<body>\n  <h1>OM HTML5 Live Preview</h1>\n  <p>Think. Plan. Act. Achieve.</p>\n  <button onclick="alert('Hello Boss!')">Click Me</button>\n</body>\n</html>`;
+      editor.value = `<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { background: #0b132b; color: #fff; font-family: sans-serif; text-align: center; padding: 40px; }\n    h1 { color: #06b6d4; }\n    button { background: #06b6d4; color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }\n  </style>\n</head>\n<body>\n  <h1>OM HTML5 Live Preview</h1>\n  <p>Think. Plan. Act. Achieve.</p>\n  <button onclick="alert('Hello World!')">Click Me</button>\n</body>\n</html>`;
     } else if (lang === 'javascript') {
       editor.value = `// JavaScript (ES2024) Sandbox\nconst tasks = ['Think', 'Plan', 'Act', 'Achieve'];\nconsole.log("OM Pipeline:", tasks.map(t => t.toUpperCase()));`;
     } else if (lang === 'flutter') {
-      editor.value = `// Flutter / Dart Sandbox\nimport 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello Boss!')))));`;
+      editor.value = `// Flutter / Dart Sandbox\nimport 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World!')))));`;
     }
   }
 
@@ -2646,7 +2598,7 @@ Key Ideas & Notes:
       }
     } else if (lang === 'python') {
       if (iframeWrap) iframeWrap.style.display = 'none';
-      output.textContent = `▶ [Python 3.12 Runtime Initializing...]\n✔ Invariants verified (0 syntax errors)\n🚀 Output:\n============================================================\n👋 Hello World from NexusPythonProject (v2.5.0)!\n👑 Welcome, Boss! All autonomous systems are initialized.\n✔ Computed array: [1, 4, 9, 16, 25]\n============================================================\n[Process completed with Exit Code: 0 (SUCCESS)]`;
+      output.textContent = `▶ [Python 3.12 Runtime Initializing...]\n✔ Invariants verified (0 syntax errors)\n🚀 Output:\n============================================================\n👋 Hello World from Python Engine!\n✔ Autonomous systems initialized.\n✔ Computed array: [1, 4, 9, 16, 25]\n============================================================\n[Process completed with Exit Code: 0 (SUCCESS)]`;
     } else {
       if (iframeWrap) iframeWrap.style.display = 'none';
       output.textContent = `[${lang.toUpperCase()} Static Analysis Complete]\n✔ Syntax check passed.\n✔ Zero runtime violations detected. Ready for compilation.`;
@@ -3094,7 +3046,7 @@ Key Ideas & Notes:
       }
     } catch (e) {}
 
-    container.innerHTML = '<div style="padding: 12px; color: #10b981;">✓ Owner: Udayast (Boss) • Role: Superuser (Unlimited Lifetime VIP) • Server-enforced.</div>';
+    container.innerHTML = '<div style="padding: 12px; color: #10b981;">✓ Administrator: Authenticated • Role: Admin • Server-enforced.</div>';
   }
 
   async grantOwnerAccess() {

@@ -80,15 +80,15 @@ SERVERLESS_USERS_FILE = os.path.join(TMP_DIR, "om_users.json")
 
 _DEFAULT_USERS = [
     {
-        "id": "usr-owner-001",
-        "username": "Udayast",
-        "name": "Abhishek Singh Yadav",
-        "role": "owner",
-        "access": "unlimited",
+        "id": "usr-admin-001",
+        "username": "Admin",
+        "name": "Administrator",
+        "role": "admin",
+        "access": "standard",
         "tools": ["*"],
-        "gems": "unlimited",
+        "gems": "standard",
         "expires_at": "never",
-        "is_developer": True
+        "is_developer": False
     },
     {
         "id": "usr-guest-002",
@@ -97,7 +97,7 @@ _DEFAULT_USERS = [
         "role": "authorized_user",
         "access": "full_free",
         "tools": ["*"],
-        "gems": "unlimited",
+        "gems": "standard",
         "expires_at": "2030-12-31",
         "is_developer": False
     }
@@ -287,6 +287,13 @@ class handler(BaseHTTPRequestHandler):
                 "configured": True,
                 "project": "om-ai",
                 "status": "authenticated"
+            })
+
+        if path == "/api/payment" or path == "/payment":
+            return self._send_json({
+                "success": False,
+                "configured": False,
+                "error": "Payment gateway is not configured."
             })
 
         # 3d. Server-Side Users & Permissions API
@@ -513,6 +520,13 @@ class handler(BaseHTTPRequestHandler):
             tasks.append(new_task)
             save_tasks(tasks)
             return self._send_json({"success": True, "task": new_task}, 201)
+
+        if path == "/api/payment" or path == "/payment":
+            return self._send_json({
+                "success": False,
+                "configured": False,
+                "error": "Payment gateway is not configured."
+            }, 400)
 
         # 4b. Server-Side Owner Access & Permissions Grant API
         if path == "/api/auth/grant" or path == "/auth/grant":

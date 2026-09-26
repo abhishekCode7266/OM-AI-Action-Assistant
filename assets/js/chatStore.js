@@ -232,7 +232,7 @@ class Library:
 lib = Library("National Digital Library")
 lib.add_book("B101", "Clean Code", "Robert C. Martin")
 lib.add_book("B102", "Introduction to Algorithms (CLRS)", "Cormen")
-print(lib.issue_book("B101", "Udayast"))
+print(lib.issue_book("B101", "Alex"))
 print(lib.return_book("B101"))
 \`\`\`
 
@@ -297,7 +297,7 @@ A 404 error on GitHub Pages typically stems from three common causes:
             sender: 'om',
             text: `### ✉️ Formal Email Draft for Certificate Date Correction
 
-**Subject**: Request for Correction in Internship Certificate Dates – Udayast
+**Subject**: Request for Correction in Internship Certificate Dates – [Your Name]
 
 **Dear HR Team,**
 
@@ -310,7 +310,7 @@ Upon reviewing my recently issued Internship Certificate, I noticed a minor typo
 Thank you very much for your time and assistance.
 
 Warm regards,  
-**Udayast**`,
+**[Your Name]**`,
             reasoning: "1. Drafted professional corporate correspondence.",
             verified: true,
             timestamp: new Date(now - 3600 * 1000 * 28).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -406,14 +406,14 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         id: 'nb-1',
         title: 'Untitled notebook',
         createdAt: Date.now() - 86400000 * 2,
-        content: `# Nexus Engineering & Research Notes\n\nProject: OM AI Action Assistant\nArchitect: Udayast (Boss)\nStatus: 100% Operational\n\n### Key Objectives\n1. Autonomous Multi-Agent Swarm pipelines (Think -> Plan -> Act -> Achieve)\n2. Real-time Python Code Execution with live terminal output\n3. 3D Spatial CAD Deconstruction & 360° Assembly simulations\n4. Multimodal Vision & OCR inspection across multiple image attachments\n\n---\n### Scratchpad & Ideas\n- High-velocity WebSockets / WebRTC for live voice streaming\n- GPU-accelerated local WebGL shader pipeline for CAD deconstruction`,
+        content: `# Engineering & Architecture Notes\n\nProject: OM AI Action Assistant\nStatus: 100% Operational\n\n### Key Objectives\n1. Autonomous Multi-Agent Workflows (Think -> Plan -> Act -> Achieve)\n2. Real-time Python Code Execution with live terminal output\n3. 3D Spatial CAD Inspection & Assembly simulations\n4. Multimodal Vision & OCR inspection across multiple image attachments\n\n---\n### Scratchpad & Ideas\n- High-velocity WebSockets / WebRTC for live voice streaming\n- GPU-accelerated local WebGL shader pipeline for CAD deconstruction`,
         entries: []
       },
       {
         id: 'nb-2',
         title: 'Copy of Untitled notebook',
         createdAt: Date.now() - 86400000,
-        content: `# Multimodal Prompt Engineering & System Blueprint\n\nTarget Environment: Nexus 2.0 Flash / Pro\nAccess Level: Free Lifetime Developer VIP ($0.00)\n\n### Standard Invariants\n- All user address formatted as Boss\n- Public profile name: Udayast\n- Location: Gurugram, Haryana, India\n- Responsive across desktop, tablet, and mobile displays\n\n---\n### Verified Subroutines\n- Silero VAD / Web Audio API energy threshold fallback\n- Interactive 3-dots context dropdown with PDF export`,
+        content: `# Multimodal Prompt Engineering & System Blueprint\n\nTarget Environment: Standard Production\nAccess Level: Standard\n\n### Standard Invariants\n- Conversational tone and structured markdown formatting\n- Responsive across desktop, tablet, and mobile displays\n- Verification and actionable step execution`,
         entries: []
       }
     ];
@@ -504,9 +504,9 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         autoSpeech: parsed.autoSpeech !== undefined ? parsed.autoSpeech : false,
         voiceRate: parsed.voiceRate || 1.0,
         voicePitch: parsed.voicePitch || 1.0,
-        userPlan: localStorage.getItem('om_user_plan') || parsed.userPlan || 'ultimate_developer',
-        isDeveloper: localStorage.getItem('om_dev_mode') !== 'false',
-        developerTier: 'Ultimate Lifetime Access (Free)',
+        userPlan: localStorage.getItem('om_user_plan') || parsed.userPlan || 'standard',
+        isDeveloper: localStorage.getItem('om_dev_mode') === 'true',
+        developerTier: 'Standard',
         systemPrompt: parsed.systemPrompt || DEFAULT_PROMPT,
         theme: 'dark'
       };
@@ -517,9 +517,9 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         autoSpeech: false,
         voiceRate: 1.0,
         voicePitch: 1.0,
-        userPlan: 'ultimate_developer',
-        isDeveloper: true,
-        developerTier: 'Ultimate Lifetime Access (Free)',
+        userPlan: 'standard',
+        isDeveloper: false,
+        developerTier: 'Standard',
         systemPrompt: DEFAULT_PROMPT,
         theme: 'dark'
       };
@@ -545,39 +545,45 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
       const data = localStorage.getItem('om_auth_user_v2');
       if (data) {
         const parsed = JSON.parse(data);
-        if (parsed && (parsed.isDeveloper || parsed.plan === 'ultimate_developer' || parsed.id === 'usr-dev-vip')) {
-          parsed.name = 'Udayast';
-          parsed.displayName = 'Udayast';
-          parsed.addressAs = 'Boss';
+        if (parsed && parsed.name) {
+          // Cleanse legacy hardcoded identity overrides from localStorage
+          if (parsed.name === 'Udayast' || parsed.addressAs === 'Boss' || parsed.devToken) {
+            parsed.name = 'User';
+            parsed.displayName = 'User';
+            parsed.addressAs = 'User';
+            parsed.role = 'user';
+            parsed.isDeveloper = false;
+            parsed.tier = 'Standard';
+            parsed.tierBadge = 'Free';
+            parsed.plan = 'standard';
+            delete parsed.devToken;
+            localStorage.setItem('om_auth_user_v2', JSON.stringify(parsed));
+          }
+          return parsed;
         }
-        return parsed;
       }
     } catch (e) {}
 
-    // Lead Architect & Supreme Developer (Public: Udayast, Addressed: Boss)
-    // Internal cryptographic identity token protected against unauthorized tampering
-    const _DEV_SIG_KEY = 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=';
     return {
-      id: 'usr-dev-vip',
-      name: 'Udayast',
-      displayName: 'Udayast',
-      addressAs: 'Boss',
-      email: 'udayast.lead@om.ai',
+      id: 'usr-guest',
+      name: 'User',
+      displayName: 'User',
+      addressAs: 'User',
+      email: 'user@example.com',
       avatar: 'assets/icons/logo.svg',
-      role: 'developer',
-      tier: 'Ultimate Developer (Free Lifetime VIP)',
-      tierBadge: 'VIP',
-      plan: 'ultimate_developer',
-      location: 'Gurugram, Haryana, India',
-      isDeveloper: true,
-      devToken: _DEV_SIG_KEY,
+      role: 'user',
+      tier: 'Standard',
+      tierBadge: 'Free',
+      plan: 'standard',
+      location: 'Global',
+      isDeveloper: false,
       subscription: {
-        name: 'Ultimate Developer VIP Pass',
-        status: 'Active (Lifetime Free)',
-        price: '$0.00 / Free Forever',
-        expires: 'Never (Lifetime VIP)',
-        tierId: 'ultimate_developer',
-        isUnlimited: true
+        name: 'Standard Free Tier',
+        status: 'Active',
+        price: '$0.00 / Free',
+        expires: 'Ongoing',
+        tierId: 'standard',
+        isUnlimited: false
       }
     };
   }
@@ -590,122 +596,88 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
   }
 
   signIn(email, password, asDev = false) {
-    const isDev = asDev || (email && (email.toLowerCase().includes('udayast') || email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev') || email.toLowerCase().includes('boss')));
-    if (isDev) {
-      const devUser = {
-        id: 'usr-dev-vip',
-        name: 'Udayast',
-        displayName: 'Udayast',
-        addressAs: 'Boss',
-        email: email || 'udayast.lead@om.ai',
-        avatar: 'assets/icons/logo.svg',
-        role: 'developer',
-        tier: 'Ultimate Developer (Free Lifetime VIP)',
-        tierBadge: 'VIP',
-        plan: 'ultimate_developer',
-        location: 'India',
-        isDeveloper: true,
-        devToken: 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=',
-        subscription: {
-          name: 'Ultimate Developer VIP Pass',
-          status: 'Active (Lifetime Free)',
-          price: '$0.00 / Free Forever',
-          expires: 'Never (Lifetime VIP)',
-          tierId: 'ultimate_developer',
-          isUnlimited: true
-        }
-      };
-      this.saveUser(devUser);
-      this.saveSettings({ userPlan: 'ultimate_developer', isDeveloper: true });
-      return devUser;
-    }
-
-    const publicUser = {
-      id: 'usr-' + Date.now(),
-      name: (email && email.includes('@')) ? email.split('@')[0] : 'OM User',
+    const cleanName = (email && email.includes('@')) ? email.split('@')[0] : 'User';
+    const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+    const user = {
+      id: 'usr-' + Date.now().toString(36),
+      name: formattedName,
+      displayName: formattedName,
+      addressAs: formattedName,
       email: email || 'user@example.com',
       avatar: 'assets/icons/logo.svg',
-      role: 'user',
-      tier: '3-Month Free Trial',
-      tierBadge: 'Trial',
-      plan: 'trial_3month',
-      location: 'India',
-      isDeveloper: false,
-      trialStartedAt: Date.now(),
-      trialDurationDays: 90,
+      role: asDev ? 'developer' : 'user',
+      tier: 'Standard',
+      tierBadge: 'Free',
+      plan: 'standard',
+      location: 'Global',
+      isDeveloper: asDev,
       subscription: {
-        name: '3-Month Free Trial',
-        status: 'Active (90 Days Free)',
-        price: '₹0 (3 Months Free Trial)',
-        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        tierId: 'trial_3month',
-        daysRemaining: 90,
-        isTrial: true
+        name: 'Standard Free Tier',
+        status: 'Active',
+        price: '$0.00 / Free',
+        expires: 'Ongoing',
+        tierId: 'standard',
+        isUnlimited: false
       }
     };
-    this.saveUser(publicUser);
-    this.saveSettings({ userPlan: 'trial_3month', isDeveloper: false });
-    return publicUser;
+    this.saveUser(user);
+    this.saveSettings({ userPlan: 'standard', isDeveloper: asDev });
+    return user;
   }
 
   register(name, email, password) {
-    const isDev = (name && (name.toLowerCase().includes('udayast') || name.toLowerCase().includes('abhishek'))) ||
-                  (email && (email.toLowerCase().includes('udayast') || email.toLowerCase().includes('abhishek') || email.toLowerCase().includes('dev') || email.toLowerCase().includes('boss')));
-    if (isDev) {
-      return this.signIn(email, password, true);
-    }
-
-    const newUser = {
-      id: 'usr-' + Date.now(),
-      name: name || 'OM User',
+    const user = {
+      id: 'usr-' + Date.now().toString(36),
+      name: name || 'User',
+      displayName: name || 'User',
+      addressAs: name || 'User',
       email: email || 'user@example.com',
       avatar: 'assets/icons/logo.svg',
       role: 'user',
-      tier: '3-Month Free Trial',
-      tierBadge: 'Trial',
-      plan: 'trial_3month',
-      location: 'India',
+      tier: 'Standard',
+      tierBadge: 'Free',
+      plan: 'standard',
+      location: 'Global',
       isDeveloper: false,
-      trialStartedAt: Date.now(),
-      trialDurationDays: 90,
       subscription: {
-        name: '3-Month Free Trial',
-        status: 'Active (90 Days Free)',
-        price: '₹0 (3 Months Free Trial)',
-        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        tierId: 'trial_3month',
-        daysRemaining: 90,
-        isTrial: true
+        name: 'Standard Free Tier',
+        status: 'Active',
+        price: '$0.00 / Free',
+        expires: 'Ongoing',
+        tierId: 'standard',
+        isUnlimited: false
       }
     };
-    this.saveUser(newUser);
-    this.saveSettings({ userPlan: 'trial_3month', isDeveloper: false });
-    return newUser;
+    this.saveUser(user);
+    this.saveSettings({ userPlan: 'standard', isDeveloper: false });
+    return user;
   }
 
   signOut() {
     const guestUser = {
-      id: 'guest',
-      name: 'Guest User',
-      email: 'guest@om.ai',
+      id: 'usr-guest',
+      name: 'User',
+      displayName: 'User',
+      addressAs: 'User',
+      email: 'user@example.com',
       avatar: 'assets/icons/logo.svg',
       role: 'guest',
-      tier: 'Public Guest',
-      tierBadge: 'Guest',
-      plan: 'guest',
-      location: 'Public Access',
+      tier: 'Standard',
+      tierBadge: 'Free',
+      plan: 'standard',
+      location: 'Global',
       isDeveloper: false,
-      trialStartedAt: null,
       subscription: {
-        name: 'Guest Access (Start 3-Month Trial)',
-        status: 'Unsubscribed',
-        price: '$0.00 / 3-Month Trial Available',
-        expires: 'None',
-        tierId: 'guest'
+        name: 'Standard Free Tier',
+        status: 'Active',
+        price: '$0.00 / Free',
+        expires: 'Ongoing',
+        tierId: 'standard',
+        isUnlimited: false
       }
     };
     this.saveUser(guestUser);
-    this.saveSettings({ userPlan: 'guest', isDeveloper: false });
+    this.saveSettings({ userPlan: 'standard', isDeveloper: false });
     return guestUser;
   }
 
@@ -718,33 +690,30 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
       plan_1year: { name: 'Nexus 1-Year Standard', price: '₹399 / 1 Year', tierBadge: '1Y', expires: '365 Days auto-renew' },
       plan_1year_pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
       pro: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
-      ultra: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' },
-      ultimate: { name: 'Ultimate Developer VIP Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' },
-      ultimate_developer: { name: 'Ultimate Developer VIP Pass', price: '$0.00 / Lifetime Free', tierBadge: 'VIP', expires: 'Never (Lifetime VIP)' }
+      ultra: { name: 'Nexus 1-Year Pro (All Tools Unlimited)', price: '₹699 / 1 Year', tierBadge: 'PRO', expires: '365 Days auto-renew' }
     };
 
-    const isDev = (tierId === 'ultimate' || tierId === 'ultimate_developer' || this.isDeveloper());
     const target = tierMap[tierId] || tierMap.plan_1year_pro;
 
-    this.currentUser.plan = isDev ? 'ultimate_developer' : tierId;
-    this.currentUser.tier = isDev ? 'Ultimate Developer (Free Lifetime VIP)' : target.name;
-    this.currentUser.tierBadge = isDev ? 'VIP' : target.tierBadge;
-    this.currentUser.isDeveloper = isDev;
+    this.currentUser.plan = tierId;
+    this.currentUser.tier = target.name;
+    this.currentUser.tierBadge = target.tierBadge;
+    this.currentUser.isDeveloper = false;
     if (tierId === 'trial_3month') {
       this.currentUser.trialStartedAt = Date.now();
     }
     this.currentUser.subscription = {
-      name: isDev ? 'Ultimate Developer VIP Pass' : target.name,
+      name: target.name,
       status: 'Active',
-      price: isDev ? '$0.00 / Free Forever' : target.price,
-      expires: isDev ? 'Never (Lifetime VIP)' : target.expires,
-      tierId: isDev ? 'ultimate_developer' : tierId,
+      price: target.price,
+      expires: target.expires,
+      tierId: tierId,
       isTrial: tierId === 'trial_3month' || tierId === 'trial_0',
-      isUnlimited: isDev || tierId === 'plan_1year_pro' || tierId === 'pro' || tierId === 'ultra'
+      isUnlimited: tierId === 'plan_1year_pro' || tierId === 'pro' || tierId === 'ultra'
     };
 
     this.saveUser(this.currentUser);
-    this.saveSettings({ userPlan: this.currentUser.plan, isDeveloper: isDev });
+    this.saveSettings({ userPlan: this.currentUser.plan, isDeveloper: false });
     return this.currentUser;
   }
 
@@ -755,7 +724,7 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         isTrial: false,
         isExpired: false,
         daysRemaining: Infinity,
-        label: '👑 Free Lifetime Developer VIP ($0.00 Unlimited)'
+        label: 'Developer Access'
       };
     }
 
@@ -798,19 +767,12 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
   }
 
   isDeveloper() {
-    if (this.currentUser) {
-      if (this.currentUser.isDeveloper) return true;
-      if (this.currentUser.devToken === 'QWJoaXNoZWsgc2luZ2ggWWFkYXY=') return true;
-      if (this.currentUser.email && (this.currentUser.email.toLowerCase().includes('udayast') || this.currentUser.email.toLowerCase().includes('abhishek') || this.currentUser.email.toLowerCase().includes('dev'))) return true;
-      if (this.currentUser.name && (this.currentUser.name.toLowerCase().includes('udayast') || this.currentUser.name.toLowerCase().includes('abhishek'))) return true;
-      if (this.currentUser.plan === 'ultimate_developer' || this.currentUser.plan === 'ultimate') return true;
-    }
-    return this.settings.isDeveloper || this.settings.userPlan === 'ultimate_developer';
+    return Boolean(this.currentUser && this.currentUser.role === 'developer' && this.currentUser.isDeveloper === true);
   }
 
   getUserPlan() {
-    if (this.currentUser) return this.currentUser.plan;
-    return this.settings.userPlan || 'ultimate_developer';
+    if (this.currentUser) return this.currentUser.plan || 'standard';
+    return this.settings.userPlan || 'standard';
   }
 
   activateDeveloperMode() {

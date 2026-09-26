@@ -139,6 +139,13 @@ class TestVercelHandler(unittest.TestCase):
         self.assertEqual(data["status"], "success")
         self.assertEqual(data["total_modules"], 65)
 
+    def test_vercel_payment_unconfigured(self):
+        req = urllib.request.urlopen(f"{self.base_url}/api/payment")
+        self.assertEqual(req.status, 200)
+        data = json.loads(req.read().decode("utf-8"))
+        self.assertFalse(data["success"])
+        self.assertIn("Payment gateway is not configured", data["error"])
+
 
 if __name__ == "__main__":
     unittest.main()

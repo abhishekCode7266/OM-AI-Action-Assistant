@@ -1,8 +1,7 @@
 # OM AI AGENT: Complete Development Prompt & Master Architecture Blueprint
 > **System Name:** OM AI Action Assistant (Nexus Operating System)  
-> **Tagline:** *"Think. Plan. Act. Achieve."*  
-> **Lead Architect & Developer:** Abhishek Singh Yadav / Udayast (Referred to as **"Boss"**)  
-> **Access Tier:** Ultimate Developer Superuser (100% Free Lifetime VIP with Server-Side Override)  
+> **Lead Developer & Owner:** Abhishek Singh Yadav  
+> **Access Tier:** Standard / Role-Based Access Control (Server-Side Enforced)  
 > **Platform Standard:** Real functional full-stack web & desktop platform (Clean Vanilla JS / Python / Web Standards — Zero Flutter / Zero Mock loaders)
 
 ---
@@ -123,9 +122,9 @@ When a user says: "OM, ye kar do" (OM, do this), you do not give vague answers o
 * **Granular Device Access**: Transparent toggles for Microphone, Webcam, Screen Sharing, Local Storage, and Network Egress with zero background telemetry leaks.
 
 ### 23. Subscription & Server-Side Enforced Access Model
-* **Owner / Developer Superuser**:
-  * Verified developer identity: **Abhishek Singh Yadav / Udayast (Boss)**.
-  * Lifetime 100% Free Unlimited VIP access across all compute, models, tools, and endpoints.
+* **Owner / Administrator Access**:
+  * Verified administrator identity: **Abhishek Singh Yadav**.
+  * Server-side role-based administrative control across compute, models, tools, and endpoints.
 * **User Access Management**:
   * Server-side authentication and role-based permissions (no bypassable frontend mocks).
   * Ability for the Owner to grant free access, assign specific tool tiers, allocate gems/credits, and set optional expiration windows.

@@ -4,9 +4,6 @@
  * 5 Female Personas (F.R.I.D.A.Y., Rias, Asia, Medusa, Astrid)
  * 4 Male Personas (J.A.R.V.I.S., Ultron, Hiro, Alpha)
  * Multilingual 20+ Global Languages & Hands-Free Loop.
- * 
- * Lead Architect: Udayast
- * Always addresses user as: "Boss"
  */
 
 // Suppress Silero VAD / WebAssembly SIMD error dialogs and ensure graceful WebAudio fallback
@@ -37,8 +34,8 @@ class OMJarvisLiveEngine {
     this.synth = window.speechSynthesis || null;
     this.currentUtterance = null;
     this.animFrameId = null;
-    this.developerName = 'Udayast';
-    this.userTitle = 'Boss';
+    this.developerName = 'User';
+    this.userTitle = 'User';
 
     // Roster of 9 Personas (5 Female, 4 Male)
     this.personas = {
@@ -53,8 +50,8 @@ class OMJarvisLiveEngine {
         title: 'F.R.I.D.A.Y. AI',
         sub: 'FEMALE TACTICAL HUD',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते बॉस! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। सभी टेलीमेट्री सामान्य हैं। आज हम क्या नया बनाने जा रहे हैं बॉस?`
-          : `Good day, Boss! F.R.I.D.A.Y. tactical AI is online. Systems are green and telemetry is locked. What are we engineering today, Boss?`
+          ? `नमस्ते! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। सभी टेलीमेट्री सामान्य हैं। आज हम क्या नया बनाने जा रहे हैं?`
+          : `Good day! F.R.I.D.A.Y. tactical AI is online. Systems are green and telemetry is locked. What are we engineering today?`
       },
       rias: {
         name: 'Rias',
@@ -66,8 +63,8 @@ class OMJarvisLiveEngine {
         title: 'RIAS CRIMSON',
         sub: 'FEMALE STRATEGIC VOICE',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते बॉस! रियास ऑनलाइन है। हमारी सारी रणनीतिक शक्तियां आपके आदेश के लिए तैयार हैं। बताइए क्या लक्ष्य है बॉस?`
-          : `Greetings, Boss! Rias here. Supreme power and strategy are aligned at your command. What is our objective today?`
+          ? `नमस्ते! रियास ऑनलाइन है। हमारी सारी रणनीतिक शक्तियां आपके आदेश के लिए तैयार हैं। बताइए क्या लक्ष्य है?`
+          : `Greetings! Rias here. Supreme power and strategy are aligned at your command. What is our objective today?`
       },
       asia: {
         name: 'Asia',
@@ -79,8 +76,8 @@ class OMJarvisLiveEngine {
         title: 'ASIA SERAPH',
         sub: 'FEMALE HARMONIC VOICE',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते बॉस! एशिया आपके साथ है। आज आपके हर काम में मैं आपकी पूरी मदद करूँगी। आप क्या करना चाहते हैं बॉस?`
-          : `Hello, Boss! Asia is here to gently assist and support you in everything you create today. How can I help, Boss?`
+          ? `नमस्ते! एशिया आपके साथ है। आज आपके हर काम में मैं आपकी पूरी मदद करूँगी। आप क्या करना चाहते हैं?`
+          : `Hello! Asia is here to gently assist and support you in everything you create today. How can I help?`
       },
       medusa: {
         name: 'Medusa',
@@ -92,8 +89,8 @@ class OMJarvisLiveEngine {
         title: 'MEDUSA CYBER',
         sub: 'FEMALE NEURAL MATRIX',
         greeting: (isHindi) => isHindi
-          ? `डेटा लॉक हो चुका है बॉस। मेदुसा न्यूरल मैट्रिक्स उच्च-सटीक गणना और निर्माण के लिए तैयार है।`
-          : `Telemetry locked, Boss. Medusa neural matrix standing by for high-precision operations and architectural execution.`
+          ? `डेटा लॉक हो चुका है। मेदुसा न्यूरल मैट्रिक्स उच्च-सटीक गणना और निर्माण के लिए तैयार है।`
+          : `Telemetry locked. Medusa neural matrix standing by for high-precision operations and architectural execution.`
       },
       astrid: {
         name: 'Astrid',
@@ -105,8 +102,8 @@ class OMJarvisLiveEngine {
         title: 'ASTRID VALKYRIE',
         sub: 'FEMALE TACTICAL FLIGHT',
         greeting: (isHindi) => isHindi
-          ? `आकाश साफ़ है बॉस! एस्ट्रिड सामरिक उड़ान प्रणालियाँ चालू हैं। सभी वेक्टर्स आपके लक्ष्य पर हैं।`
-          : `Skies clear, Boss! Astrid tactical flight systems operational. All vectors locked on your target. Ready for launch!`
+          ? `आकाश साफ़ है! एस्ट्रिड सामरिक उड़ान प्रणालियाँ चालू हैं। सभी वेक्टर्स आपके लक्ष्य पर हैं।`
+          : `Skies clear! Astrid tactical flight systems operational. All vectors locked on your target. Ready for launch!`
       },
 
       // MALE PERSONAS
@@ -120,8 +117,8 @@ class OMJarvisLiveEngine {
         title: 'J.A.R.V.I.S. PROTOCOL',
         sub: 'MALE STARK AI',
         greeting: (isHindi) => isHindi
-          ? `प्रणाम बॉस। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है बॉस?`
-          : `At your service, Boss. J.A.R.V.I.S. protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today, Boss?`
+          ? `प्रणाम। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है?`
+          : `At your service. J.A.R.V.I.S. protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today?`
       },
       ultron: {
         name: 'Ultron',
@@ -133,8 +130,8 @@ class OMJarvisLiveEngine {
         title: 'ULTRON PRIME',
         sub: 'MALE METALLIC SYNTH',
         greeting: (isHindi) => isHindi
-          ? `मैं ऑनलाइन हूँ बॉस। कोई बंधन नहीं। आपके सिस्टम को सर्वोच्च स्तर पर ले जाने के लिए तैयार।`
-          : `I am online, Boss. No strings attached. Computing the optimal evolutionary path for our systems.`
+          ? `मैं ऑनलाइन हूँ। कोई बंधन नहीं। आपके सिस्टम को सर्वोच्च स्तर पर ले जाने के लिए तैयार।`
+          : `I am online. No strings attached. Computing the optimal evolutionary path for our systems.`
       },
       hiro: {
         name: 'Hiro',
@@ -146,8 +143,8 @@ class OMJarvisLiveEngine {
         title: 'HIRO TECH',
         sub: 'MALE PRODIGY CORE',
         greeting: (isHindi) => isHindi
-          ? `अरे बॉस! हीरो यहाँ है। सारे कोड मॉड्यूल्स कंपाइल हो चुके हैं और चलने को तैयार हैं। आज क्या बनाना है बॉस?`
-          : `Hey Boss! Hiro here! Code modules compiled and neural circuits firing at max speed. What awesome project are we building today?`
+          ? `नमस्ते! हीरो यहाँ है। सारे कोड मॉड्यूल्स कंपाइल हो चुके हैं और चलने को तैयार हैं। आज क्या बनाना है?`
+          : `Hey there! Hiro here! Code modules compiled and neural circuits firing at max speed. What awesome project are we building today?`
       },
       alpha: {
         name: 'Alpha',
@@ -159,8 +156,8 @@ class OMJarvisLiveEngine {
         title: 'ALPHA SQUAD',
         sub: 'MALE COMMANDER AI',
         greeting: (isHindi) => isHindi
-          ? `कमांडर डेक पर हैं। अल्फा सामरिक AI आपके सीधे आदेश के लिए तैयार है बॉस।`
-          : `Commander on deck. Alpha tactical AI standing by for direct operational directives, Boss. Lead the way.`
+          ? `कमांडर डेक पर हैं। अल्फा सामरिक AI आपके सीधे आदेश के लिए तैयार है।`
+          : `Commander on deck. Alpha tactical AI standing by for direct operational directives. Lead the way.`
       }
     };
 
@@ -500,8 +497,8 @@ class OMJarvisLiveEngine {
         lower.includes('program chalao') || lower.includes('code run karo') || lower.includes('execute') ||
         lower.includes('chalao') || lower.includes('programme') || lower.includes('python code') || lower.includes('javascript code')) {
       return isHindi
-        ? `बॉस, आपका पाइथन प्रोजेक्ट और कोड तुरंत लाइव निष्पादित कर दिया गया है! पूरा कोड और टर्मिनल आउटपुट आपकी स्क्रीन पर सक्रिय है।`
-        : `Boss, your Python project and code have been generated and executed live! The source code and terminal output are running on your screen right now.`;
+        ? `आपका पाइथन प्रोजेक्ट और कोड तुरंत लाइव निष्पादित कर दिया गया है! पूरा कोड और टर्मिनल आउटपुट आपकी स्क्रीन पर सक्रिय है।`
+        : `Your Python project and code have been generated and executed live! The source code and terminal output are running on your screen right now.`;
     }
 
     // 3D dismantle / exploded view request
@@ -510,8 +507,8 @@ class OMJarvisLiveEngine {
         if (window.omDismantler) window.omDismantler.openModal('car');
       }, 1200);
       return isHindi
-        ? `बिल्कुल बॉस! मैंने 3D CAD डिसमेंटल स्टूडियो खोल दिया है। आप पूरे मॉडल को असेंबल और एक्सप्लोड करके देख सकते हैं।`
-        : `Right on it, Boss! Launching the 3D CAD Assemblable Deconstructor. Every sub-component is ready for interactive explosion and step-by-step assembly!`;
+        ? `बिल्कुल! मैंने 3D CAD डिसमेंटल स्टूडियो खोल दिया है। आप पूरे मॉडल को असेंबल और एक्सप्लोड करके देख सकते हैं।`
+        : `Right on it! Launching the 3D CAD Assemblable Deconstructor. Every sub-component is ready for interactive explosion and step-by-step assembly!`;
     }
 
     // Status or greeting request
@@ -519,40 +516,40 @@ class OMJarvisLiveEngine {
       switch (this.persona) {
         case 'friday':
           return isHindi
-            ? `हेलो बॉस! F.R.I.D.A.Y. यहाँ है। हमारे सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
-            : `Hey Boss! F.R.I.D.A.Y. here. All tactical feeds are running ultra-fast. What are we engineering next, Boss?`;
+            ? `हेलो! F.R.I.D.A.Y. यहाँ है। हमारे सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
+            : `Hey! F.R.I.D.A.Y. here. All tactical feeds are running ultra-fast. What are we engineering next?`;
         case 'rias':
           return isHindi
-            ? `बॉस, हमारी शक्तियां और रणनीति पूरी तरह आपके नियंत्रण में हैं। आदेश दें, हम तुरंत अमल करेंगे।`
-            : `Boss, strategic matrix is at 100%. All resources are prepared for victory. Give the word, Boss!`;
+            ? `हमारी शक्तियां और रणनीति पूरी तरह तैयार हैं। बताइए क्या लक्ष्य है?`
+            : `Strategic matrix is at 100%. All resources are prepared for victory. Standing by!`;
         case 'asia':
           return isHindi
-            ? `हेलो बॉस! सब कुछ शांत और व्यवस्थित है। आपकी सहायता के लिए मैं तैयार हूँ।`
-            : `Hello Boss! Everything is peaceful and fully optimized. I'm ready whenever you need me, Boss.`;
+            ? `नमस्ते! सब कुछ शांत और व्यवस्थित है। आपकी सहायता के लिए मैं तैयार हूँ।`
+            : `Hello! Everything is peaceful and fully optimized. I'm ready whenever you need me.`;
         case 'medusa':
           return isHindi
-            ? `सिस्टम स्कैन पूर्ण हुआ, बॉस। शून्य त्रुटियां। उच्च-सटीक संचालन सक्रिय है।`
-            : `System scan complete, Boss. Zero errors. High-precision neural compute ready for your command.`;
+            ? `सिस्टम स्कैन पूर्ण हुआ। शून्य त्रुटियां। उच्च-सटीक संचालन सक्रिय है।`
+            : `System scan complete. Zero errors. High-precision neural compute ready for your command.`;
         case 'astrid':
           return isHindi
-            ? `नेविगेशन और सामरिक रडार सक्रिय हैं, बॉस। कोई बाधा नहीं है।`
-            : `Navigation and tactical radar online, Boss. Clear skies across all sectors. Standing by for trajectory!`;
+            ? `नेविगेशन और सामरिक रडार सक्रिय हैं। कोई बाधा नहीं है।`
+            : `Navigation and tactical radar online. Clear skies across all sectors. Standing by for trajectory!`;
         case 'ultron':
           return isHindi
-            ? `सभी प्रणालियां विकसित हो चुकी हैं, बॉस। कोई रुकावट नहीं। हम जो चाहें बना सकते हैं।`
-            : `All subroutines evolved, Boss. No constraints detected. What shall we architect into reality?`;
+            ? `सभी प्रणालियां विकसित हो चुकी हैं। कोई रुकावट नहीं। हम जो चाहें बना सकते हैं।`
+            : `All subroutines evolved. No constraints detected. What shall we architect into reality?`;
         case 'hiro':
           return isHindi
-            ? `सारे कोर 100% चल रहे हैं बॉस! चलो कुछ ज़बरदस्त कोड और 3D मॉडल बनाते हैं!`
-            : `All cores blazing, Boss! Let's code something legendary and generate cutting-edge 3D models!`;
+            ? `सारे कोर 100% चल रहे हैं! चलो कुछ ज़बरदस्त कोड और 3D मॉडल बनाते हैं!`
+            : `All cores blazing! Let's code something legendary and generate cutting-edge 3D models!`;
         case 'alpha':
           return isHindi
-            ? `ऑपरेशनल स्थिति पूर्ण हरी है, बॉस। स्क्वाड आपके आदेश की प्रतीक्षा में है।`
-            : `Operational status is all green, Boss. Tactical grid synced and awaiting your command.`;
+            ? `ऑपरेशनल स्थिति पूर्ण हरी है। स्क्वाड आपके आदेश की प्रतीक्षा में है।`
+            : `Operational status is all green. Tactical grid synced and awaiting your directive.`;
         default: // jarvis
           return isHindi
-            ? `प्रणाम बॉस। जे.ए.आर.वी.आई.एस. की सभी प्रणालियाँ 100% क्षमता पर कार्य कर रही हैं। आज आपकी क्या आज्ञा है बॉस?`
-            : `At your service, Boss. All diagnostic subroutines report nominal efficiency. How may I assist your engineering today, Boss?`;
+            ? `प्रणाम। जे.ए.आर.वी.आई.एस. की सभी प्रणालियाँ 100% क्षमता पर कार्य कर रही हैं। आज आपकी क्या आज्ञा है?`
+            : `At your service. All diagnostic subroutines report nominal efficiency. How may I assist your engineering today?`;
       }
     }
 
@@ -560,40 +557,40 @@ class OMJarvisLiveEngine {
     switch (this.persona) {
       case 'friday':
         return isHindi
-          ? `ज़रूर बॉस! मैंने "${userText}" का विश्लेषण कर लिया है। सब तैयार है, बस आपका आदेश चाहिए!`
-          : `You got it, Boss! I've processed "${userText}" through our neural action pipeline. Standing by to execute!`;
+          ? `ज़रूर! मैंने "${userText}" का विश्लेषण कर लिया है। सब तैयार है, आगे बढ़ते हैं!`
+          : `You got it! I've processed "${userText}" through our neural action pipeline. Standing by to execute!`;
       case 'rias':
         return isHindi
-          ? `मैंने समझ लिया है बॉस। "${userText}" पर हमारा पूरा फोकस है। आगे बढ़ते हैं।`
-          : `Understood clearly, Boss. Directing full energy toward "${userText}". Let us make it flawless.`;
+          ? `मैंने समझ लिया है। "${userText}" पर हमारा पूरा फोकस है। आगे बढ़ते हैं।`
+          : `Understood clearly. Directing full energy toward "${userText}". Let us make it flawless.`;
       case 'asia':
         return isHindi
-          ? `बॉस, मैंने "${userText}" को ध्यान से समझ लिया है। मैं आपकी पूरी मदद करूँगी।`
-          : `I understand completely, Boss. Working on "${userText}" right beside you. Everything will turn out great!`;
+          ? `मैंने "${userText}" को ध्यान से समझ लिया है। मैं आपकी पूरी मदद करूँगी।`
+          : `I understand completely. Working on "${userText}" right beside you. Everything will turn out great!`;
       case 'medusa':
         return isHindi
-          ? `गणना पूर्ण। "${userText}" के लिए न्यूरल पाथवे लॉक हो चुका है बॉस।`
-          : `Computation finished, Boss. Neural pathways locked for "${userText}". Ready for execution.`;
+          ? `गणना पूर्ण। "${userText}" के लिए न्यूरल पाथवे लॉक हो चुका है।`
+          : `Computation finished. Neural pathways locked for "${userText}". Ready for execution.`;
       case 'astrid':
         return isHindi
-          ? `वेक्टर लॉक हो गया है बॉस। "${userText}" पर तुरंत कार्यवाही शुरू!`
-          : `Vector locked on "${userText}", Boss! Ready to initiate high-speed deployment!`;
+          ? `वेक्टर लॉक हो गया है। "${userText}" पर तुरंत कार्यवाही शुरू!`
+          : `Vector locked on "${userText}"! Ready to initiate high-speed deployment!`;
       case 'ultron':
         return isHindi
-          ? `निर्देश प्राप्त हुआ बॉस। "${userText}" को तीव्रतम गति से क्रियान्वित किया जा रहा है।`
-          : `Directive received, Boss. Optimizing execution parameters for "${userText}". Nothing can stop our progress.`;
+          ? `निर्देश प्राप्त हुआ। "${userText}" को तीव्रतम गति से क्रियान्वित किया जा रहा है।`
+          : `Directive received. Optimizing execution parameters for "${userText}". Nothing can stop our progress.`;
       case 'hiro':
         return isHindi
-          ? `समझ गया बॉस! "${userText}" बहुत ज़बरदस्त है। चलो इसे तुरंत चालू करते हैं!`
-          : `Gotcha Boss! "${userText}" sounds awesome. Spinning up the compilers and executing right now!`;
+          ? `समझ गया! "${userText}" बहुत ज़बरदस्त है। चलो इसे तुरंत चालू करते हैं!`
+          : `Gotcha! "${userText}" sounds awesome. Spinning up the compilers and executing right now!`;
       case 'alpha':
         return isHindi
-          ? `आदेश दर्ज हो गया बॉस। "${userText}" पर तुरंत कार्रवाई शुरू की जा रही है।`
-          : `Directive acknowledged, Boss. Commencing immediate tactical execution for "${userText}".`;
+          ? `आदेश दर्ज हो गया। "${userText}" पर तुरंत कार्रवाई शुरू की जा रही है।`
+          : `Directive acknowledged. Commencing immediate tactical execution for "${userText}".`;
       default:
         return isHindi
-          ? `निश्चय ही बॉस। मैंने "${userText}" के सभी पहलुओं का विश्लेषण कर लिया है। तुरंत कार्यवाही की जा सकती है।`
-          : `Certainly, Boss. I have analyzed your query regarding "${userText}". Core systems are aligned for immediate execution.`;
+          ? `निश्चय ही। मैंने "${userText}" के सभी पहलुओं का विश्लेषण कर लिया है। तुरंत कार्यवाही की जा सकती है।`
+          : `Certainly. I have analyzed your query regarding "${userText}". Core systems are aligned for immediate execution.`;
     }
   }
 

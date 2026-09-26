@@ -3,9 +3,6 @@
  * Screen Share (WebRTC getDisplayMedia) & Camera Vision (getUserMedia)
  * Supports Mobile & Tablet front/back camera flipping,
  * Snapshot-to-3D Assemblable Studio, and Live Spoken Telemetry.
- * 
- * Lead Architect: Udayast
- * Always addresses user as: "Boss"
  */
 
 class OMMediaVisionEngine {
@@ -66,8 +63,8 @@ class OMMediaVisionEngine {
       if (window.omJarvisLive && window.omJarvisLive.isActive) {
         const isHindi = (window.omJarvisLive.currentLanguage || 'en').startsWith('hi');
         const speech = isHindi
-          ? 'स्क्रीन शेयरिंग सक्रिय हो चुकी है बॉस। डिस्प्ले का लाइव टेलीमेट्री विश्लेषण चालू है।'
-          : 'Screen sharing is live, Boss. Visual telemetry linked and analyzing viewport in real-time.';
+          ? 'स्क्रीन शेयरिंग सक्रिय हो चुकी है। डिस्प्ले का लाइव टेलीमेट्री विश्लेषण चालू है।'
+          : 'Screen sharing is live. Visual telemetry linked and analyzing viewport in real-time.';
         window.omJarvisLive.speakResponse(speech);
       } else if (window.omApp) {
         window.omApp.showToast('🖥️ Screen Share Active: Transmitting visual viewport', 'success');
@@ -149,8 +146,8 @@ class OMMediaVisionEngine {
       if (window.omJarvisLive && window.omJarvisLive.isActive) {
         const isHindi = (window.omJarvisLive.currentLanguage || 'en').startsWith('hi');
         const speech = isHindi
-          ? 'कैमरा विज़न कनेक्ट हो गया है बॉस। ऑप्टिकल सेंसर सक्रिय हैं।'
-          : 'Camera vision optical sensors engaged, Boss. Visual tracking active.';
+          ? 'कैमरा विज़न कनेक्ट हो गया है। ऑप्टिकल सेंसर सक्रिय हैं।'
+          : 'Camera vision optical sensors engaged. Visual tracking active.';
         window.omJarvisLive.speakResponse(speech);
       } else if (window.omApp) {
         window.omApp.showToast('📷 Camera Vision Active: Optical sensors engaged', 'success');
@@ -228,7 +225,7 @@ class OMMediaVisionEngine {
         window.omApp.showToast('📸 Frame captured! Transferred to 3D Assemblable Studio for CAD modeling.', 'success');
       }
       if (window.omJarvisLive && window.omJarvisLive.isActive) {
-        window.omJarvisLive.speakResponse('Optical snapshot captured, Boss. Generating parametric 3D structural model.');
+        window.omJarvisLive.speakResponse('Optical snapshot captured. Generating parametric 3D structural model.');
       }
     } else if (window.omApp) {
       window.omApp.showToast('📸 Snapshot captured and saved to workspace.', 'success');
@@ -279,8 +276,8 @@ class OMMediaVisionEngine {
 
       if (window.omJarvisLive && window.omJarvisLive.isActive) {
         const speech = this.isScreenSharing
-          ? 'Capturing screen telemetry frame, Boss. Analyzing viewport in real-time.'
-          : 'Optical camera snapshot acquired, Boss. Running multimodal analysis.';
+          ? 'Capturing screen telemetry frame. Analyzing viewport in real-time.'
+          : 'Optical camera snapshot acquired. Running multimodal analysis.';
         window.omJarvisLive.speakResponse(speech);
       }
     }

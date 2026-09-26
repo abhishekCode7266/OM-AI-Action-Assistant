@@ -14,8 +14,8 @@ class OMCyberTerminal {
     this.historyIndex = -1;
     this.isMatrixActive = false;
     this.matrixInterval = null;
-    this.developerName = 'Udayast';
-    this.userAddress = 'Boss';
+    this.developerName = 'User';
+    this.userAddress = 'User';
   }
 
   init() {
@@ -82,7 +82,7 @@ class OMCyberTerminal {
         break;
 
       case 'whoami':
-        this.printLine(`USER: <span class="text-emerald-400 font-bold">${this.developerName}</span> [LEAD ARCHITECT]\nACCESS LEVEL: <span class="text-cyan-300 font-mono">LIFETIME VIP TIER ($0.00 / FREE FOREVER)</span>\nPERMISSIONS: <span class="text-purple-400 font-mono">ROOT / SUPERUSER / SWARM CONTROLLER</span>`, 'success');
+        this.printLine(`USER: <span class="text-emerald-400 font-bold">${this.developerName}</span> [STANDARD OPERATOR]\nACCESS LEVEL: <span class="text-cyan-300 font-mono">STANDARD ACCOUNT</span>\nPERMISSIONS: <span class="text-purple-400 font-mono">OPERATOR / SYSTEM INTERFACE</span>`, 'success');
         break;
 
       case 'voice':
@@ -177,7 +177,7 @@ class OMCyberTerminal {
     <span>SYSTEM TELEMETRY DIAGNOSTIC</span>
     <span class="text-emerald-400">ONLINE [200 OK]</span>
   </div>
-  <div>• ARCHITECT: <span class="text-white font-bold">${this.developerName}</span> ($0.00 FREE VIP ACTIVE)</div>
+  <div>• OPERATOR: <span class="text-white font-bold">${this.developerName}</span> (STANDARD ACCOUNT)</div>
   <div>• ACTIVE PERSONA: <span class="text-amber-400 font-bold">${persona.toUpperCase()}</span> (${gender.toUpperCase()})</div>
   <div>• SPEECH LOCALIZATION: <span class="text-cyan-300 font-mono">${lang}</span> (20+ World Languages Supported)</div>
   <div>• 3D CAD ENGINE: <span class="text-emerald-400 font-semibold">WebAssembly / WebGL Spatial Ready</span></div>
@@ -192,7 +192,7 @@ class OMCyberTerminal {
     if (val === 'female' || val === 'f' || val === 'friday') {
       if (window.omVoice) window.omVoice.setVoiceGender('female');
       if (window.omJarvisLive) window.omJarvisLive.setVoiceGender('female');
-      this.printLine('Voice set to <span class="text-pink-400 font-bold">FEMALE (F.R.I.D.A.Y. Tactical Persona)</span>. Ready for instructions, Boss!', 'success');
+      this.printLine('Voice set to <span class="text-pink-400 font-bold">FEMALE (F.R.I.D.A.Y. Tactical Persona)</span>. Ready for instructions!', 'success');
     } else if (val === 'male' || val === 'm' || val === 'jarvis') {
       if (window.omVoice) window.omVoice.setVoiceGender('male');
       if (window.omJarvisLive) window.omJarvisLive.setVoiceGender('male');
