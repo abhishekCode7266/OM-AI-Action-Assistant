@@ -1632,11 +1632,13 @@
           <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;">✕</button>
         </div>
 
-        <!-- 9 Persona Selection Roster (5 Female, 4 Male) -->
+        <!-- Persona Selection Roster (Matching Screenshot) -->
         <div class="live-persona-roster-wrap" style="width: 100%; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span style="font-size: 0.7rem; font-weight: 800; color: #f472b6; letter-spacing: 0.05em;">👩 FEMALE VOICES:</span>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6;">👩 F.R.I.D.A.Y.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6;">🛡️ F.R.I.D.A.Y.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="samantha" onclick="window.omJarvisLive.setPersona('samantha')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: #fda4af;">🌸 Samantha</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="nova" onclick="window.omJarvisLive.setPersona('nova')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">✨ Nova Pro</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="rias" onclick="window.omJarvisLive.setPersona('rias')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(225, 29, 72, 0.15); border: 1px solid rgba(225, 29, 72, 0.4); color: #fb7185;">🌹 Rias</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="asia" onclick="window.omJarvisLive.setPersona('asia')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">✨ Asia</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="medusa" onclick="window.omJarvisLive.setPersona('medusa')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399;">🐍 Medusa</button>
@@ -1644,10 +1646,12 @@
           </div>
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span style="font-size: 0.7rem; font-weight: 800; color: #38bdf8; letter-spacing: 0.05em;">👨 MALE VOICES:</span>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="jarvis" onclick="window.omJarvisLive.setPersona('jarvis')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8;">👨 J.A.R.V.I.S.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="jarvis" onclick="window.omJarvisLive.setPersona('jarvis')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8;">🎩 J.A.R.V.I.S.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="onyx" onclick="window.omJarvisLive.setPersona('onyx')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(100, 116, 139, 0.15); border: 1px solid rgba(100, 116, 139, 0.4); color: #cbd5e1;">🎙️ Onyx Deep</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="ultron" onclick="window.omJarvisLive.setPersona('ultron')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.4); color: #f87171;">🤖 Ultron</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="hiro" onclick="window.omJarvisLive.setPersona('hiro')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); color: #fb923c;">⚡ Hiro</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="alpha" onclick="window.omJarvisLive.setPersona('alpha')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa;">🛡️ Alpha</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="custom" onclick="if(window.omApp) window.omApp.openSettings('voice')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.25); color: #94a3b8;">+ Custom</button>
           </div>
         </div>
       </div>

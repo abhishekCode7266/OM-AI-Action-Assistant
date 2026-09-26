@@ -9,7 +9,7 @@
 (function(window) {
   'use strict';
 
-  const DEFAULT_VERCEL_API = 'https://om-ai-abhishek-ef1f.vercel.app/api';
+  const DEFAULT_VERCEL_API = 'https://om-ai-eight.vercel.app/api';
 
   function resolveApiBaseUrl() {
     if (typeof window === 'undefined') return '/api';

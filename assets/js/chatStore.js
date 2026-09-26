@@ -882,6 +882,15 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         localStorage.setItem(this.ACTIVE_CHAT_KEY, this.activeChatId);
       }
       this.saveChats();
+
+      // Delete from backend server as well
+      try {
+        const deleteUrl = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
+          ? window.OM_CONFIG.getApiUrl('chats') + `?id=${encodeURIComponent(chatId)}`
+          : `/api/chats?id=${encodeURIComponent(chatId)}`;
+        fetch(deleteUrl, { method: 'DELETE' }).catch(() => {});
+      } catch (e) {}
+
       return true;
     }
     return false;

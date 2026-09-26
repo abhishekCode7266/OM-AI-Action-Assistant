@@ -9,10 +9,13 @@ Brand: OM – AI Action Assistant
 import json
 import mimetypes
 import os
+import sys
 import tempfile
+import time
+import subprocess
 import urllib.request
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -120,6 +123,27 @@ def save_users(users):
     try:
         with open(SERVERLESS_USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(users, f, indent=2)
+    except Exception:
+        pass
+
+SERVERLESS_CHATS_FILE = os.path.join(TMP_DIR, "om_chats.json")
+_MEMORY_CHATS = []
+
+def load_chats():
+    if os.path.exists(SERVERLESS_CHATS_FILE):
+        try:
+            with open(SERVERLESS_CHATS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return list(_MEMORY_CHATS)
+
+def save_chats(chats):
+    global _MEMORY_CHATS
+    _MEMORY_CHATS = chats
+    try:
+        with open(SERVERLESS_CHATS_FILE, "w", encoding="utf-8") as f:
+            json.dump(chats, f, indent=2)
     except Exception:
         pass
 
@@ -329,6 +353,18 @@ class handler(BaseHTTPRequestHandler):
                     "achieve": achieve_count
                 }
             })
+
+        # 5b. Chats API
+        if path in ["/api/chats", "/chats", "/api/chat", "/chat"]:
+            params = parse_qs(parsed.query)
+            chat_id = params.get("id", [""])[0]
+            chats = load_chats()
+            if chat_id:
+                matched = next((c for c in chats if c.get("id") == chat_id), None)
+                if matched:
+                    return self._send_json({"success": True, "chat": matched})
+                return self._send_json({"success": False, "error": "Chat not found"}, 404)
+            return self._send_json({"success": True, "chats": chats})
 
         # 6. Fallback: try checking if a file exists in BASE_DIR
         clean_rel = raw_path.lstrip("/").replace("/", os.sep)
@@ -602,14 +638,93 @@ class handler(BaseHTTPRequestHandler):
                 }, 400)
             return self._send_json({"success": False, "error": "Video generation service is initializing or awaiting job completion."}, 503)
 
-        # 4e. GitHub Commit Dispatch API
-        if path == "/api/github/commit" or path == "/github/commit":
-            token = os.environ.get("GITHUB_TOKEN")
-            if not token:
+        # 4f. Chats Persistence API
+        if path in ["/api/chats", "/chats", "/api/chat/save"]:
+            chat_data = body.get("chat") or body
+            chat_id = chat_data.get("id")
+            if not chat_id:
+                return self._send_json({"success": False, "error": "Missing chat id"}, 400)
+            chats = load_chats()
+            existing_idx = next((i for i, c in enumerate(chats) if c.get("id") == chat_id), -1)
+            if existing_idx >= 0:
+                chats[existing_idx] = chat_data
+            else:
+                chats.insert(0, chat_data)
+            save_chats(chats)
+            return self._send_json({"success": True, "chat": chat_data})
+
+        # 4g. Real Code Execution API
+        if path in ["/api/execute", "/execute", "/api/code/run"]:
+            code = body.get("code", "")
+            language = body.get("language", "python").lower()
+            if not code or not code.strip():
                 return self._send_json({
                     "success": False,
-                    "error": "GITHUB_TOKEN is not configured on the server."
+                    "error": "No code provided for execution.",
+                    "exit_code": 1
                 }, 400)
-            return self._send_json({"success": False, "error": "Direct remote commit requires write permissions and active Git branch lock."}, 403)
+
+            if language == "python":
+                start_t = time.time()
+                try:
+                    res = subprocess.run(
+                        [sys.executable, "-c", code],
+                        capture_output=True,
+                        text=True,
+                        timeout=8
+                    )
+                    elapsed = round((time.time() - start_t) * 1000, 1)
+                    return self._send_json({
+                        "success": res.returncode == 0,
+                        "stdout": res.stdout,
+                        "stderr": res.stderr,
+                        "exit_code": res.returncode,
+                        "execution_time_ms": elapsed
+                    })
+                except subprocess.TimeoutExpired:
+                    return self._send_json({
+                        "success": False,
+                        "error": "Execution timed out (limit: 8 seconds).",
+                        "exit_code": 124
+                    }, 408)
+                except Exception as ex:
+                    return self._send_json({
+                        "success": False,
+                        "error": str(ex),
+                        "exit_code": 1
+                    }, 500)
+            else:
+                return self._send_json({
+                    "success": False,
+                    "error": f"Language '{language}' execution is not supported on this runtime.",
+                    "exit_code": 1
+                }, 400)
+
+        return self._send_json({"error": "Endpoint not found", "path": path}, 404)
+
+    def do_DELETE(self):
+        parsed = urlparse(self.path)
+        path = parsed.path.rstrip("/")
+        params = parse_qs(parsed.query)
+        chat_id = params.get("id", [""])[0]
+
+        if not chat_id and len(path.split("/")) > 3 and (path.startswith("/api/chats/") or path.startswith("/api/chat/")):
+            chat_id = path.split("/")[-1]
+
+        if path in ["/api/chats", "/chats", "/api/chat", "/chat"] or path.startswith("/api/chats/") or path.startswith("/api/chat/"):
+            if not chat_id:
+                if params.get("clear", [""])[0] == "all":
+                    save_chats([])
+                    return self._send_json({"success": True, "message": "All conversations deleted."})
+                return self._send_json({"success": False, "error": "Missing conversation id parameter (?id=...)"}, 400)
+
+            chats = load_chats()
+            new_chats = [c for c in chats if c.get("id") != chat_id]
+            save_chats(new_chats)
+            return self._send_json({
+                "success": True,
+                "deleted": chat_id,
+                "message": f"Conversation {chat_id} deleted successfully from backend."
+            })
 
         return self._send_json({"error": "Endpoint not found", "path": path}, 404)

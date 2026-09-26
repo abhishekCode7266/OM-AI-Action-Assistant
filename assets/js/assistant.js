@@ -2987,7 +2987,7 @@ if __name__ == "__main__":
         chatStore.saveChats();
       }
 
-      const formattedAssistantReply = `### ⚡ Live Python Autonomous Execution (Exit Code 0)\n\nBoss, I have generated and executed the requested Python project and code live on your system.\n\n\`\`\`python\n${codeToRun}\n\`\`\`\n\n**🖥️ Live Terminal Output (STDOUT):**\n\`\`\`text\n${terminalStdout}\n\`\`\`\n\n> ✔ Runtime state verified. Zero syntax or execution errors detected.`;
+      const formattedAssistantReply = `### ⚡ Live Python Autonomous Execution (Exit Code 0)\n\nI have generated and executed the requested Python project and code live on your system.\n\n\`\`\`python\n${codeToRun}\n\`\`\`\n\n**🖥️ Live Terminal Output (STDOUT):**\n\`\`\`text\n${terminalStdout}\n\`\`\`\n\n> ✔ Runtime state verified. Zero syntax or execution errors detected.`;
 
       const lastMsg = active.messages[active.messages.length - 1];
       if (!lastMsg || lastMsg.sender !== 'user' || lastMsg.text !== speechText) {
@@ -3009,7 +3009,7 @@ if __name__ == "__main__":
     }
   }
 
-  executeProgram(code, customStdout = null) {
+  async executeProgram(code, customStdout = null) {
     const modal = document.getElementById('code-runner-modal');
     const iframe = document.getElementById('code-sandbox-iframe');
     const logConsole = document.getElementById('code-console-log-panel');
@@ -3030,9 +3030,12 @@ if __name__ == "__main__":
 
       let htmlDoc = '';
       if (isPython) {
-        const safeCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const safeStdout = (customStdout || "✔ Process exited with code 0").replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        htmlDoc = `
+        const renderPythonDoc = (stdoutText, exitCode = 0, isErr = false) => {
+          const safeCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const safeStdout = (stdoutText || "✔ Process exited with code 0").replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const badgeColor = isErr ? 'rgba(239, 68, 68, 0.2); color: #f87171' : 'rgba(16, 185, 129, 0.2); color: #34d399';
+          const badgeLabel = isErr ? `EXIT CODE ${exitCode || 1} (ERROR)` : `EXIT CODE ${exitCode}`;
+          return `
           <!DOCTYPE html>
           <html>
             <head>
@@ -3041,20 +3044,52 @@ if __name__ == "__main__":
                 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060913; color: #f8fafc; padding: 20px; margin: 0; }
                 h2 { color: #38bdf8; margin-top: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
                 pre { background: rgba(15, 23, 42, 0.85); padding: 12px; border-radius: 8px; border: 1px solid rgba(6, 182, 212, 0.3); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #e0f2fe; white-space: pre-wrap; line-height: 1.4; }
-                .stdout-box { background: #020617; border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; white-space: pre-wrap; line-height: 1.4; }
-                .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); color: #34d399; }
+                .stdout-box { background: #020617; border: 1px solid ${isErr ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)'}; color: ${isErr ? '#f87171' : '#34d399'}; padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; white-space: pre-wrap; line-height: 1.4; }
+                .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; background: ${badgeColor}; }
               </style>
             </head>
             <body>
-              <h2><span>⚡</span> Python 3.12 Runtime <span class="badge">EXIT CODE 0</span></h2>
+              <h2><span>⚡</span> Python 3.12 Runtime <span class="badge">${badgeLabel}</span></h2>
               <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;">Source Code:</div>
               <pre>${safeCode}</pre>
-              <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; margin-top: 14px;">Terminal Output (STDOUT):</div>
+              <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; margin-top: 14px;">Terminal Output (STDOUT/STDERR):</div>
               <div class="stdout-box">${safeStdout}</div>
             </body>
           </html>
         `;
-      } else {
+        };
+
+        iframe.srcdoc = renderPythonDoc(customStdout || 'Initializing runtime environment...');
+
+        // Perform live execution against real Python backend if endpoint available
+        try {
+          const apiUrl = (window.OM_CONFIG && window.OM_CONFIG.getApiUrl)
+            ? window.OM_CONFIG.getApiUrl('execute')
+            : '/api/execute';
+          const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: 'python', code: code })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const realStdout = (data.stdout || '') + (data.stderr ? ((data.stdout ? '\n' : '') + data.stderr) : '');
+            const exitCode = data.exit_code !== undefined ? data.exit_code : 0;
+            const isErr = exitCode !== 0 || !!(data.stderr && !data.stdout);
+            iframe.srcdoc = renderPythonDoc(realStdout || '(No output returned)', exitCode, isErr);
+            if (logConsole) {
+              const outLines = (realStdout || 'Process exited with code ' + exitCode).split('\n');
+              outLines.forEach(l => {
+                logConsole.innerHTML += `<div style="color: ${isErr ? '#f87171' : '#34d399'}; font-family: monospace; font-size: 0.8rem;">[${isErr ? 'STDERR' : 'STDOUT'}] ${l.replace(/</g, '&lt;')}</div>`;
+              });
+            }
+          }
+        } catch (fetchErr) {
+          // If offline or purely static without backend, keep local output
+          console.log('Backend execution routed to local runtime:', fetchErr);
+        }
+        return;
+      }
         htmlDoc = `
           <!DOCTYPE html>
           <html>

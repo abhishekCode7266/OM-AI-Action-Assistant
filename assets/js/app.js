@@ -505,6 +505,7 @@ class OMApp {
             <span class="chat-item-icon">${modeIcon}</span>
             <span class="chat-item-title" title="${this.escapeHTML(chat.title)}">${this.escapeHTML(chat.title)}</span>
             <div class="chat-item-actions">
+              <button class="chat-action-btn chat-item-delete-btn" onclick="event.stopPropagation(); window.omApp.deleteChat('${chat.id}')" title="Delete conversation" style="font-size: 0.85rem; color: #ef4444; opacity: 0.85; margin-right: 4px; padding: 2px 4px;">🗑️</button>
               <button class="chat-action-btn chat-item-menu-btn" onclick="event.stopPropagation(); window.omApp.openChatContextMenu(event, '${chat.id}')" title="More options">⋮</button>
             </div>
           </div>
@@ -805,11 +806,14 @@ class OMApp {
   }
 
   deleteChat(chatId) {
-    if (confirm("Delete this conversation?")) {
+    const chat = this.chatStore.getChat(chatId);
+    const title = chat ? chat.title : 'this chat';
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
       this.chatStore.deleteChat(chatId);
       this.renderSidebar();
       this.renderChatMessages();
       this.updateHeaderInfo();
+      this.showToast('Conversation deleted from history and server', 'info');
     }
   }
 

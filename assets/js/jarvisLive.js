@@ -53,6 +53,32 @@ class OMJarvisLiveEngine {
           ? `नमस्ते! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। सभी टेलीमेट्री सामान्य हैं। आज हम क्या नया बनाने जा रहे हैं?`
           : `Good day! F.R.I.D.A.Y. tactical AI is online. Systems are green and telemetry is locked. What are we engineering today?`
       },
+      samantha: {
+        name: 'Samantha',
+        gender: 'female',
+        pitch: 1.18,
+        rate: 1.00,
+        primaryColor: '#f43f5e',
+        secondaryColor: '#fda4af',
+        title: 'SAMANTHA CORE',
+        sub: 'FEMALE WARM CONVERSATIONAL',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते! सामंथा यहाँ है। मैं आपकी हर बात सुनने और काम में मदद करने के लिए तैयार हूँ। बताइए, आज क्या करना है?`
+          : `Hello there! Samantha here. I'm right here with you, ready to help with anything you need. What's on your mind today?`
+      },
+      nova: {
+        name: 'Nova Pro',
+        gender: 'female',
+        pitch: 1.25,
+        rate: 1.05,
+        primaryColor: '#38bdf8',
+        secondaryColor: '#818cf8',
+        title: 'NOVA PRO AI',
+        sub: 'FEMALE FAST REASONING',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते! नोवा प्रो सक्रिय है। हाई-स्पीड न्यूरल प्रोसेसिंग तैयार है। बताइए आज क्या प्रोजेक्ट है?`
+          : `Greetings! Nova Pro neural core is active. High-speed reasoning and task pipeline are ready. How can I assist you?`
+      },
       rias: {
         name: 'Rias',
         gender: 'female',
@@ -120,6 +146,19 @@ class OMJarvisLiveEngine {
           ? `प्रणाम। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है?`
           : `At your service. J.A.R.V.I.S. protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today?`
       },
+      onyx: {
+        name: 'Onyx Deep',
+        gender: 'male',
+        pitch: 0.82,
+        rate: 0.98,
+        primaryColor: '#64748b',
+        secondaryColor: '#cbd5e1',
+        title: 'ONYX DEEP',
+        sub: 'MALE RESONANT BARITONE',
+        greeting: (isHindi) => isHindi
+          ? `नमस्कार। ओनिक्स डीप तैयार है। सटीक और शांत विश्लेषण के लिए मैं उपस्थित हूँ। आपका क्या निर्देश है?`
+          : `Good day. Onyx Deep core online. Calm, resonant, and focused execution at your command. What is our direction?`
+      },
       ultron: {
         name: 'Ultron',
         gender: 'male',
@@ -174,13 +213,15 @@ class OMJarvisLiveEngine {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
-      this.recognition.continuous = false;
+      this.recognition.continuous = true;
       this.recognition.interimResults = true;
       this.recognition.lang = this.currentLanguage;
 
       this.recognition.onstart = () => {
         this.isListening = true;
-        this.updateHUDStatus('LISTENING');
+        if (!this.isSpeaking) {
+          this.updateHUDStatus('LISTENING');
+        }
       };
 
       this.recognition.onresult = (event) => {
@@ -194,30 +235,76 @@ class OMJarvisLiveEngine {
           }
         }
 
+        const candidate = (interim || finalTranscript || '').trim();
+        const lowerCandidate = candidate.toLowerCase();
+
+        // 1. Instant Interrupt on "Stop", "रुको", "chup", etc.
+        const isStopCmd = /^(stop|रुको|ruko|chup|चुप|shant|शान्त|pause|wait|hold on|cancel|बस|bas|quiet)$/i.test(lowerCandidate) ||
+                          lowerCandidate === 'stop' || lowerCandidate.startsWith('stop ') || lowerCandidate.endsWith(' stop') ||
+                          lowerCandidate.includes('रुको') || lowerCandidate.includes('ruko') || lowerCandidate.includes('चुप');
+
+        if (isStopCmd) {
+          this.stopSpeaking();
+          this.isSpeaking = false;
+          this.updateHUDStatus('STANDBY');
+          const userTranscriptEl = document.getElementById('live-user-transcript');
+          if (userTranscriptEl) userTranscriptEl.textContent = `[Stopped by user: "${candidate}"]`;
+          const pipTicker = document.getElementById('pip-live-speech-ticker');
+          if (pipTicker) pipTicker.textContent = `Stopped • Standing by`;
+          try { this.recognition.abort(); } catch (e) {}
+          setTimeout(() => this.rearmMic(), 500);
+          return;
+        }
+
+        // 2. Anti-feedback / Echo rejection:
+        // Ignore recognized audio if it's the assistant's own TTS output
+        if (this.isSpeaking || (this.ignoreEchoUntil && Date.now() < this.ignoreEchoUntil)) {
+          const currentSpoken = (this.currentSpokenText || '').toLowerCase();
+          if (currentSpoken && lowerCandidate.length > 2 && currentSpoken.includes(lowerCandidate)) {
+            return; // Ignore mic feedback echo
+          }
+          // If distinct user speech arrives while assistant is speaking, barge-in / interrupt!
+          if (lowerCandidate.length >= 3) {
+            this.stopSpeaking();
+            this.isSpeaking = false;
+            this.updateHUDStatus('PROCESSING');
+          }
+        }
+
         const userTranscriptEl = document.getElementById('live-user-transcript');
-        if (userTranscriptEl) {
-          userTranscriptEl.textContent = interim || finalTranscript || `Listening in ${this.currentLanguage}...`;
+        if (userTranscriptEl && candidate) {
+          userTranscriptEl.textContent = candidate;
         }
 
         if (finalTranscript && finalTranscript.trim()) {
-          this.handleLiveUserSpeech(finalTranscript.trim());
+          const cleanFinal = finalTranscript.trim();
+          // Filter stray acoustic noise
+          if (cleanFinal.length < 2) return;
+          if (this.currentSpokenText && this.currentSpokenText.toLowerCase().includes(cleanFinal.toLowerCase())) {
+            return;
+          }
+          if (this.lastUserSpeech && this.lastUserSpeech.toLowerCase() === cleanFinal.toLowerCase() && (Date.now() - (this.lastUserSpeechTime || 0)) < 2500) {
+            return;
+          }
+          this.lastUserSpeech = cleanFinal;
+          this.lastUserSpeechTime = Date.now();
+          this.handleLiveUserSpeech(cleanFinal);
         }
       };
 
       this.recognition.onerror = (e) => {
-        console.warn('Live Speech recognition error:', e.error);
         if (e.error !== 'no-speech') {
-          this.updateHUDStatus('STANDBY');
+          console.warn('Live Speech recognition notice:', e.error);
         }
         if (this.isActive && !this.isSpeaking && this.continuousLoop) {
-          setTimeout(() => this.rearmMic(), 800);
+          setTimeout(() => this.rearmMic(), 600);
         }
       };
 
       this.recognition.onend = () => {
         this.isListening = false;
         if (this.isActive && !this.isSpeaking && this.continuousLoop) {
-          setTimeout(() => this.rearmMic(), 500);
+          setTimeout(() => this.rearmMic(), 400);
         }
       };
     }
@@ -393,7 +480,7 @@ class OMJarvisLiveEngine {
   }
 
   rearmMic() {
-    if (!this.isActive || this.isSpeaking) return;
+    if (!this.isActive) return;
     if (this.recognition && !this.isListening) {
       try {
         this.recognition.lang = this.currentLanguage;
@@ -429,6 +516,22 @@ class OMJarvisLiveEngine {
       lower.includes('banao') || lower.includes('likho') || lower.includes('calculator') ||
       (lower.includes('run') && !lower.includes('running'))
     );
+
+    // Section 4: Auto-minimize big voice orb to PiP as soon as a task starts
+    // so the screen work is clear and unobstructed while voice conversation continues
+    const isTaskAction = isCodeExecution ||
+      lower.includes('terminal') || lower.includes('कमांड') || lower.includes('cli') ||
+      lower.includes('thought map') || lower.includes('neural canvas') || lower.includes('माइंड मैप') ||
+      lower.includes('screen share') || lower.includes('स्क्रीन शेयर') ||
+      lower.includes('camera') || lower.includes('कैमरा') ||
+      lower.includes('3d') || lower.includes('cad') || lower.includes('model') || lower.includes('dismantle') || lower.includes('assemble') ||
+      lower.includes('notebook') || lower.includes('नोटबुक') || lower.includes('pdf');
+
+    if (isTaskAction) {
+      setTimeout(() => {
+        this.minimizeToPiP();
+      }, 350);
+    }
 
     const replyText = this.generatePersonaResponse(userSpeech, isHindi, isCodeExecution);
 
@@ -514,6 +617,18 @@ class OMJarvisLiveEngine {
     // Status or greeting request
     if (lower.includes('hello') || lower.includes('hi') || lower.includes('नमस्ते') || lower.includes('status') || lower.includes('diagnostic')) {
       switch (this.persona) {
+        case 'samantha':
+          return isHindi
+            ? `नमस्ते! सामन्था यहाँ है। मैं आपकी बात सुनने और हर काम में मदद करने के लिए तैयार हूँ। बताइए क्या करना है?`
+            : `Hello there! Samantha here. I'm right here with you, listening closely. What would you like to explore today?`;
+        case 'nova':
+          return isHindi
+            ? `नमस्ते! नोवा प्रो सिस्टम्स पूरी तरह ऑप्टिमाइज्ड और सुपर-फ़ास्ट हैं। आज क्या बनाना है?`
+            : `Greetings! Nova Pro systems online, running with hyper-speed neural compute. What are we creating today?`;
+        case 'onyx':
+          return isHindi
+            ? `नमस्कार। ओनिक्स डीप तैयार है। सभी कोर और कमांड चैनल सक्रिय हैं। निर्देश दीजिए।`
+            : `Onyx online. Deep neural channels locked and operational. Awaiting your parameters.`;
         case 'friday':
           return isHindi
             ? `हेलो! F.R.I.D.A.Y. यहाँ है। हमारे सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
@@ -555,6 +670,18 @@ class OMJarvisLiveEngine {
 
     // Default conversational response tailored by persona
     switch (this.persona) {
+      case 'samantha':
+        return isHindi
+          ? `मैंने "${userText}" को समझ लिया है। चलिए इसे शांति और सटीकता से पूरा करते हैं।`
+          : `I hear you loud and clear on "${userText}". Let's take care of this thoughtfully and seamlessly.`;
+      case 'nova':
+        return isHindi
+          ? `नोवा प्रो ने "${userText}" का विश्लेषण पूरा कर लिया है। चलिए तुरंत आगे बढ़ते हैं!`
+          : `Nova Pro processed "${userText}". All metrics optimal. Let's move fast!`;
+      case 'onyx':
+        return isHindi
+          ? `ओनिक्स डीप: "${userText}" का विश्लेषण पूर्ण। तुरंत कार्यवाही जारी है।`
+          : `Onyx confirmed. Processing "${userText}" with focused precision. Executing now.`;
       case 'friday':
         return isHindi
           ? `ज़रूर! मैंने "${userText}" का विश्लेषण कर लिया है। सब तैयार है, आगे बढ़ते हैं!`
@@ -602,6 +729,7 @@ class OMJarvisLiveEngine {
 
     this.stopSpeaking();
     this.isSpeaking = true;
+    this.currentSpokenText = text;
     this.updateHUDStatus('SPEAKING');
 
     const cleanText = text
@@ -611,6 +739,8 @@ class OMJarvisLiveEngine {
       .replace(/[*_~•]/g, "")
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
       .substring(0, 1200);
+
+    this.currentSpokenText = cleanText;
 
     const p = this.personas[this.persona] || this.personas.friday;
 
@@ -645,6 +775,7 @@ class OMJarvisLiveEngine {
 
     this.currentUtterance.onend = () => {
       this.isSpeaking = false;
+      this.ignoreEchoUntil = Date.now() + 400;
       this.updateHUDStatus('STANDBY');
       if (onComplete) onComplete();
     };
@@ -652,6 +783,7 @@ class OMJarvisLiveEngine {
     this.currentUtterance.onerror = (e) => {
       console.warn("TTS Error:", e);
       this.isSpeaking = false;
+      this.ignoreEchoUntil = Date.now() + 400;
       this.updateHUDStatus('STANDBY');
       if (onComplete) onComplete();
     };
@@ -664,6 +796,8 @@ class OMJarvisLiveEngine {
       this.synth.cancel();
     }
     this.isSpeaking = false;
+    this.currentSpokenText = '';
+    this.ignoreEchoUntil = Date.now() + 300;
   }
 
   updateHUDStatus(status) {
