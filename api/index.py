@@ -159,6 +159,30 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
+    def _resolve_path_and_query(self):
+        parsed = urlparse(self.path)
+        params = parse_qs(parsed.query)
+
+        # 1. Check for Vercel __route rewrite parameter
+        if "__route" in params and params["__route"][0]:
+            sub = params["__route"][0].strip("/")
+            return f"/api/{sub}", parsed, params
+
+        # 2. Check Vercel headers
+        v_path = (
+            self.headers.get("x-matched-path") or
+            self.headers.get("x-forwarded-uri") or
+            self.headers.get("x-original-url") or
+            ""
+        )
+        if v_path and not v_path.endswith("/index.py"):
+            v_parsed = urlparse(v_path)
+            v_params = parse_qs(v_parsed.query)
+            merged = {**params, **v_params}
+            return v_parsed.path.rstrip("/"), parsed, merged
+
+        return parsed.path.rstrip("/"), parsed, params
+
     def _send_json(self, data, status_code=200):
         response_bytes = json.dumps(data, indent=2).encode("utf-8")
         self.send_response(status_code)
@@ -199,8 +223,7 @@ class handler(BaseHTTPRequestHandler):
         return self._send_json({"error": "File not found", "path": file_path}, 404)
 
     def do_GET(self):
-        parsed = urlparse(self.path)
-        path = parsed.path.rstrip("/")
+        path, parsed, params = self._resolve_path_and_query()
         raw_path = parsed.path
 
         # 1. Root / Homepage & Static Files
@@ -380,8 +403,7 @@ class handler(BaseHTTPRequestHandler):
         return self._send_json({"error": "Endpoint not found", "path": path}, 404)
 
     def do_POST(self):
-        parsed = urlparse(self.path)
-        path = parsed.path.rstrip("/")
+        path, parsed, params = self._resolve_path_and_query()
 
         length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(length) if length > 0 else b"{}"
@@ -703,9 +725,7 @@ class handler(BaseHTTPRequestHandler):
         return self._send_json({"error": "Endpoint not found", "path": path}, 404)
 
     def do_DELETE(self):
-        parsed = urlparse(self.path)
-        path = parsed.path.rstrip("/")
-        params = parse_qs(parsed.query)
+        path, parsed, params = self._resolve_path_and_query()
         chat_id = params.get("id", [""])[0]
 
         if not chat_id and len(path.split("/")) > 3 and (path.startswith("/api/chats/") or path.startswith("/api/chat/")):
