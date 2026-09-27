@@ -152,7 +152,9 @@ class OMAssistant {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: prompt + attachmentsCtx + (memoryCtx ? "\n" + memoryCtx : ""),
+          prompt: prompt,
+          attachmentsContext: attachmentsCtx,
+          memory: memoryCtx,
           mode: mode,
           apiKey: apiKey || 'om_web'
         }),
@@ -162,6 +164,23 @@ class OMAssistant {
 
       if (serverResp.ok) {
         const data = await serverResp.json();
+
+        // 1. If backend succeeded with live AI provider or autonomous greeting:
+        if (data && data.success && data.text) {
+          const providerLabel = data.apiKeyUsed || (window.location && window.location.hostname.includes('github.io') ? 'OM Backend (Live)' : 'OM Serverless');
+          return this.formatStructuredResponse(data.text, data.reasoning, data.actions, mode, providerLabel);
+        }
+
+        // 2. If no AI provider key is configured on backend, seamlessly engage rich local autonomous engine:
+        if (data && (data.noApiKey || !data.success)) {
+          const localFallback = this.generateAutonomousFallback(prompt, history, mode, attachments);
+          if (localFallback && localFallback.text) {
+            localFallback.text += `\n\n> 💡 **Cloud AI Status**: Generated via OM Autonomous Engine. To activate Google Gemini 1.5 Flash cloud intelligence, configure \`GEMINI_API_KEY\` in your Vercel project environment variables, or enter your API key in **⚙️ Settings**.`;
+            return localFallback;
+          }
+          return this.formatStructuredResponse(data.text || data.error, data.reasoning, data.actions || [], mode, 'OM Configuration Needed');
+        }
+
         const replyText = data.text || data.message || data.error || data.greeting;
         if (data && replyText) {
           const providerLabel = data.apiKeyUsed || (window.location && window.location.hostname.includes('github.io') ? 'OM Backend (Live)' : 'OM Serverless');
