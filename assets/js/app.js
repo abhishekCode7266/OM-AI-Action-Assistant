@@ -1569,6 +1569,15 @@ Key Ideas & Notes:
       });
     }
 
+    const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
+    if (autoSpeechCheck) {
+      autoSpeechCheck.checked = !!this.chatStore.settings.autoSpeech;
+      autoSpeechCheck.addEventListener('change', () => {
+        this.chatStore.saveSettings({ autoSpeech: autoSpeechCheck.checked });
+        this.showToast(autoSpeechCheck.checked ? '🔊 Auto-speech read aloud enabled' : '🔇 Auto-speech read aloud disabled', 'info');
+      });
+    }
+
     // Activate Developer Mode Button
     const devBtn = document.getElementById('btn-activate-dev-mode');
     if (devBtn) {

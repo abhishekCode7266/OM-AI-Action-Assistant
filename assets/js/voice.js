@@ -104,7 +104,11 @@ class OMVoiceEngine {
           }
         } else if (e.error === 'network') {
           if (window.omApp) {
-            window.omApp.showToast("Speech recognition network error.", "error");
+            window.omApp.showToast("Speech recognition network error. Check your connection.", "error");
+          }
+        } else if (e.error !== 'aborted') {
+          if (window.omApp) {
+            window.omApp.showToast(`Microphone notice: ${e.error}. Please try again.`, "info");
           }
         }
       };
@@ -165,7 +169,7 @@ class OMVoiceEngine {
 
     if (!this.recognition) {
       if (window.omApp) {
-        window.omApp.showToast("Voice dictation is not supported in this browser. Try Chrome or Edge.", "info");
+        window.omApp.showToast("Voice dictation is not supported in this browser. Please use Chrome, Edge, or a browser with Web Speech API support.", "info");
       }
       return;
     }
