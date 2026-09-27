@@ -1460,6 +1460,17 @@ Key Ideas & Notes:
     }
   }
 
+  openSettings(tab = null) {
+    if (tab === 'voice') {
+      const voiceModal = document.getElementById('voice-matrix-modal');
+      if (voiceModal) {
+        voiceModal.classList.add('active');
+        return;
+      }
+    }
+    this.openSettingsModal();
+  }
+
   openSettingsModal() {
     const modal = document.getElementById('settings-modal');
     if (!modal) return;

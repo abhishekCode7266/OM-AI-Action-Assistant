@@ -128,25 +128,40 @@ Selectable via the top-header pill selector or auto-detected based on user inten
 ## 📁 Project Structure
 
 ```
-C:\Users\Rajnesh\.gemini\antigravity\scratch\om-ai-action-assistant\
-├── index.html              # Core single-page application containing all views & OM branding
+om-ai-action-assistant/
+├── index.html              # Core single-page application & responsive UI
+├── manifest.json           # Progressive Web App (PWA) manifest
 ├── server.py               # Lightweight standard-library Python backend & API dispatcher
+├── api/                    # Serverless endpoints for Vercel deployment
+│   ├── chat.js             # Multimodal AI chat dispatcher (Gemini / OpenAI / Offline Demo)
+│   ├── index.py            # Python serverless dispatcher
+│   └── ...
 ├── assets/
 │   ├── css/
 │   │   └── style.css       # Obsidian & cyber cyan glassmorphic UI system
 │   ├── js/
-│   │   ├── app.js          # App coordinator, routing, modals, auth & activity feed
+│   │   ├── app.js          # Main coordinator, routing, modals, audio dock & activity feed
 │   │   ├── assistant.js    # OM Cognitive dialogue engine & goal deconstruction
+│   │   ├── chatStore.js    # Client-side multi-turn conversation & memory store
+│   │   ├── voice.js        # Web Speech API STT/TTS engine with 20+ languages
+│   │   ├── jarvisLive.js   # Nexus Live hands-free 9-persona voice orchestrator
+│   │   ├── files.js        # FileReader & multimodal document/image ingest
+│   │   ├── dismantler3d.js # Pure 3D Canvas CAD Assemblable Studio with 0-100% explode slider
+│   │   ├── neuralCanvas.js # Interactive holographic thought map
+│   │   ├── cyberTerminal.js# Cyber terminal CLI sandbox simulator
 │   │   ├── planner.js      # 4-stage Think-Plan-Act-Achieve interactive Kanban
 │   │   ├── dashboard.js    # Velocity analytics & SVG burnup charts
-│   │   ├── knowledge.js    # Document Vault upload & context injector
-│   │   └── demo.js         # Interactive scenario loader
+│   │   ├── projects.js     # Multi-project manager & branch controller
+│   │   ├── analytics.js    # CSV & data analytics processor
+│   │   └── config.js       # Dynamic API routing & health telemetry
 │   └── icons/
 │       └── logo.svg        # Modern geometric AI vector logo for OM
 ├── data/
 │   └── tasks.json          # Persistent task storage
 ├── tests/
-│   └── test_server.py      # Automated unit tests for API and brand compliance
+│   ├── test_server.py      # Automated unit tests for API and brand compliance
+│   ├── test_features.py    # Endpoint & feature integration tests
+│   └── test_vercel_handler.py # Serverless handler unit tests
 └── README.md               # Complete project documentation
 ```
 
@@ -158,30 +173,27 @@ C:\Users\Rajnesh\.gemini\antigravity\scratch\om-ai-action-assistant\
 No external pip dependencies required (compatible with Python 3.10+ and Python 3.14):
 
 ```bash
-cd C:\Users\Rajnesh\.gemini\antigravity\scratch\om-ai-action-assistant
+git clone https://github.com/abhishekCode7266/OM-AI-Action-Assistant.git
+cd OM-AI-Action-Assistant
 python server.py
 ```
 Open **`http://localhost:8000`** in any modern web browser.
 
 ### Option 2: Standalone Browser Launch
 Open `index.html` directly in your browser:
-```powershell
-Start-Process "C:\Users\Rajnesh\.gemini\antigravity\scratch\om-ai-action-assistant\index.html"
+```bash
+# On macOS / Linux:
+open index.html
+# On Windows (PowerShell):
+Start-Process index.html
 ```
 
 ### Running Automated Tests
 ```bash
 python tests/test_server.py
+python tests/test_features.py
 ```
-All 4 test suites will run against the API endpoints and branding assertions.
-
----
-
-## ⚙️ Recommended Workspace Setup
-
-To set this project as your active workspace in Antigravity or your editor:
-1. Open folder: `C:\Users\Rajnesh\.gemini\antigravity\scratch\om-ai-action-assistant`
-2. Set as active workspace root.
+All test suites run against the API endpoints and branding assertions.
 
 ---
 
