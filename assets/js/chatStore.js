@@ -785,6 +785,7 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
       id,
       title,
       mode,
+      userExplicitMode: false,
       projectId,
       pinned: false,
       createdAt: Date.now(),

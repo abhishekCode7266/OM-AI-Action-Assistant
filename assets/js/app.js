@@ -209,11 +209,11 @@ class OMApp {
     // Model Quick Selector Dropdown (Nexus 2.0 / 1.5 Pro / Autonomous)
     const modelQuickSelect = document.getElementById('chat-model-quick-selector');
     if (modelQuickSelect) {
-      const curModel = this.chatStore.settings.model;
+      const curModel = (this.chatStore && this.chatStore.settings) ? this.chatStore.settings.model : 'nexus-2.0-flash';
       modelQuickSelect.value = (curModel && !curModel.includes('gemini')) ? curModel : 'nexus-2.0-flash';
       modelQuickSelect.addEventListener('change', (e) => {
         const newModel = e.target.value;
-        this.chatStore.saveSettings({ model: newModel });
+        if (this.chatStore) this.chatStore.saveSettings({ model: newModel });
         const label = modelQuickSelect.options[modelQuickSelect.selectedIndex]?.text || newModel;
         this.showToast(`Switched active model to ${label}`, 'info');
       });
@@ -224,7 +224,7 @@ class OMApp {
     if (modeSelect) {
       modeSelect.addEventListener('change', (e) => {
         const newMode = e.target.value;
-        this.assistant.setMode(newMode);
+        this.assistant.setMode(newMode, true);
         this.showToast(`Switched to ${newMode.toUpperCase()} Mode`, 'info');
       });
     }
