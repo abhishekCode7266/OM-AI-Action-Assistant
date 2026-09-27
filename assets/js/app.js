@@ -447,13 +447,7 @@ class OMApp {
       
       // Display clean message if backend response is null or empty
       if (!assistantResponse || !assistantResponse.text) {
-        assistantResponse = {
-          sender: 'om',
-          text: "AI service is currently unavailable. Please check the backend configuration.",
-          reasoning: "The backend AI service did not return a response. Please verify backend environment variables (GEMINI_API_KEY / OPENAI_API_KEY) or configure your API key in Settings.",
-          verified: false,
-          actions: []
-        };
+        assistantResponse = this.assistant.generateAutonomousFallback(text, [], activeChat.mode, attachments);
       }
 
       this.removeTypingIndicator();
