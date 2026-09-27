@@ -59,11 +59,20 @@ class OMApp {
     }
 
     const mobileMenuBtn = document.getElementById('btn-mobile-menu');
-    if (mobileMenuBtn && sidebar) {
+    if (mobileMenuBtn) {
       mobileMenuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('mobile-open');
+        this.toggleMobileDrawer();
       });
     }
+
+    // Global Escape Key to dismiss overlays & drawer
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeMobileDrawer();
+        this.closeInputAttachMenu();
+        this.closeProfilePopover();
+      }
+    });
 
     // Search Chats
     const searchInput = document.getElementById('sidebar-chat-search');
@@ -385,8 +394,25 @@ class OMApp {
     if (input) input.focus();
 
     // Close mobile drawer if open
+    this.closeMobileDrawer();
+  }
+
+  toggleMobileDrawer() {
     const sidebar = document.getElementById('om-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) {
+      const isOpen = sidebar.classList.toggle('mobile-open');
+      if (backdrop) {
+        backdrop.classList.toggle('active', isOpen);
+      }
+    }
+  }
+
+  closeMobileDrawer() {
+    const sidebar = document.getElementById('om-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
     if (sidebar) sidebar.classList.remove('mobile-open');
+    if (backdrop) backdrop.classList.remove('active');
   }
 
   async handleSendMessage() {
@@ -550,8 +576,7 @@ class OMApp {
         this.renderChatMessages();
         this.updateHeaderInfo();
 
-        const sidebar = document.getElementById('om-sidebar');
-        if (sidebar) sidebar.classList.remove('mobile-open');
+        this.closeMobileDrawer();
       });
     });
   }

@@ -1277,7 +1277,8 @@ h1, h2, h3, h4, h5 {
 .om-toast.toast-info { border-color: var(--om-cyan); }
 
 /* Responsive Media Queries */
-@media (max-width: 900px) {
+/* Responsive Media Queries (Tablets & Mobile) */
+@media (max-width: 992px) {
   .welcome-cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1286,28 +1287,40 @@ h1, h2, h3, h4, h5 {
     height: 100vh;
     left: 0;
     top: 0;
-    margin-left: -270px;
+    width: 280px;
+    max-width: 85vw;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1050;
+    margin-left: 0;
+    box-shadow: none;
   }
   .om-sidebar.mobile-open {
-    margin-left: 0;
+    transform: translateX(0);
+    box-shadow: 10px 0 45px rgba(0, 0, 0, 0.9);
   }
   .btn-mobile-drawer {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .om-main-workspace {
+    width: 100vw;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .welcome-cards-grid {
     grid-template-columns: 1fr;
   }
   .welcome-heading {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
   .om-chat-header {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
   .om-prompt-dock {
-    padding: 0.5rem 1rem 0.75rem;
+    padding: 0.4rem 0.5rem 0.6rem;
   }
 }
 
@@ -2664,9 +2677,39 @@ h1, h2, h3, h4, h5 {
 /* ==========================================================================
    Universal Responsive Media Queries (Mobile & Tablet)
    ========================================================================== */
+/* Sidebar Touch Dismiss Backdrop */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1040;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   Universal Responsive Media Queries (Mobile, Tablet, Desktop)
+   ========================================================================== */
 @media (max-width: 1024px) {
   .pricing-tiers-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .header-btn-text,
+  #header-gender-label {
+    display: none;
+  }
+  .om-chat-header {
+    padding: 0 1rem;
   }
 }
 
@@ -2703,17 +2746,36 @@ h1, h2, h3, h4, h5 {
   .om-sidebar {
     position: fixed;
     top: 0;
-    left: -280px;
-    width: 270px;
+    left: 0;
+    width: 280px;
+    max-width: 85vw;
     height: 100vh;
     z-index: 1050;
-    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
   }
 
   .sidebar.mobile-open,
   .om-sidebar.mobile-open {
-    left: 0;
-    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.85);
+    transform: translateX(0);
+    box-shadow: 10px 0 45px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Header decluttering on mobile / small tablets */
+  #btn-header-3d-dismantle,
+  #btn-header-neural-canvas,
+  #btn-header-cyber-terminal,
+  #btn-export-chat,
+  #chat-mode-selector,
+  #global-lang-selector,
+  #btn-toggle-voice-gender {
+    display: none !important;
+  }
+
+  .chat-header-title {
+    max-width: 140px;
+    font-size: 0.88rem;
   }
 
   /* Increase touch targets for mobile thumb usability */
@@ -2722,8 +2784,62 @@ h1, h2, h3, h4, h5 {
   .input-tool-btn,
   .nexus-tab-pill,
   .gemini-tab-pill {
-    min-height: 44px;
+    min-height: 42px;
     touch-action: manipulation;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Input dock optimization for phones */
+  #btn-attach-image,
+  #btn-attach-file {
+    display: none !important; /* Accessible from + capsule menu */
+  }
+
+  .input-capsule {
+    gap: 4px;
+    padding: 6px 10px;
+  }
+
+  .capsule-model-pill #capsule-model-label {
+    max-width: 55px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-textarea {
+    font-size: 0.9rem;
+    padding: 6px 2px;
+  }
+
+  /* Modals adaptive fit on phones */
+  .om-modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .om-modal-content {
+    max-height: 90vh;
+    border-radius: var(--om-radius-md);
+  }
+
+  .modal-header,
+  .om-modal-header {
+    padding: 0.85rem 1rem !important;
+  }
+
+  .modal-body,
+  .om-modal-body {
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .capsule-model-wrapper {
+    display: none !important;
+  }
+  .chat-header-title {
+    max-width: 100px;
+    font-size: 0.82rem;
   }
 }
 
