@@ -147,6 +147,9 @@ class OMAssistant {
     } catch (err) {
       console.warn("Inference error, falling back to autonomous action engine", err);
       responseObj = this.generateAutonomousFallback(userText, history, activeChat.mode, attachments);
+      if (responseObj && responseObj.text && !responseObj.text.includes('Offline Demo Mode')) {
+        responseObj.text = `> ⚠️ **Offline Demo Mode**: Live cloud backend unreachable. Operating in local autonomous mode.\n> To connect cloud models, configure \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` in your environment or **⚙️ Settings**.\n\n` + responseObj.text;
+      }
     } finally {
       this.isProcessing = false;
     }
@@ -188,6 +191,8 @@ class OMAssistant {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: prompt,
+          history: history,
+          systemPrompt: (settings && settings.systemPrompt) ? settings.systemPrompt : '',
           attachmentsContext: attachmentsCtx,
           memory: memoryCtx,
           mode: mode,
@@ -200,20 +205,16 @@ class OMAssistant {
       if (serverResp.ok) {
         const data = await serverResp.json();
 
-        // 1. If backend succeeded with live AI provider or autonomous greeting:
-        if (data && data.success && data.text) {
+        // 1. If backend succeeded with live AI provider:
+        if (data && data.success && data.text && !data.offlineDemo) {
           const providerLabel = data.apiKeyUsed || (window.location && window.location.hostname.includes('github.io') ? 'OM Backend (Live)' : 'OM Serverless');
           return this.formatStructuredResponse(data.text, data.reasoning, data.actions, mode, providerLabel);
         }
 
-        // 2. If no AI provider key is configured on backend, seamlessly engage rich local autonomous engine:
-        if (data && (data.noApiKey || !data.success)) {
-          const localFallback = this.generateAutonomousFallback(prompt, history, mode, attachments);
-          if (localFallback && localFallback.text) {
-            localFallback.text += `\n\n> 💡 **Cloud AI Status**: Generated via OM Autonomous Engine. To activate Google Gemini 1.5 Flash cloud intelligence, configure \`GEMINI_API_KEY\` in your Vercel project environment variables, or enter your API key in **⚙️ Settings**.`;
-            return localFallback;
-          }
-          return this.formatStructuredResponse(data.text || data.error, data.reasoning, data.actions || [], mode, 'OM Configuration Needed');
+        // 2. If no AI provider key is configured on backend, present clear Offline Demo Mode:
+        if (data && (data.noApiKey || data.offlineDemo || !data.success)) {
+          const bannerText = data.text || `### ⚠️ Offline Demo Mode\n\nAI backend is active, but no cloud AI API key is configured.\n\nTo enable live intelligence from Google Gemini 1.5/2.0 Flash or OpenAI GPT-4o, set \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` in your environment variables, or enter your key in **⚙️ Settings** > **API Configuration**.\n\n*OM's local autonomous engines (Python sandbox runner, 3D CAD studio, thought map, and notebook) remain fully functional.*`;
+          return this.formatStructuredResponse(bannerText, data.reasoning || "Running in Offline Demo Mode.", data.actions || [], mode, 'Offline Demo Mode');
         }
 
         const replyText = data.text || data.message || data.error || data.greeting;

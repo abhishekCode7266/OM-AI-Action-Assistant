@@ -474,6 +474,9 @@ class OMApp {
       // Display clean message if backend response is null or empty
       if (!assistantResponse || !assistantResponse.text) {
         assistantResponse = this.assistant.generateAutonomousFallback(text, [], activeChat.mode, attachments);
+        if (assistantResponse && assistantResponse.text && !assistantResponse.text.includes('Offline Demo Mode')) {
+          assistantResponse.text = `> ⚠️ **Offline Demo Mode**: Live backend unreachable. Operating in local autonomous mode.\n> To enable live cloud responses, configure \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` in your environment or **⚙️ Settings**.\n\n` + assistantResponse.text;
+        }
       }
 
       this.removeTypingIndicator();

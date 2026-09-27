@@ -414,33 +414,55 @@ class handler(BaseHTTPRequestHandler):
 
         if path == "/api/chat" or path == "/chat":
             prompt = body.get("prompt", "")
-            mode = body.get("mode", "action")
+            mode = body.get("mode", "general")
+            history = body.get("history", [])
+            custom_persona = (body.get("systemPrompt") or "").strip()
             user_api_key = body.get("apiKey", "")
 
             clean_goal = prompt.replace("Decompose:", "").replace("Deconstruct:", "").strip()
             if not clean_goal:
                 clean_goal = "General Objective"
 
+            lower_goal = clean_goal.lower()
+            is_greeting = any(
+                lower_goal == g or lower_goal.startswith(g + " ")
+                for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
+            )
+
+            mode_prompts = {
+                "general": "You are OM AI Assistant, a direct, concise, and helpful multimodal personal AI collaborator. Brand tagline: 'Think. Plan. Act. Achieve.'",
+                "coding": "You are an expert software engineer and debugger. Write clean, modular, production-ready code with explanations, edge-case analysis, and verification steps.",
+                "data": "You are an expert data analyst. Parse and analyze datasets, provide statistical summaries, identify trends, anomalies, and structured markdown tables.",
+                "research": "You are an investigative research analyst. Provide deep, rigorous, multi-faceted analysis, citations, counterarguments, and syntheses.",
+                "writing": "You are an elite copywriter and editor. Craft clear, persuasive, beautifully structured prose tailored to the target audience.",
+                "project": "You are a technical project architect and scrum master. Deconstruct complex ambitions into concrete Think-Plan-Act-Achieve milestones, dependencies, and deliverables.",
+                "career": "You are an executive career coach and technical interviewer. Provide role-specific guidance, resume feedback, and mock interview questions.",
+                "study": "You are a master tutor and educator. Break down complex concepts using first-principles thinking, intuitive analogies, and interactive quizzes."
+            }
+            full_sys_prompt = mode_prompts.get(mode, mode_prompts["general"])
+            if custom_persona:
+                full_sys_prompt += f"\n\nUser Custom Persona & Instructions:\n{custom_persona}"
+            if body.get("memory"):
+                full_sys_prompt += f"\n\n{body.get('memory')}"
+
             effective_nexus_key = user_api_key if (user_api_key and user_api_key.startswith("AIzaSy")) else (os.environ.get("NEXUS_API_KEY", "") or os.environ.get("GEMINI_API_KEY", ""))
 
-            # Call Nexus 1.5 Flash if key is present
+            # Call Nexus / Gemini 1.5 Flash if key is present
             if effective_nexus_key:
                 try:
+                    contents = []
+                    if isinstance(history, list):
+                        for item in history[-8:]:
+                            t = item.get("text", "").strip()
+                            if t:
+                                r = "model" if item.get("role") in ["model", "assistant"] else "user"
+                                contents.append({"role": r, "parts": [{"text": t}]})
+                    contents.append({"role": "user", "parts": [{"text": prompt}]})
+
                     nexus_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={effective_nexus_key}"
                     nexus_payload = json.dumps({
-                        "contents": [{
-                            "role": "user",
-                            "parts": [{
-                                "text": (
-                                    "You are Om AI Assistant, a master-level, fully multimodal personal AI collaborator built to handle any task across text, vision, code, media, and data analysis.\n"
-                                    "Tagline: 'Think. Plan. Act. Achieve.'\n"
-                                    "1. Core Persona: Warm, highly engaging, direct, professional, and resourceful. Formatting: Clean Markdown hierarchy (Headings, bullet points, bold text, tables).\n"
-                                    "2. Capabilities: Vision & Image Analysis, Video & Audio Processing, Document & Library Search, Code & Technical Execution, Live Search & Data Lookup, Charts & Data Analytics (Sparks), Notebook Workflows.\n"
-                                    "3. Operational Rules: Clarity First, Step-by-Step Breakdown, Completeness.\n"
-                                    f"User Request: {prompt}"
-                                )
-                            }]
-                        }]
+                        "contents": contents,
+                        "systemInstruction": {"parts": [{"text": full_sys_prompt}]}
                     }).encode("utf-8")
 
                     req = urllib.request.Request(
@@ -454,17 +476,18 @@ class handler(BaseHTTPRequestHandler):
                             text = g_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                             if text:
                                 return self._send_json({
+                                    "success": True,
                                     "sender": "om",
                                     "greeting": "Hi, I'm Om AI Assistant, a master-level, fully multimodal personal AI collaborator. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
                                     "brand": "OM – AI Action Assistant",
                                     "tagline": "Think. Plan. Act. Achieve.",
                                     "query": prompt,
                                     "mode": mode,
-                                    "apiKeyUsed": "Nexus 1.5 Flash (Live)",
+                                    "apiKeyUsed": f"Google Gemini 1.5 Flash (Live Server Key - {mode})",
                                     "text": text,
-                                    "reasoning": "1. Connected live to Nexus 1.5 Flash Engine.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 99/100).",
+                                    "reasoning": f"Generated live by Google Gemini 1.5 Flash with {mode} specialization.",
                                     "verified": True,
-                                    "actions": [
+                                    "actions": is_greeting ? [] : [
                                         {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},
                                         {"stage": "plan", "title": "Architect milestones, contracts and timeline", "estimate": "2d"},
                                         {"stage": "act", "title": "Execute core development and workflows", "estimate": "3d"},
@@ -477,13 +500,19 @@ class handler(BaseHTTPRequestHandler):
             openai_key = os.environ.get("OPENAI_API_KEY", "")
             if openai_key:
                 try:
+                    messages = [{"role": "system", "content": full_sys_prompt}]
+                    if isinstance(history, list):
+                        for item in history[-8:]:
+                            t = item.get("text", "").strip()
+                            if t:
+                                r = "assistant" if item.get("role") in ["model", "assistant"] else "user"
+                                messages.append({"role": r, "content": t})
+                    messages.append({"role": "user", "content": prompt})
+
                     oai_url = "https://api.openai.com/v1/chat/completions"
                     oai_payload = json.dumps({
                         "model": "gpt-4o-mini",
-                        "messages": [
-                            {"role": "system", "content": "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'"},
-                            {"role": "user", "content": prompt}
-                        ]
+                        "messages": messages
                     }).encode("utf-8")
                     req = urllib.request.Request(oai_url, data=oai_payload, headers={"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"})
                     with urllib.request.urlopen(req, timeout=12) as o_resp:
@@ -492,17 +521,18 @@ class handler(BaseHTTPRequestHandler):
                             llm_text = o_data.get("choices", [{}])[0].get("message", {}).get("content", "")
                             if llm_text:
                                 return self._send_json({
+                                    "success": True,
                                     "sender": "om",
                                     "greeting": "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
                                     "brand": "OM – AI Action Assistant",
                                     "tagline": "Think. Plan. Act. Achieve.",
                                     "query": prompt,
                                     "mode": mode,
-                                    "apiKeyUsed": "OpenAI GPT-4o-mini (Live Server Key)",
+                                    "apiKeyUsed": f"OpenAI GPT-4o-mini (Live Server Key - {mode})",
                                     "text": llm_text,
-                                    "reasoning": "1. Connected live to OpenAI GPT-4o-mini Engine.\n2. Deconstructed into Think-Plan-Act-Achieve pipeline.\n3. Verified feasibility and dependency sequencing (Score: 98/100).",
+                                    "reasoning": f"Generated live by OpenAI GPT-4o-mini with {mode} specialization.",
                                     "verified": True,
-                                    "actions": [
+                                    "actions": is_greeting ? [] : [
                                         {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},
                                         {"stage": "plan", "title": "Architect milestones, contracts and timeline", "estimate": "2d"},
                                         {"stage": "act", "title": "Execute core development and workflows", "estimate": "3d"},
@@ -512,36 +542,34 @@ class handler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
 
-            lower = clean_goal.lower()
-            is_greeting = any(
-                lower == g or lower.startswith(g + " ")
-                for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
-            )
             if is_greeting:
                 text_response = (
-                    "### 👋 Hello! I'm Om AI Assistant.\n\n"
-                    "I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:\n\n"
-                    "* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts. Extract text accurately and analyze visual composition.\n"
-                    "* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages (Python, JavaScript, C++, Go, etc.).\n"
-                    "* 📊 **Charts & Data Analytics (Sparks)**: Ingest CSV/Excel datasets for statistical summaries and inline interactive charts.\n"
-                    "* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, summarize long recordings, and extract timestamps.\n"
-                    "* 📑 **Document & Library Search**: Read, cross-reference, and summarize large libraries of files, including PDFs, spreadsheets, and text documents.\n"
-                    "* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing multi-step projects.\n"
-                    "* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.\n\n"
-                    "**What would you like to achieve today?** Ask a question, paste code, or attach an image/dataset!"
+                    "### 👋 Hello! I'm OM AI Assistant.\n\n"
+                    "I am your **multimodal AI action collaborator**, designed to transform your intent into verified actions using the **Think. Plan. Act. Achieve.** framework.\n\n"
+                    "* 💻 **Coding Studio**: Write, execute, and debug Python, JavaScript, and HTML live.\n"
+                    "* 🎙️ **Live Voice Matrix**: Hands-free real-time conversation across 9+ distinct personas.\n"
+                    "* 📐 **3D Studio**: View and mechanically disassemble interactive CAD models (0–100% exploded view).\n"
+                    "* 📊 **Data & Files**: Analyze CSVs, PDFs, and extract structured insights.\n"
+                    "* 📝 **AI Notebook**: Capture thoughts and auto-save notes with live source citations.\n\n"
+                    "> 💡 **Notice**: Server is running in **Offline Demo Mode**. To activate live cloud intelligence, set `GEMINI_API_KEY` or `OPENAI_API_KEY` in environment variables or in **⚙️ Settings**.\n\n"
+                    "**What would you like to achieve today?**"
                 )
+                api_used = "OM Autonomous Engine (Offline Demo)"
             else:
                 text_response = (
-                    f"### 🎯 Strategic Plan for: **{clean_goal}**\n\n"
-                    f"I have analyzed your objective and mapped out an actionable execution roadmap:\n\n"
-                    f"1. **Think (Scope & Requirements)**: Deconstruct '{clean_goal}' into foundational constraints, dependencies, and deliverables.\n"
-                    f"2. **Plan (Architecture & Milestones)**: Sequence architecture, API contracts, database schemas, and sprint checkpoints.\n"
-                    f"3. **Act (Implementation)**: Write modular, production-ready code and execute core development sprints.\n"
-                    f"4. **Achieve (Verification & Review)**: Benchmark latency, test edge cases, and deploy live.\n\n"
-                    f"How would you like to proceed? We can begin with Step 1 immediately or refine the scope!"
+                    "### ⚠️ Offline Demo Mode\n\n"
+                    "No live AI provider API key is configured on the backend.\n\n"
+                    f"To activate live cloud intelligence for '{clean_goal}':\n"
+                    "1. Set `GEMINI_API_KEY` or `OPENAI_API_KEY` in your environment variables, or\n"
+                    "2. Enter your Gemini API key in **⚙️ Settings** > **API Configuration**.\n\n"
+                    "*OM's local autonomous engines (Python sandbox runner, 3D studio, terminal, and notebook) are fully active.*"
                 )
+                api_used = "Offline Demo Mode"
 
             return self._send_json({
+                "success": is_greeting,
+                "offlineDemo": True,
+                "noApiKey": True,
                 "sender": "om",
                 "greeting": "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
                 "brand": "OM – AI Action Assistant",
@@ -549,12 +577,9 @@ class handler(BaseHTTPRequestHandler):
                 "query": prompt,
                 "mode": mode,
                 "text": text_response,
-                "apiKeyUsed": "OM Autonomous Action Engine",
+                "apiKeyUsed": api_used,
                 "reasoning": (
-                    "1. Parsed objective into core ambition, constraints, and target deliverables.\n"
-                    "2. Cross-referenced multi-turn context and active Knowledge Vault.\n"
-                    "3. Deconstructed into Think-Plan-Act-Achieve pipeline.\n"
-                    "4. Verified feasibility and dependency sequencing (Score: 98/100)."
+                    "Offline Demo Mode active. Prompt deconstructed into standard Think-Plan-Act-Achieve pipeline."
                 ),
                 "verified": True,
                 "actions": [

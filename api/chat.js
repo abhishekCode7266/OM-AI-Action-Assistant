@@ -18,6 +18,17 @@ function setCors(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
+const MODE_SYSTEM_PROMPTS = {
+  general: "You are OM AI Assistant, a direct, concise, and helpful multimodal personal AI collaborator. Brand tagline: 'Think. Plan. Act. Achieve.'",
+  coding: "You are an expert software engineer and debugger. Write clean, modular, production-ready code with explanations, edge-case analysis, and verification steps.",
+  data: "You are an expert data analyst. Parse and analyze datasets, provide statistical summaries, identify trends, anomalies, and structured markdown tables.",
+  research: "You are an investigative research analyst. Provide deep, rigorous, multi-faceted analysis, citations, counterarguments, and syntheses.",
+  writing: "You are an elite copywriter and editor. Craft clear, persuasive, beautifully structured prose tailored to the target audience.",
+  project: "You are a technical project architect and scrum master. Deconstruct complex ambitions into concrete Think-Plan-Act-Achieve milestones, dependencies, and deliverables.",
+  career: "You are an executive career coach and technical interviewer. Provide role-specific guidance, resume feedback, and mock interview questions.",
+  study: "You are a master tutor and educator. Break down complex concepts using first-principles thinking, intuitive analogies, and interactive quizzes."
+};
+
 export default async function handler(req, res) {
   setCors(req, res);
 
@@ -27,9 +38,11 @@ export default async function handler(req, res) {
 
   const body = req.body || {};
   const rawPrompt = (body.prompt || '').trim();
-  const mode = body.mode || 'action';
+  const mode = body.mode || 'general';
+  const history = Array.isArray(body.history) ? body.history : [];
+  const customPersona = (body.systemPrompt || '').trim();
 
-  // Extract clean user query by stripping attached memory or file contexts
+  // Extract clean user query
   const userQuery = rawPrompt
     .split('\nUser Profile Preferences')[0]
     .split('\n--- USER ATTACHED')[0]
@@ -41,6 +54,17 @@ export default async function handler(req, res) {
   const cleanGoal = userQuery.replace(/^(decompose:|deconstruct:|plan:|launch:|build:|how to|i want to)\s*/i, '').trim() || 'Core Goal';
   const capGoal = cleanGoal.length > 50 ? cleanGoal.substring(0, 50) + '...' : (cleanGoal.charAt(0).toUpperCase() + cleanGoal.slice(1));
 
+  // Compose complete system prompt with mode specialization + user persona + memory
+  let fullSystemPrompt = MODE_SYSTEM_PROMPTS[mode] || MODE_SYSTEM_PROMPTS.general;
+  if (customPersona) {
+    fullSystemPrompt += `\n\nUser Custom Persona & Instructions:\n${customPersona}`;
+  }
+  if (body.memory) {
+    fullSystemPrompt += `\n\n${body.memory}`;
+  }
+
+  const fullUserText = body.attachmentsContext ? `${userQuery}\n\n${body.attachmentsContext}` : userQuery;
+
   // 1. Check for Gemini Key (Server environment variable or client-supplied in settings)
   const effectiveGeminiKey = (body.apiKey && body.apiKey.startsWith('AIzaSy'))
     ? body.apiKey
@@ -48,17 +72,29 @@ export default async function handler(req, res) {
 
   if (effectiveGeminiKey) {
     try {
+      const contents = [];
+      history.slice(-8).forEach(item => {
+        if (item.text && item.text.trim()) {
+          contents.push({
+            role: (item.role === 'model' || item.role === 'assistant') ? 'model' : 'user',
+            parts: [{ text: item.text }]
+          });
+        }
+      });
+      contents.push({
+        role: 'user',
+        parts: [{ text: fullUserText }]
+      });
+
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveGeminiKey}`;
       const geminiResp = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{
-            role: "user",
-            parts: [{
-              text: `You are OM – AI Action Assistant. Brand tagline: "Think. Plan. Act. Achieve." Provide a helpful, intelligent response to: ${userQuery}`
-            }]
-          }]
+          contents: contents,
+          systemInstruction: {
+            parts: [{ text: fullSystemPrompt }]
+          }
         })
       });
 
@@ -76,7 +112,7 @@ export default async function handler(req, res) {
             mode: mode,
             apiKeyUsed: 'Gemini 1.5 Flash (Live)',
             text: geminiText,
-            reasoning: "Generated live by Google Gemini 1.5 Flash via OM AI Action Assistant backend.",
+            reasoning: `Generated live by Google Gemini 1.5 Flash with ${mode} specialization.`,
             verified: true,
             actions: isGreeting ? [] : [
               { stage: 'think', title: `Analyze specifications for ${capGoal}`, estimate: '1d' },
@@ -96,6 +132,17 @@ export default async function handler(req, res) {
   const openaiKey = process.env.OPENAI_API_KEY;
   if (openaiKey) {
     try {
+      const messages = [{ role: 'system', content: fullSystemPrompt }];
+      history.slice(-8).forEach(item => {
+        if (item.text && item.text.trim()) {
+          messages.push({
+            role: (item.role === 'model' || item.role === 'assistant') ? 'assistant' : 'user',
+            content: item.text
+          });
+        }
+      });
+      messages.push({ role: 'user', content: fullUserText });
+
       const oaiResp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -104,10 +151,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: 'You are OM – AI Action Assistant. Tagline: "Think. Plan. Act. Achieve."' },
-            { role: 'user', content: userQuery }
-          ]
+          messages: messages
         })
       });
 
@@ -125,7 +169,7 @@ export default async function handler(req, res) {
             mode: mode,
             apiKeyUsed: 'OpenAI GPT-4o-mini (Live)',
             text: oaiText,
-            reasoning: "Generated live by OpenAI GPT-4o-mini via OM AI Action Assistant backend.",
+            reasoning: `Generated live by OpenAI GPT-4o-mini with ${mode} specialization.`,
             verified: true,
             actions: isGreeting ? [] : [
               { stage: 'think', title: `Scope requirements for ${capGoal}`, estimate: '1d' },
@@ -151,13 +195,13 @@ export default async function handler(req, res) {
       tagline: "Think. Plan. Act. Achieve.",
       query: userQuery,
       mode: mode,
-      apiKeyUsed: 'OM Autonomous Engine',
+      apiKeyUsed: 'OM Autonomous Engine (Offline Demo)',
       text: `### 👋 Hello! I'm OM AI Assistant.
 
 I am your **multimodal AI action collaborator**, designed to transform your intent into verified actions using the **Think. Plan. Act. Achieve.** framework.
 
 Here is what we can do together:
-* 💻 **Coding Studio**: Write, execute, and debug Python, JavaScript, and Java code live.
+* 💻 **Coding Studio**: Write, execute, and debug Python, JavaScript, and HTML live.
 * 🎙️ **Live Voice Matrix**: Hands-free real-time conversation across 9+ distinct personas.
 * 📐 **3D Studio**: View and mechanically disassemble interactive CAD models (0–100% exploded view).
 * 📊 **Data & Files**: Analyze CSVs, PDFs, and extract structured insights.
@@ -175,15 +219,16 @@ Here is what we can do together:
   // 4. Truthful response when no AI provider API key is configured for a specific query
   return res.status(200).json({
     success: false,
+    offlineDemo: true,
     noApiKey: true,
-    error: "AI backend is running, but no AI provider API key is configured.",
-    text: `AI backend is running, but no AI provider API key is configured.\n\nTo activate Google Gemini 1.5 Flash live inference for "${userQuery}":\n1. Add \`GEMINI_API_KEY\` to your Vercel project environment variables, or\n2. Open **⚙️ Settings** in the left sidebar and enter your Gemini API key under **API Configuration**.\n\nIn the meantime, OM's local autonomous engines (Python sandbox runner, 3D studio, terminal, and notebook) are fully active.`,
+    error: "AI backend is running in Offline Demo Mode (no API key configured).",
+    text: `### ⚠️ Offline Demo Mode\n\nNo live AI provider API key is currently configured on the backend.\n\nTo activate Google Gemini 1.5 Flash live inference for "${userQuery}":\n1. Add \`GEMINI_API_KEY\` to your Vercel project environment variables, or\n2. Open **⚙️ Settings** in the left sidebar and enter your Gemini API key under **API Configuration**.\n\nIn the meantime, OM's local autonomous engines (Python code sandbox, 3D CAD studio, thought map, and notebook) are fully active.`,
     sender: 'om',
     brand: "OM – AI Action Assistant",
     tagline: "Think. Plan. Act. Achieve.",
     query: userQuery,
     mode: mode,
-    apiKeyUsed: 'None Configured',
+    apiKeyUsed: 'Offline Demo Mode',
     verified: true,
     actions: [
       { stage: 'think', title: `Scope requirements for ${capGoal}`, estimate: '1d' },

@@ -290,31 +290,56 @@ class OMRequestHandler(BaseHTTPRequestHandler):
 
         if path == "/api/chat":
             prompt = body.get("prompt", "")
-            mode = body.get("mode", "action")
+            mode = body.get("mode", "general")
+            history = body.get("history", [])
+            custom_persona = (body.get("systemPrompt") or "").strip()
 
             clean_goal = prompt.replace("Decompose:", "").replace("Deconstruct:", "").strip()
             if not clean_goal:
                 clean_goal = "General Objective"
 
+            lower_goal = clean_goal.lower()
+            is_greeting = any(
+                lower_goal == g or lower_goal.startswith(g + " ")
+                for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
+            )
+
+            mode_prompts = {
+                "general": "You are OM AI Assistant, a direct, concise, and helpful multimodal personal AI collaborator. Brand tagline: 'Think. Plan. Act. Achieve.'",
+                "coding": "You are an expert software engineer and debugger. Write clean, modular, production-ready code with explanations, edge-case analysis, and verification steps.",
+                "data": "You are an expert data analyst. Parse and analyze datasets, provide statistical summaries, identify trends, anomalies, and structured markdown tables.",
+                "research": "You are an investigative research analyst. Provide deep, rigorous, multi-faceted analysis, citations, counterarguments, and syntheses.",
+                "writing": "You are an elite copywriter and editor. Craft clear, persuasive, beautifully structured prose tailored to the target audience.",
+                "project": "You are a technical project architect and scrum master. Deconstruct complex ambitions into concrete Think-Plan-Act-Achieve milestones, dependencies, and deliverables.",
+                "career": "You are an executive career coach and technical interviewer. Provide role-specific guidance, resume feedback, and mock interview questions.",
+                "study": "You are a master tutor and educator. Break down complex concepts using first-principles thinking, intuitive analogies, and interactive quizzes."
+            }
+            full_sys_prompt = mode_prompts.get(mode, mode_prompts["general"])
+            if custom_persona:
+                full_sys_prompt += f"\n\nUser Custom Persona & Instructions:\n{custom_persona}"
+            if body.get("memory"):
+                full_sys_prompt += f"\n\n{body.get('memory')}"
+
             gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("NEXUS_API_KEY")
             openai_key = os.environ.get("OPENAI_API_KEY")
             llm_text = None
-            api_used = "OM Native Cognitive Engine (Set GEMINI_API_KEY on server for live LLM mode)"
+            api_used = "Offline Demo Mode"
 
             if gemini_key:
                 try:
+                    contents = []
+                    if isinstance(history, list):
+                        for item in history[-8:]:
+                            t = item.get("text", "").strip()
+                            if t:
+                                r = "model" if item.get("role") in ["model", "assistant"] else "user"
+                                contents.append({"role": r, "parts": [{"text": t}]})
+                    contents.append({"role": "user", "parts": [{"text": prompt}]})
+
                     gem_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
                     gem_payload = json.dumps({
-                        "contents": [{
-                            "role": "user",
-                            "parts": [{
-                                "text": (
-                                    "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'\n"
-                                    "Provide a direct, intelligent, and helpful response. If the user asks for a plan or task breakdown, provide structured stages: Think, Plan, Act, Achieve.\n"
-                                    f"User Request: {prompt}"
-                                )
-                            }]
-                        }]
+                        "contents": contents,
+                        "systemInstruction": {"parts": [{"text": full_sys_prompt}]}
                     }).encode("utf-8")
                     req = urllib.request.Request(gem_url, data=gem_payload, headers={"Content-Type": "application/json"})
                     with urllib.request.urlopen(req, timeout=12) as g_resp:
@@ -322,19 +347,25 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                             g_data = json.loads(g_resp.read().decode("utf-8"))
                             llm_text = g_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                             if llm_text:
-                                api_used = "Google Gemini 1.5 Flash (Live Server Key)"
+                                api_used = f"Google Gemini 1.5 Flash (Live Server Key - {mode})"
                 except Exception:
                     pass
 
             if not llm_text and openai_key:
                 try:
+                    messages = [{"role": "system", "content": full_sys_prompt}]
+                    if isinstance(history, list):
+                        for item in history[-8:]:
+                            t = item.get("text", "").strip()
+                            if t:
+                                r = "assistant" if item.get("role") in ["model", "assistant"] else "user"
+                                messages.append({"role": r, "content": t})
+                    messages.append({"role": "user", "content": prompt})
+
                     oai_url = "https://api.openai.com/v1/chat/completions"
                     oai_payload = json.dumps({
                         "model": "gpt-4o-mini",
-                        "messages": [
-                            {"role": "system", "content": "You are OM AI Action Assistant. Brand tagline: 'Think. Plan. Act. Achieve.'"},
-                            {"role": "user", "content": prompt}
-                        ]
+                        "messages": messages
                     }).encode("utf-8")
                     req = urllib.request.Request(oai_url, data=oai_payload, headers={"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"})
                     with urllib.request.urlopen(req, timeout=12) as o_resp:
@@ -342,41 +373,40 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                             o_data = json.loads(o_resp.read().decode("utf-8"))
                             llm_text = o_data.get("choices", [{}])[0].get("message", {}).get("content", "")
                             if llm_text:
-                                api_used = "OpenAI GPT-4o-mini (Live Server Key)"
+                                api_used = f"OpenAI GPT-4o-mini (Live Server Key - {mode})"
                 except Exception:
                     pass
 
             if not llm_text:
-                lower = clean_goal.lower()
-                is_greeting = any(
-                    lower == g or lower.startswith(g + " ")
-                    for g in ["hello", "hi", "hey", "namaste", "hola", "greetings", "good morning", "good afternoon", "good evening", "how are you", "what's up"]
-                )
                 if is_greeting:
                     llm_text = (
-                        "### 👋 Hello! I'm Om AI Assistant.\n\n"
-                        "I am your **master-level, fully multimodal personal AI collaborator**, built to handle any task across text, vision, code, media, and data analysis:\n\n"
-                        "* 👁️ **Vision & Image Analysis**: Inspect photos, screenshots, diagrams, and UI/UX layouts.\n"
-                        "* 💻 **Code & Technical Execution**: Write, debug, optimize, and explain code across all major languages.\n"
-                        "* 📊 **Charts & Data Analytics (Sparks)**: Ingest datasets for statistical summaries and inline interactive charts.\n"
-                        "* 🎥 **Video & Audio Processing**: Parse video frames, listen to audio clips, and summarize recordings.\n"
-                        "* 📑 **Document & Library Search**: Read, cross-reference, and summarize libraries of files, PDFs, and spreadsheets.\n"
-                        "* 📓 **Notebook Workflows**: Act as an interactive research partner, synthesizing notes, brainstorming ideas, and organizing projects.\n"
-                        "* 🌐 **Live Search & Data Lookup**: Access and synthesize real-time information, web data, and current news.\n\n"
-                        "**What would you like to achieve today?** Ask a question, paste code, or explore any tool!"
+                        "### 👋 Hello! I'm OM AI Assistant.\n\n"
+                        "I am your **multimodal AI action collaborator**, designed to transform your intent into verified actions using the **Think. Plan. Act. Achieve.** framework.\n\n"
+                        "* 💻 **Coding Studio**: Write, execute, and debug Python, JavaScript, and HTML live.\n"
+                        "* 🎙️ **Live Voice Matrix**: Hands-free real-time conversation across 9+ distinct personas.\n"
+                        "* 📐 **3D Studio**: View and mechanically disassemble interactive CAD models (0–100% exploded view).\n"
+                        "* 📊 **Data & Files**: Analyze CSVs, PDFs, and extract structured insights.\n"
+                        "* 📝 **AI Notebook**: Capture thoughts and auto-save notes with live source citations.\n\n"
+                        "> 💡 **Notice**: Server is running in **Offline Demo Mode**. To activate live cloud intelligence, set `GEMINI_API_KEY` or `OPENAI_API_KEY` in server environment variables or in **⚙️ Settings**.\n\n"
+                        "**What would you like to achieve today?**"
                     )
+                    api_used = "OM Autonomous Engine (Offline Demo)"
                 else:
                     llm_text = (
-                        f"### 🎯 Strategic Plan for: **{clean_goal}**\n\n"
-                        f"I have analyzed your objective and mapped out an actionable execution roadmap:\n\n"
-                        f"1. **Think (Scope & Requirements)**: Deconstruct '{clean_goal}' into foundational constraints, dependencies, and deliverables.\n"
-                        f"2. **Plan (Architecture & Milestones)**: Sequence architecture, API contracts, database schemas, and sprint checkpoints.\n"
-                        f"3. **Act (Implementation)**: Write modular, production-ready code and execute core development sprints.\n"
-                        f"4. **Achieve (Verification & Review)**: Benchmark latency, test edge cases, and deploy live.\n\n"
-                        f"How would you like to proceed? We can begin with Step 1 immediately or refine the scope!"
+                        "### ⚠️ Offline Demo Mode\n\n"
+                        "No live AI provider API key is configured on the backend.\n\n"
+                        f"To activate live cloud intelligence for '{clean_goal}':\n"
+                        "1. Set `GEMINI_API_KEY` or `OPENAI_API_KEY` in your environment variables, or\n"
+                        "2. Enter your Gemini API key in **⚙️ Settings** > **API Configuration**.\n\n"
+                        "*OM's local autonomous engines (Python sandbox runner, 3D studio, terminal, and notebook) are fully active.*"
                     )
+                    api_used = "Offline Demo Mode"
 
+            is_offline = "Offline Demo" in api_used or "Native Cognitive" in api_used
             return self._send_json({
+                "success": not is_offline or is_greeting,
+                "offlineDemo": is_offline,
+                "noApiKey": is_offline and not (gemini_key or openai_key),
                 "sender": "om",
                 "greeting": "Hi, I'm OM. Tell me what you want to achieve, and I'll help you plan, execute, verify, and track it.",
                 "brand": "OM – AI Action Assistant",
@@ -386,10 +416,8 @@ class OMRequestHandler(BaseHTTPRequestHandler):
                 "apiKeyUsed": api_used,
                 "text": llm_text,
                 "reasoning": (
-                    "1. Parsed objective into core ambition, constraints, and target deliverables.\n"
-                    "2. Cross-referenced multi-turn context and active Knowledge Vault.\n"
-                    "3. Deconstructed into Think-Plan-Act-Achieve pipeline.\n"
-                    "4. Verified feasibility and dependency sequencing (Score: 98/100)."
+                    f"Generated live via {api_used}." if not is_offline
+                    else "Offline Demo Mode active. Prompt deconstructed into standard Think-Plan-Act-Achieve pipeline."
                 ),
                 "verified": True,
                 "actions": [
