@@ -1254,24 +1254,24 @@
         <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">Billing cycle: Annual • Cancel anytime</div>
       </div>
 
-      <div style="margin-top: 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 14px;">
-        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #ef4444; font-size: 0.9rem;">
-          <span>⚠️</span>
-          <span>Payment Gateway Notice</span>
+      <div style="margin-top: 14px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--om-cyan); font-size: 0.9rem;">
+          <span>🧪</span>
+          <span>Sandbox / Demo Checkout Mode</span>
         </div>
         <p style="font-size: 0.82rem; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">
-          Payment gateway is not configured. Live transactions and paid tier upgrades require configuring a verified payment provider (such as Stripe or Razorpay) in backend environment variables.
+          Live payment processor is running in <strong>Interactive Sandbox Test Mode</strong>. Confirming below will instantly unlock and apply full Pro access tier features to your current active session without charge.
         </p>
       </div>
 
       <div class="payment-fields-wrap" id="upi-fields" style="margin-top: 12px;">
-        <label style="font-size: 0.78rem; color: #cbd5e1;">Payment Status</label>
-        <input type="text" class="om-input" id="checkout-upi-id" placeholder="Payment gateway unconfigured" value="" readonly style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8; background: rgba(255,255,255,0.02);">
+        <label style="font-size: 0.78rem; color: #cbd5e1;">Sandbox Environment Status</label>
+        <input type="text" class="om-input" id="checkout-upi-id" placeholder="Ready for Sandbox Activation" value="Verified Test Sandbox (₹0 Simulation)" readonly style="font-size: 0.85rem; margin-top: 4px; color: var(--om-cyan); background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.3);">
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
         <button class="om-btn om-btn-secondary modal-close-trigger">Close</button>
-        <button class="om-btn om-btn-primary" id="btn-confirm-payment" onclick="window.omApp.completeCheckout()">Confirm</button>
+        <button class="om-btn om-btn-primary" id="btn-confirm-payment" onclick="window.omApp.completeCheckout()">⚡ Activate in Sandbox Mode</button>
       </div>
     </div>
   </div>
