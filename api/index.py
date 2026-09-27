@@ -487,7 +487,7 @@ class handler(BaseHTTPRequestHandler):
                                     "text": text,
                                     "reasoning": f"Generated live by Google Gemini 1.5 Flash with {mode} specialization.",
                                     "verified": True,
-                                    "actions": is_greeting ? [] : [
+                                    "actions": [] if is_greeting else [
                                         {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},
                                         {"stage": "plan", "title": "Architect milestones, contracts and timeline", "estimate": "2d"},
                                         {"stage": "act", "title": "Execute core development and workflows", "estimate": "3d"},
@@ -532,7 +532,7 @@ class handler(BaseHTTPRequestHandler):
                                     "text": llm_text,
                                     "reasoning": f"Generated live by OpenAI GPT-4o-mini with {mode} specialization.",
                                     "verified": True,
-                                    "actions": is_greeting ? [] : [
+                                    "actions": [] if is_greeting else [
                                         {"stage": "think", "title": f"Scope requirements for '{clean_goal}'", "estimate": "1d"},
                                         {"stage": "plan", "title": "Architect milestones, contracts and timeline", "estimate": "2d"},
                                         {"stage": "act", "title": "Execute core development and workflows", "estimate": "3d"},

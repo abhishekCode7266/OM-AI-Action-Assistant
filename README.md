@@ -17,7 +17,7 @@
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Active%20%26%20Passing-10B981?style=flat-square&logo=github)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed%20%26%20Passing-10B981?style=flat-square&logo=vercel)](https://om-ai-eight.vercel.app/)
 [![AI Models](https://img.shields.io/badge/Models-Nexus%202.0%20%7C%201.5%20Pro-10B981?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
-[![Test Suite](https://img.shields.io/badge/Tests-30%2F30%20Passing-10B981?style=flat-square)](tests/)
+[![Test Suite](https://img.shields.io/badge/Tests-35%2F35%20Passing-10B981?style=flat-square)](tests/)
 
 ---
 
@@ -190,10 +190,16 @@ Start-Process index.html
 
 ### Running Automated Tests
 ```bash
-python tests/test_server.py
+# Run all 35 automated tests across all test suites
+python -m unittest discover tests
+
+# Or run individual test suites:
+python tests/test_chat_voice.py
 python tests/test_features.py
+python tests/test_server.py
+python tests/test_vercel_handler.py
 ```
-All test suites run against the API endpoints and branding assertions.
+All test suites verify backend routing, 8-mode AI chat, Python execution, speech recognition pipelines, and brand compliance.
 
 ---
 
