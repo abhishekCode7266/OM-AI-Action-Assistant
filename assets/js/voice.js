@@ -178,6 +178,10 @@ class OMVoiceEngine {
   }
 
   startRecording() {
+    // Interrupt any ongoing AI speech immediately (Barge-in / Interruptibility)
+    if (this.isPlayingTTS) {
+      this.stopSpeaking();
+    }
     if (!this.recognition || this.isRecording || this.isStarting) {
       return;
     }
@@ -190,7 +194,7 @@ class OMVoiceEngine {
       if (e.name === 'InvalidStateError') {
         // Recognition already running in browser
         this.isRecording = true;
-        this.updateVisualState(true);
+        this.updateVisualState(true, 'listening');
       } else {
         console.warn("Recognition start notice:", e);
       }
@@ -206,15 +210,27 @@ class OMVoiceEngine {
     this.updateVisualState(false);
   }
 
-  updateVisualState(recording) {
+  updateVisualState(recording, state = 'listening') {
     const voiceBtn = document.getElementById('btn-voice-input');
     const visualizer = document.getElementById('voice-visualizer-bar');
+    const orb = document.getElementById('om-voice-orb');
+    const preview = document.getElementById('voice-transcript-preview');
+
     if (voiceBtn) {
       voiceBtn.classList.toggle('recording', recording);
-      voiceBtn.innerHTML = recording ? '🔴' : '🎙️';
+      voiceBtn.innerHTML = recording ? '<span class="mic-orb-circle"></span>' : '🎙️';
     }
     if (visualizer) {
       visualizer.style.display = recording ? 'flex' : 'none';
+      if (recording) {
+        visualizer.setAttribute('data-state', state);
+      }
+    }
+    if (orb) {
+      orb.setAttribute('data-state', state);
+    }
+    if (preview && !recording) {
+      preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;
     }
   }
 
@@ -308,18 +324,23 @@ class OMVoiceEngine {
       this.isPlayingTTS = true;
       this.activeTTSMsgId = msgId;
       this.updateTTSButtonState(msgId, true);
+      this.updateVisualState(true, 'speaking');
+      const preview = document.getElementById('voice-transcript-preview');
+      if (preview) preview.textContent = "AI speaking response...";
     };
 
     this.currentUtterance.onend = () => {
       this.isPlayingTTS = false;
       this.updateTTSButtonState(msgId, false);
       this.activeTTSMsgId = null;
+      this.updateVisualState(false);
     };
 
     this.currentUtterance.onerror = () => {
       this.isPlayingTTS = false;
       this.updateTTSButtonState(msgId, false);
       this.activeTTSMsgId = null;
+      this.updateVisualState(false);
     };
 
     this.synth.speak(this.currentUtterance);
@@ -343,6 +364,7 @@ class OMVoiceEngine {
         this.updateTTSButtonState(this.activeTTSMsgId, false);
         this.activeTTSMsgId = null;
       }
+      this.updateVisualState(false);
     }
   }
 

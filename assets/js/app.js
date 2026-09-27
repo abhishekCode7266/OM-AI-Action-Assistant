@@ -828,6 +828,21 @@ class OMApp {
     }
   }
 
+  handleClearAllHistory() {
+    const total = (this.chatStore.getAllChats() || []).length;
+    if (total === 0) {
+      this.showToast('No chat history to delete.', 'info');
+      return;
+    }
+    if (confirm(`Are you sure you want to delete all ${total} chat history sessions? This will permanently wipe your conversations for privacy.`)) {
+      this.chatStore.clearAllChats();
+      this.renderSidebar();
+      this.renderChatMessages();
+      this.updateHeaderInfo();
+      this.showToast('🗑️ All chat history has been permanently deleted.', 'success');
+    }
+  }
+
   editUserMessage(msgId) {
     const active = this.chatStore.getActiveChat();
     if (!active) return;
@@ -2285,6 +2300,9 @@ Key Ideas & Notes:
   stopProcessing() {
     if (this.assistant) {
       this.assistant.isProcessing = false;
+    }
+    if (this.voice) {
+      this.voice.stopSpeaking();
     }
     this.removeTypingIndicator();
     const sendBtn = document.getElementById('btn-chat-send');

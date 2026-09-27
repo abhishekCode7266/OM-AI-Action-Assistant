@@ -267,9 +267,12 @@
           </div>
         </div>
 
-        <!-- Recents Section Header (Matching Image 2) -->
-        <div class="sidebar-section-header" style="margin-top: 6px;">
+        <!-- Recents Section Header with Delete History Option -->
+        <div class="sidebar-section-header" style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
           <span class="section-title">Recents</span>
+          <button class="btn-clear-history-all" id="btn-clear-all-history" onclick="window.omApp.handleClearAllHistory()" title="Delete Chat History (Clear all chats for privacy)">
+            🗑️ <span>Delete History</span>
+          </button>
         </div>
 
         <!-- Chronologically Grouped Chat History -->
@@ -444,11 +447,17 @@
           <!-- Attachment Previews -->
           <div class="attachment-preview-dock" id="attachment-preview-dock" style="display: none;"></div>
 
-          <!-- Live Voice Dictation Waveform Bar -->
-          <div class="voice-visualizer-bar" id="voice-visualizer-bar">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="pulse-dot" style="background: #f43f5e;"></span>
-              <span id="voice-transcript-preview">Listening to your voice...</span>
+          <!-- Live Voice Dictation Waveform Bar with Dynamic Morphing Orb ("Small Gola") -->
+          <div class="voice-visualizer-bar" id="voice-visualizer-bar" data-state="listening">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="om-voice-orb" id="om-voice-orb" title="Voice AI Active (Listening / Speaking)">
+                <div class="om-orb-core"></div>
+                <div class="om-orb-pulse"></div>
+              </div>
+              <div class="om-voice-wave-eq" id="om-voice-wave-eq">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span id="voice-transcript-preview" style="font-weight: 500; font-size: 0.85rem; color: #fff;">Listening to your voice...</span>
             </div>
             <button class="remove-att-btn" onclick="window.omVoice.stopRecording()" title="Stop voice recording">✕ Stop</button>
           </div>
