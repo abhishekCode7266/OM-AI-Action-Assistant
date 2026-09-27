@@ -8,6 +8,8 @@ class OMVoiceEngine {
   constructor() {
     this.recognition = null;
     this.isRecording = false;
+    this.isStarting = false;
+    this._lastToggleTime = 0;
     this.synth = window.speechSynthesis || null;
     this.currentUtterance = null;
     this.isPlayingTTS = false;
@@ -53,6 +55,7 @@ class OMVoiceEngine {
       this.lastSpokenText = '';
 
       this.recognition.onstart = () => {
+        this.isStarting = false;
         this.isRecording = true;
         this.lastSpokenText = '';
         this.updateVisualState(true);
@@ -84,7 +87,8 @@ class OMVoiceEngine {
       };
 
       this.recognition.onerror = (e) => {
-        console.warn("Speech recognition error", e.error);
+        this.isStarting = false;
+        console.warn("Speech recognition notice:", e.error);
         this.stopRecording();
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
           if (window.omApp) {
@@ -106,6 +110,7 @@ class OMVoiceEngine {
       };
 
       this.recognition.onend = () => {
+        this.isStarting = false;
         const spoken = (this.lastSpokenText || '').trim();
         this.stopRecording();
         if (spoken.length > 0) {
@@ -152,6 +157,12 @@ class OMVoiceEngine {
   }
 
   toggleRecording() {
+    const now = Date.now();
+    if (this._lastToggleTime && (now - this._lastToggleTime < 350)) {
+      return; // Debounce rapid multi-clicks
+    }
+    this._lastToggleTime = now;
+
     if (!this.recognition) {
       if (window.omApp) {
         window.omApp.showToast("Voice dictation is not supported in this browser. Try Chrome or Edge.", "info");
@@ -159,7 +170,7 @@ class OMVoiceEngine {
       return;
     }
 
-    if (this.isRecording) {
+    if (this.isRecording || this.isStarting) {
       this.stopRecording();
     } else {
       this.startRecording();
@@ -167,17 +178,27 @@ class OMVoiceEngine {
   }
 
   startRecording() {
-    if (this.recognition && !this.isRecording) {
-      try {
-        this.recognition.lang = this.currentLanguage;
-        this.recognition.start();
-      } catch (e) {
-        console.warn("Recognition already started or permission error", e);
+    if (!this.recognition || this.isRecording || this.isStarting) {
+      return;
+    }
+    this.isStarting = true;
+    try {
+      this.recognition.lang = this.currentLanguage;
+      this.recognition.start();
+    } catch (e) {
+      this.isStarting = false;
+      if (e.name === 'InvalidStateError') {
+        // Recognition already running in browser
+        this.isRecording = true;
+        this.updateVisualState(true);
+      } else {
+        console.warn("Recognition start notice:", e);
       }
     }
   }
 
   stopRecording() {
+    this.isStarting = false;
     this.isRecording = false;
     if (this.recognition) {
       try { this.recognition.stop(); } catch (e) {}
