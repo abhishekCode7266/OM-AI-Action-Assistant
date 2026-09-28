@@ -12,6 +12,7 @@
 | **Vercel Project Dashboard** | [https://vercel.com/abhishek-ef1f/om-ai](https://vercel.com/abhishek-ef1f/om-ai) | 🟢 **Connected to GitHub (Auto-Builds on Push)** |
 | **Vercel Production Domain** | [https://om-ai-eight.vercel.app](https://om-ai-eight.vercel.app) | 🟢 **Production Domain** |
 | **GitHub Repository** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant](https://github.com/abhishekCode7266/OM-AI-Action-Assistant) | 📂 **Branch `main`** |
+| **GitHub Actions (CI/CD)** | [https://github.com/abhishekCode7266/OM-AI-Action-Assistant/actions](https://github.com/abhishekCode7266/OM-AI-Action-Assistant/actions) | ⚡ **Automated Test & Deploy** |
 
 
 ---
