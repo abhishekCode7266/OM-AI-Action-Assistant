@@ -203,4 +203,43 @@ All test suites verify backend routing, 8-mode AI chat, Python execution, speech
 
 ---
 
+## 🚀 Automated Continuous Deployment (GitHub Pages & Vercel)
+
+Every push to the `main` branch automatically triggers synchronized dual-platform deployment:
+
+```mermaid
+flowchart LR
+    A["git push origin main"] --> B["GitHub Actions CI/CD"]
+    A --> C["Vercel Git Integration"]
+    B --> D["35 Unit Tests"]
+    D --> E["Deploy GitHub Pages (Frontend)"]
+    E --> F["Verify Endpoints (HTTP 200)"]
+    C --> G["Deploy Serverless Functions (/api)"]
+    G --> H["Live Production Backend"]
+```
+
+### 1. One-Click Deploy Script
+You can test, commit, and deploy all pending updates with a single command:
+```bash
+# On Windows (PowerShell):
+.\deploy.ps1 "feat: your update description"
+
+# On macOS / Linux:
+./deploy.sh "feat: your update description"
+```
+The script automatically:
+1. Runs all 35 unit tests to prevent deploying broken code.
+2. Stages and commits all modified files.
+3. Pushes to `main` branch on GitHub.
+4. Triggers both GitHub Pages and Vercel builds with live deployment links.
+
+### 2. Live Deployment Endpoints
+| Platform | Target | Role | Live URL |
+| :--- | :--- | :--- | :--- |
+| **GitHub Pages** | `main` branch | Primary Frontend & PWA | [abhishekcode7266.github.io/OM-AI-Action-Assistant](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/) |
+| **Vercel** | `main` branch | Serverless Backend & API | [om-ai-eight.vercel.app](https://om-ai-eight.vercel.app/) |
+| **GitHub Actions** | `.github/workflows/deploy.yml` | CI/CD Pipeline & Health Check | [Workflow Runs](https://github.com/abhishekCode7266/OM-AI-Action-Assistant/actions) |
+
+---
+
 *OM – AI Action Assistant © 2026. "Think. Plan. Act. Achieve."*

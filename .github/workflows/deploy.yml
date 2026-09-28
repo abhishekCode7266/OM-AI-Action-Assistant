@@ -1,4 +1,4 @@
-name: Deploy OM to GitHub Pages
+name: CI/CD — Test, Deploy & Verify OM
 
 on:
   push:
@@ -15,7 +15,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test:
+    name: Run Automated Test Suites (35 Tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Test Suites
+        run: |
+          python -m unittest discover tests
+
   deploy:
+    name: Deploy to GitHub Pages
+    needs: test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -35,3 +54,47 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    name: Verify GitHub Pages & Vercel Deployments
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Live Deployment Endpoints
+        run: |
+          python -c "
+          import urllib.request, json, time, sys
+
+          print('Allowing 10s for CDN and cache synchronization...')
+          time.sleep(10)
+
+          # 1. Verify GitHub Pages
+          gh_url = 'https://abhishekcode7266.github.io/OM-AI-Action-Assistant/'
+          try:
+              req = urllib.request.Request(gh_url, headers={'User-Agent': 'OM-Deploy-Checker'})
+              with urllib.request.urlopen(req, timeout=25) as r:
+                  html = r.read().decode('utf-8', errors='ignore')
+                  assert r.status == 200, f'GitHub Pages status: {r.status}'
+                  assert 'omApp' in html, 'omApp missing from index.html'
+                  print(f'✅ SUCCESS: GitHub Pages is live at {gh_url} (HTTP 200, {len(html)} bytes)')
+          except Exception as e:
+              print(f'❌ ERROR verifying GitHub Pages: {e}', file=sys.stderr)
+              sys.exit(1)
+
+          # 2. Verify Vercel Backend
+          vercel_url = 'https://om-ai-eight.vercel.app/api/status'
+          try:
+              req = urllib.request.Request(vercel_url, headers={'User-Agent': 'OM-Deploy-Checker'})
+              with urllib.request.urlopen(req, timeout=25) as r:
+                  data = json.loads(r.read().decode('utf-8'))
+                  assert r.status == 200, f'Vercel status: {r.status}'
+                  assert data.get('status') == 'online', 'Vercel backend is not reporting online'
+                  print(f'✅ SUCCESS: Vercel Backend is live at {vercel_url} (Status: {data.get(\"status\")}, Engine: {data.get(\"engine_version\")})')
+          except Exception as e:
+              print(f'⚠️ WARNING verifying Vercel backend: {e}', file=sys.stderr)
+          "
