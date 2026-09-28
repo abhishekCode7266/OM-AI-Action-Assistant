@@ -1775,6 +1775,9 @@
           <button class="om-btn om-btn-secondary" onclick="window.omJarvisLive.rearmMic()" title="Re-arm Microphone">
             🎙️ Speak / Mic
           </button>
+          <button class="om-btn om-btn-warning" id="btn-live-stop-speech" onclick="window.omJarvisLive && window.omJarvisLive.stopSpeaking(); if(window.omVoice) window.omVoice.stopSpeaking();" title="Interrupt / Cancel current speech" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">
+            🛑 Cancel / Stop
+          </button>
           <button class="om-btn om-btn-secondary" id="btn-live-context-overlay" onclick="window.omJarvisLive.toggleChatHistoryOverlay()" title="Overlay view of chat history for continuous context">
             💬 Context History
           </button>
@@ -2943,6 +2946,7 @@
     <div class="pip-controls-row">
       <button class="pip-action-btn" id="pip-btn-screen" title="Toggle Screen Share">🖥️</button>
       <button class="pip-action-btn" id="pip-btn-camera" title="Toggle Camera">📷</button>
+      <button class="pip-action-btn" id="pip-btn-stop" onclick="window.omJarvisLive && window.omJarvisLive.stopSpeaking(); if(window.omVoice) window.omVoice.stopSpeaking();" title="Interrupt / Cancel Speech" style="color: #fbbf24;">🛑</button>
       <button class="pip-action-btn" id="pip-btn-expand" title="Expand to Full Screen">🗖</button>
       <button class="pip-action-btn close-btn" id="pip-btn-close" title="End Voice Session">✕</button>
     </div>
