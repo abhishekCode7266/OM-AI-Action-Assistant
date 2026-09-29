@@ -1,0 +1,17 @@
+{
+  "name": "OM AI Assistant",
+  "short_name": "OM",
+  "description": "Think. Talk. See. Act. Achieve. Next-generation multimodal AI personal assistant.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0F17",
+  "theme_color": "#0D5FE6",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
