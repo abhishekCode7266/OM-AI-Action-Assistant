@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test tests/modes-voice.test.js tests/data-analysis.test.js tests/chat-action.test.js"
+    "test": "node --test tests/"
   },
   "dependencies": {
     "clsx": "^2.1.1",
