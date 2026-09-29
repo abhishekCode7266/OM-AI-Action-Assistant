@@ -24,7 +24,7 @@
 
 <br/>
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2Fom-ai-assistant)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2FOM-AI-Action-Assistant)
 
 </div>
 
