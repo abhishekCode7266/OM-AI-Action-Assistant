@@ -1,0 +1,75 @@
+name: CI/CD Pipeline - Build, Test & Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Automated Test Suite
+        run: npm test
+
+      - name: Next.js Production Build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+  deploy:
+    name: Deploy to Vercel
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "Deploying to Vercel Production..."
+            npx vercel --token "$VERCEL_TOKEN" --prod --yes
+          else
+            echo "=============================================================================="
+            echo "NOTICE: VERCEL_TOKEN secret is not set in this GitHub repository."
+            echo "To enable direct GitHub Actions deployment to Vercel:"
+            echo "1. Go to https://vercel.com/account/tokens and generate a token."
+            echo "2. Add it to GitHub: Repo Settings -> Secrets and variables -> Actions -> VERCEL_TOKEN"
+            echo "Alternatively, connect this repository directly on https://vercel.com/new"
+            echo "for automatic zero-config deployments on every git push."
+            echo "=============================================================================="
+          fi
