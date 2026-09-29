@@ -18,7 +18,16 @@ class OMApp {
     this.init();
   }
 
+  hydrateTheme() {
+    try {
+      const saved = localStorage.getItem('om_theme') || 'dark';
+      const valid = ['dark', 'cyber', 'light'].includes(saved) ? saved : 'dark';
+      document.body.setAttribute('data-theme', valid);
+    } catch(e) {}
+  }
+
   init() {
+    this.hydrateTheme();
     this.setupEventListeners();
     this.renderSidebar();
     this.renderChatMessages();
@@ -1208,10 +1217,13 @@ class OMApp {
   }
 
   setAppTheme(theme) {
-    document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('om_theme', theme);
+    const valid = ['dark', 'cyber', 'light'].includes(theme) ? theme : 'dark';
+    document.body.setAttribute('data-theme', valid);
+    try {
+      localStorage.setItem('om_theme', valid);
+    } catch(e) {}
     this.closeProfilePopover();
-    this.showToast(`Applied ${theme.toUpperCase()} theme`, 'info');
+    this.showToast(`Applied ${valid.toUpperCase()} theme`, 'info');
   }
 
   openSparkSettingsModal() {
@@ -2196,6 +2208,18 @@ Key Ideas & Notes:
   openLibraryModal() {
     const modal = document.getElementById('resource-library-modal');
     if (modal) modal.classList.add('active');
+  }
+
+  openResourceLibraryModal() {
+    return this.openLibraryModal();
+  }
+
+  openNotesScratchpadModal(notebookId = null) {
+    return this.openNotebookModal(notebookId);
+  }
+
+  openCodingStudioModal(optionalCode = '', optionalLang = 'python') {
+    return this.openCodingModal(optionalCode, optionalLang);
   }
 
   filterLibraryItems(query) {

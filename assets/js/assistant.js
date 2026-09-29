@@ -712,15 +712,66 @@ You are OM AI Assistant, an advanced, highly conversational multimodal AI operat
     }
 
     // =========================================================================
-    // 00a. 3D Exploded View & Dismantle Inspector Engine
     // =========================================================================
-    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('3d image') || lower.includes('3d process') || lower.includes('car part') || lower.includes('disassemble') || lower.includes('engine part') || lower.includes('blueprint') || lower.includes('assembly video') || (lower.includes('car') && lower.includes('part'))) {
+    // 00a. 3D Exploded View, CAD Deconstructor & Video Generation Engine
+    // =========================================================================
+    if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('3d model') || lower.includes('generate 3d') || lower.includes('create 3d') || lower.includes('3d cad') || lower.includes('3d studio') || lower.includes('3d image') || lower.includes('3d process') || lower.includes('car part') || lower.includes('disassemble') || lower.includes('engine part') || lower.includes('blueprint') || lower.includes('assembly video') || (lower.includes('car') && lower.includes('part')) || lower.includes('generate video') || lower.includes('create video') || lower.includes('video generation') || lower.includes('video studio') || (lower.includes('video') && (lower.includes('generate') || lower.includes('create') || lower.includes('ai') || lower.includes('render')))) {
       const isTurbine = lower.includes('jet') || lower.includes('turbine') || lower.includes('plane');
-      const isRobot = lower.includes('robot') || lower.includes('drone') || lower.includes('humanoid');
-      const targetModel = isTurbine ? 'turbine' : (isRobot ? 'robot' : 'car');
-      const modelName = isTurbine ? "Mach-4 Jet Turbine Engine" : (isRobot ? "Bipedal Autonomous Robotics Core" : "Apex Cyber-EV Hypercar");
+      const isRobot = lower.includes('robot') || lower.includes('humanoid') || lower.includes('bionic');
+      const isDrone = lower.includes('drone') || lower.includes('quad') || lower.includes('uav');
+      const isSatellite = lower.includes('satellite') || lower.includes('space') || lower.includes('orbit');
+      const isEngine = lower.includes('engine') || lower.includes('v8') || lower.includes('motor');
+      const isHand = lower.includes('hand') || lower.includes('arm') || lower.includes('prosthetic');
+      const isVideo = lower.includes('video') || lower.includes('render');
 
-      text = `### 🚗 3D Exploded CAD Deconstructor: ${modelName}
+      const targetModel = isTurbine ? 'turbine' : (isRobot ? 'robot' : (isDrone ? 'drone' : (isSatellite ? 'satellite' : (isEngine ? 'engine' : (isHand ? 'hand' : 'car')))));
+      const modelName = isTurbine ? "Mach-4 Jet Turbine Engine" : (isRobot ? "Bipedal Autonomous Robotics Core" : (isDrone ? "Apex Valkyrie X-4 Autonomous Drone" : (isSatellite ? "Orbital High-Gain Defense Satellite" : (isEngine ? "Twin-Turbocharged 4.0L V8 Engine" : (isHand ? "Bionic Cybernetic Neural Hand" : "Apex Cyber-EV Hypercar")))));
+
+      if (isVideo && !lower.includes('3d')) {
+        text = `### 🎬 OM Autonomous Video Studio & Synthesis Pipeline
+
+I have initialized the **Autonomous Video Generation & Media Studio** pipeline. You can generate cinematic AI video simulations, orchestrate multi-track video timelines, and record 360° technical assembly animations directly in your browser.
+
+---
+
+### 🎥 Video Synthesis Architecture & Capabilities
+
+| Module | Engine Pipeline | Output Resolution | Status |
+| :--- | :--- | :--- | :---: |
+| **3D Assembly Video Recorder** | Canvas 60 FPS Stream + MediaRecorder | 1080p / 4K WebM / MP4 | 🟢 **ACTIVE** |
+| **Video Editing Timeline** | Web Audio API + Multi-Track Canvas Sequencer | Real-Time Live Preview | 🟢 **ACTIVE** |
+| **Autonomous Video Gallery** | Local persistent IndexedDB & Media Cache | Instant Playback & Download | 🟢 **ACTIVE** |
+
+---
+
+<div class="om-3d-interactive-card" style="background: rgba(6, 182, 212, 0.08); border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 12px; padding: 18px; margin: 12px 0;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1.4rem;">🎬</span>
+      <div>
+        <div style="font-weight: 800; font-size: 1rem; color: #fff;">OM Video Studio & Assembly Animator</div>
+        <div style="font-size: 0.75rem; color: var(--om-cyan);">Kinematic Keyframing • 60 FPS Capture • Export WebM / MP4</div>
+      </div>
+    </div>
+    <span class="stage-tag stage-plan">Studio Ready</span>
+  </div>
+  <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 14px; line-height: 1.5;">
+    Launch the Video Gallery and Editing Studio to manage your clips, or synthesize a dynamic 3D exploded assembly simulation of the <strong>${modelName}</strong>.
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button class="om-btn om-btn-primary" onclick="if(window.omApp && typeof window.omApp.openVideosModal === 'function') window.omApp.openVideosModal();">
+      🎥 Open Video Studio & Gallery
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.omDismantler) { window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 300); }">
+      🎬 Render 3D Assembly Video
+    </button>
+    <button class="om-btn om-btn-secondary" onclick="if(window.omDismantler) window.omDismantler.openModal('${targetModel}');">
+      📐 Launch 3D CAD Studio
+    </button>
+  </div>
+</div>`;
+      } else {
+        text = `### 🚗 3D Exploded CAD Deconstructor: ${modelName}
 
 I have initiated a full **3D holographic deconstruction** of the ${modelName}. Every primary mechanical, structural, aerodynamic, and electrical sub-system has been decoupled into distinct 3D parts with real-time vector explosion:
 
@@ -757,13 +808,13 @@ I have initiated a full **3D holographic deconstruction** of the ${modelName}. E
     Launch the high-resolution 3D CAD inspector to orbit the model in 360°, slide the explosion slider to isolate parts, export high-precision blueprints, or generate an animated assembly video simulation.
   </p>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-    <button class="om-btn om-btn-primary" onclick="window.omDismantler.openModal('${targetModel}')">
+    <button class="om-btn om-btn-primary" onclick="if(window.omDismantler) window.omDismantler.openModal('${targetModel}');">
       🚀 Open Interactive 3D Exploded Inspector
     </button>
-    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.exportBlueprintImage(), 300);">
+    <button class="om-btn om-btn-secondary" onclick="if(window.omDismantler) { window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.exportBlueprintImage(), 300); }">
       📸 Export 3D Blueprint (PNG)
     </button>
-    <button class="om-btn om-btn-secondary" onclick="window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 300);">
+    <button class="om-btn om-btn-secondary" onclick="if(window.omDismantler) { window.omDismantler.openModal('${targetModel}'); setTimeout(() => window.omDismantler.generateAssemblyVideo(), 300); }">
       🎥 Generate 3D Assembly Video
     </button>
   </div>
@@ -774,11 +825,12 @@ I have initiated a full **3D holographic deconstruction** of the ${modelName}. E
 2. **Fastener De-torque**: Release the 16 titanium quick-release aero fasteners along the roof rail.
 3. **Powertrain Decoupling**: Disconnect optical CAN-FD bus and dual coolant manifold couplings before translating the rear sub-frame.
 4. **Tolerance Verification**: Laser-scan all contact datums to ensure retention of ±0.001 mm assembly tolerances.`;
+      }
 
       reasoning = [
-        "1. 3D Model Engine: Deconstructed vehicle into 9 distinct CAD parts with isometric displacement vectors.",
-        "2. Dimensional Analysis: Formulated tolerances (±0.001mm), materials (T1000 Carbon, Ti-6Al-4V), and specs.",
-        "3. Interactive HUD: Injected 3D Exploded View Inspector, Blueprint Export, and 3D Video Generator triggers."
+        "1. 3D & Video Engine: Initialized CAD component matrix and assembly vectors.",
+        "2. Dimensional Analysis: Formulated tolerances (±0.001mm), materials, and specs.",
+        "3. Interactive HUD: Injected 3D Exploded View Inspector, Blueprint Export, and Video Studio triggers."
       ];
       actions = [
         { stage: 'think', title: 'Formulate 3D CAD coordinate matrix and explosion vectors', estimate: '1m' },

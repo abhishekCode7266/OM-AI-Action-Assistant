@@ -38,6 +38,131 @@
   --om-transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ==========================================================================
+   Theme Systems: Cyber Indigo & Light Mode overrides
+   ========================================================================== */
+
+body[data-theme='cyber'] {
+  --om-bg-deep: #070a1e;
+  --om-bg-surface: #0c102f;
+  --om-bg-sidebar: #090d26;
+  --om-bg-card: rgba(18, 24, 66, 0.78);
+  --om-bg-card-hover: rgba(28, 38, 98, 0.88);
+  --om-border-subtle: rgba(129, 140, 248, 0.28);
+  --om-border-glow: rgba(99, 102, 241, 0.55);
+  
+  --om-cyan: #38bdf8;
+  --om-cyan-glow: #67e8f9;
+  --om-indigo: #818cf8;
+  --om-violet: #a78bfa;
+  --om-emerald: #34d399;
+  --om-amber: #fbbf24;
+  --om-rose: #fb7185;
+  
+  --om-text-main: #f1f5f9;
+  --om-text-secondary: #cbd5e1;
+  --om-text-muted: #94a3b8;
+  --om-shadow-glow: 0 0 28px rgba(99, 102, 241, 0.35);
+  --om-shadow-cyan: 0 0 22px rgba(56, 189, 248, 0.35);
+
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 85% 35%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+}
+
+body[data-theme='light'] {
+  --om-bg-deep: #f8fafc;
+  --om-bg-surface: #ffffff;
+  --om-bg-sidebar: #f1f5f9;
+  --om-bg-card: rgba(255, 255, 255, 0.92);
+  --om-bg-card-hover: rgba(241, 245, 249, 0.98);
+  --om-border-subtle: rgba(148, 163, 184, 0.35);
+  --om-border-glow: rgba(2, 132, 199, 0.45);
+  
+  --om-cyan: #0284c7;
+  --om-cyan-glow: #0ea5e9;
+  --om-indigo: #4f46e5;
+  --om-violet: #7c3aed;
+  --om-emerald: #059669;
+  --om-amber: #d97706;
+  --om-rose: #e11d48;
+  
+  --om-text-main: #0f172a;
+  --om-text-secondary: #334155;
+  --om-text-muted: #64748b;
+  --om-shadow-glow: 0 4px 20px rgba(79, 70, 229, 0.12);
+  --om-shadow-cyan: 0 4px 16px rgba(2, 132, 199, 0.15);
+
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 35%, rgba(2, 132, 199, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 50%);
+}
+
+body[data-theme='light'] .sidebar-brand-name,
+body[data-theme='light'] .header-chat-title,
+body[data-theme='light'] .modal-header h3,
+body[data-theme='light'] .lib-title,
+body[data-theme='light'] .user-name {
+  color: #0f172a !important;
+}
+
+body[data-theme='light'] .om-input,
+body[data-theme='light'] .chat-textarea,
+body[data-theme='light'] .mode-select-pill,
+body[data-theme='light'] .model-select-pill,
+body[data-theme='light'] .popover-menu,
+body[data-theme='light'] .om-modal-content {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+body[data-theme='light'] .sidebar-chat-item:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+
+body[data-theme='light'] .sidebar-chat-item.active {
+  background: rgba(79, 70, 229, 0.12) !important;
+  color: #4f46e5 !important;
+  border-color: rgba(79, 70, 229, 0.3) !important;
+}
+
+body[data-theme='light'] .sidebar-footer {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-top-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+body[data-theme='light'] .header-icon-btn,
+body[data-theme='light'] .btn-sidebar-toggle-icon {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  color: #334155 !important;
+}
+
+body[data-theme='light'] .header-icon-btn:hover,
+body[data-theme='light'] .btn-sidebar-toggle-icon:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+
+body[data-theme='light'] .om-chat-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+
+body[data-theme='light'] .om-message-bubble.om-message-bubble-user {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body[data-theme='light'] .om-message-bubble.om-message-bubble-assistant {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

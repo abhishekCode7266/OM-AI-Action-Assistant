@@ -1718,3 +1718,4 @@ class OMDismantler3D {
 }
 
 window.omDismantler = new OMDismantler3D();
+window.omDismantler3D = window.omDismantler;
