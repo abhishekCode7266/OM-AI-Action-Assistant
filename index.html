@@ -280,8 +280,8 @@
         <!-- Recents Section Header with Delete History Option -->
         <div class="sidebar-section-header" style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
           <span class="section-title">Recents</span>
-          <button class="btn-clear-history-all" id="btn-clear-all-history" onclick="window.omApp.handleClearAllHistory()" title="Delete Chat History (Clear all chats for privacy)">
-            🗑️ <span>Delete History</span>
+          <button class="btn-clear-history-all" id="btn-clear-all-history" onclick="window.omApp.handleClearAllHistory()" title="Clear all chat history from local storage">
+            🗑️ <span>Clear All</span>
           </button>
         </div>
 
@@ -532,7 +532,7 @@
               </div>
             </div>
 
-            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" onclick="if(window.omApp) window.omApp.toggleInputAttachMenu(event)" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
+            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
             <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
             <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
 

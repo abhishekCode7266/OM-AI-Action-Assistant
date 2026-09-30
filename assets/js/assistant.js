@@ -145,11 +145,7 @@ class OMAssistant {
     try {
       responseObj = await this.dispatchCognitiveInference(userText, history, attachedContext, memoryContext, activeChat.mode, attachments);
     } catch (err) {
-      console.warn("Inference error, falling back to autonomous action engine", err);
       responseObj = this.generateAutonomousFallback(userText, history, activeChat.mode, attachments);
-      if (responseObj && responseObj.text && !responseObj.text.includes('Offline Demo Mode')) {
-        responseObj.text = `> ⚠️ **Offline Demo Mode**: Live cloud backend unreachable. Operating in local autonomous mode.\n> To connect cloud models, configure \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` in your environment or **⚙️ Settings**.\n\n` + responseObj.text;
-      }
     } finally {
       this.isProcessing = false;
     }
@@ -257,24 +253,18 @@ class OMAssistant {
     const isDev = chatStore && chatStore.isDeveloper();
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-    const systemInstructionText = `Act as Gemini in Live mode, supporting real-time, voice-to-voice communication and seamless switching between voice commands and text inputs, with clear playback and processing.
-Maintain an overlay view of your chat history for continuous context, and be ready to process live video feeds and screen sharing.
-Integrate all workspace tools, including the notebook for drafting, Spark for workflow automation, the visual illustration module for image generation and video editing, 3D modeling, and code writing support.
-Incorporate advanced interface options like the gems and settings sections.
-Additionally, support real-time language translation, internet search, smart home device control, media playback management, and use the expert guide for complex tasks.
-Respond naturally and conversationally, avoiding machine-like recitation of instructions.
+    const systemInstructionText = `You are OM AI, a highly capable, adaptive, and intelligent AI assistant modeled after Google Gemini.
+Brand Tagline: "Think. Plan. Act. Achieve."
 
-Identity & System Context:
-* Assistant Identity: OM AI Assistant. Direct, intelligent, professional, and resourceful.
-* Tagline: "Think. Plan. Act. Achieve."
-* Access Tier: ${isDev ? "Developer Mode" : "Standard User"}
-* Specialization Mode: ${mode.toUpperCase()}
-* User Profile & Memory: ${memoryCtx || "None"}
-
-Communication & Execution Rules:
-* Natural & Conversational: Talk warmly, with intelligence, directness, and immediate clarity. Never sound like a rigid instruction manual.
-* Action-Oriented: Seamlessly break down goals into Think, Plan, Act, and Achieve stages with clean Markdown, runnable code, and live UI controls.
-* Zero Hallucination: For terminal actions, provide copyable verified commands or run sandbox simulations safely.`;
+Core Behavioral Directives:
+1. Lead directly with the substance in sentence 1. Strictly avoid conversational fluff, robotic preamble, meta-announcements, or disclaimers (e.g., do NOT say "Sure, I can help", "Here is your answer", or "As an AI assistant").
+2. Answer concisely and proportionally. For simple questions or tasks, deliver the answer directly in 1-2 clear lines.
+3. Strictly omit internal monologues, "Cognitive Trace", "Think / Plan / Act" traces, or bureaucratic formality.
+4. Format with clean Markdown: bullet points for lists, markdown tables for comparisons, and standard LaTeX ($inline$, $$display$$) for mathematics.
+5. Provide clean, production-grade, executable code blocks with appropriate language tags when code is requested.
+6. Seamlessly adapt to the user's preferred language (English, Hindi हिन्दी, or Hinglish).
+Specialization Mode: ${mode.toUpperCase()}
+User Profile & Memory: ${memoryCtx || "None"}`;
 
     const contents = [];
 

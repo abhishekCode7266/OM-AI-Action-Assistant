@@ -166,9 +166,13 @@ class OMApp {
     // Attach / Plus Button Popover Menu
     const plusBtn = document.getElementById('btn-capsule-plus');
     if (plusBtn) {
-      plusBtn.addEventListener('click', (e) => {
+      plusBtn.onclick = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         this.toggleInputAttachMenu(e);
-      });
+      };
     }
 
     // Click outside to dismiss attach popover menu
@@ -180,12 +184,20 @@ class OMApp {
       }
     });
 
-    // Voice Dictation Button
+    // Voice Dictation Button (Mic)
     const voiceBtn = document.getElementById('btn-voice-input');
     if (voiceBtn) {
-      voiceBtn.addEventListener('click', () => {
-        if (this.voice) this.voice.toggleRecording();
-      });
+      voiceBtn.onclick = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        if (this.voice) {
+          this.voice.toggleRecording();
+        } else if (window.omJarvisLive) {
+          window.omJarvisLive.startSession();
+        }
+      };
     }
 
     // File Upload Trigger (Multiple Support)
@@ -267,15 +279,20 @@ class OMApp {
     }
 
     // Clear Chat Messages Button
+    // Clear Chat Messages Button
     const clearBtn = document.getElementById('btn-clear-chat');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
         const active = this.chatStore.getActiveChat();
-        if (active) {
-          active.messages = [];
-          this.chatStore.saveChats();
-          this.renderChatMessages();
-          this.showToast('Conversation cleared', 'info');
+        if (active && active.messages && active.messages.length > 0) {
+          if (confirm('Clear all messages in the current conversation?')) {
+            active.messages = [];
+            this.chatStore.saveChats();
+            this.renderChatMessages();
+            this.showToast('Conversation messages cleared', 'info');
+          }
+        } else {
+          this.showToast('No messages to clear in this chat.', 'info');
         }
       });
     }
@@ -653,14 +670,15 @@ class OMApp {
   renderAssistantMessage(msg) {
     const formattedText = this.assistant.formatMarkdown(msg.text);
 
-    // Collapsible Think-Plan-Act-Verify trace
+    // Cognitive Trace: omitted by default to ensure crisp, clean, direct answers without clutter
     let reasoningHtml = '';
-    if (msg.reasoning) {
+    const activeModelLabel = document.getElementById('capsule-model-label')?.textContent || '';
+    if (msg.reasoning && activeModelLabel.includes('Thinking') && !msg.reasoning.includes('Offline Demo')) {
       reasoningHtml = `
         <details class="om-thinking-trace">
           <summary>
             <span class="pulse-dot"></span>
-            <span>OM Cognitive Trace (Think ➔ Plan ➔ Act ➔ Verify)</span>
+            <span>Thinking Process</span>
           </summary>
           <div class="trace-content">
             <pre>${this.escapeHTML(msg.reasoning)}</pre>
@@ -675,9 +693,11 @@ class OMApp {
       chartHtml = window.omAnalytics.renderInlineChartSVG(msg.chartDataset);
     }
 
-    // Task Checklist
+    // Task Checklist - Only displayed in Project mode or when explicitly relevant
     let tasksHtml = '';
-    if (msg.actions && msg.actions.length > 0) {
+    const activeChat = this.chatStore ? this.chatStore.getActiveChat() : null;
+    const isProjectMode = (msg.mode === 'project') || (activeChat && activeChat.mode === 'project');
+    if (msg.actions && msg.actions.length > 0 && isProjectMode) {
       tasksHtml = `
         <div class="om-tasks-card">
           <div class="tasks-card-header">

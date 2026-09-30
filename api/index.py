@@ -430,7 +430,12 @@ class handler(BaseHTTPRequestHandler):
             )
 
             mode_prompts = {
-                "general": "You are OM AI Assistant, a direct, concise, and helpful multimodal personal AI collaborator. Brand tagline: 'Think. Plan. Act. Achieve.'",
+                "general": (
+                    "You are OM AI, a highly capable, adaptive, and direct AI assistant modeled after Google Gemini. "
+                    "Lead directly with the substance in sentence 1. Strictly avoid conversational fluff, robotic preamble, "
+                    "meta-announcements, or cognitive traces. Answer concisely and proportionally (1-2 clear lines for simple queries). "
+                    "Format with clean Markdown, LaTeX math, and executable code blocks. Adapt naturally to English, Hindi, and Hinglish."
+                ),
                 "coding": "You are an expert software engineer and debugger. Write clean, modular, production-ready code with explanations, edge-case analysis, and verification steps.",
                 "data": "You are an expert data analyst. Parse and analyze datasets, provide statistical summaries, identify trends, anomalies, and structured markdown tables.",
                 "research": "You are an investigative research analyst. Provide deep, rigorous, multi-faceted analysis, citations, counterarguments, and syntheses.",
@@ -551,7 +556,7 @@ class handler(BaseHTTPRequestHandler):
                     "* 📐 **3D Studio**: View and mechanically disassemble interactive CAD models (0–100% exploded view).\n"
                     "* 📊 **Data & Files**: Analyze CSVs, PDFs, and extract structured insights.\n"
                     "* 📝 **AI Notebook**: Capture thoughts and auto-save notes with live source citations.\n\n"
-                    "> 💡 **Notice**: Server is running in **Offline Demo Mode**. To activate live cloud intelligence, set `GEMINI_API_KEY` or `OPENAI_API_KEY` in environment variables or in **⚙️ Settings**.\n\n"
+                    "> 💡 **Notice**: Running in **Offline Demo Mode**. To activate live cloud intelligence, set `GEMINI_API_KEY` or `OPENAI_API_KEY` in environment variables or in **⚙️ Settings**.\n\n"
                     "**What would you like to achieve today?**"
                 )
                 api_used = "OM Autonomous Engine (Offline Demo)"

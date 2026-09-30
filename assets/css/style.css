@@ -2498,24 +2498,29 @@ h1, h2, h3, h4, h5 {
 /* ==========================================================================
    Floating Minimized PiP Widget (Small form / Background Voice & Tasks)
    ========================================================================== */
+/* ==========================================================================
+   Ultra-Small Floating Voice Widget (PiP Reactor Orb)
+   ========================================================================== */
 .floating-live-pip-widget {
   position: fixed;
   bottom: 24px;
   right: 24px;
   z-index: 9999;
-  background: rgba(11, 15, 25, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(6, 182, 212, 0.4);
-  border-radius: 50px;
-  padding: 8px 16px 8px 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(6, 182, 212, 0.25);
+  background: rgba(9, 13, 24, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  border-radius: 40px;
+  padding: 4px 10px 4px 5px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75), 0 0 16px rgba(6, 182, 212, 0.28);
   display: none;
   align-items: center;
-  gap: 12px;
-  max-width: 360px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: pipSlideIn 0.35s ease-out;
+  gap: 8px;
+  max-width: 250px;
+  height: 42px;
+  box-sizing: border-box;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pipSlideIn 0.3s ease-out;
 }
 
 .floating-live-pip-widget.active {
@@ -2524,7 +2529,7 @@ h1, h2, h3, h4, h5 {
 
 @keyframes pipSlideIn {
   from {
-    transform: translateY(30px) scale(0.9);
+    transform: translateY(20px) scale(0.9);
     opacity: 0;
   }
   to {
@@ -2534,100 +2539,102 @@ h1, h2, h3, h4, h5 {
 }
 
 .pip-reactor-orb {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0369a1 70%, #082f49 100%);
-  border: 2px solid var(--om-cyan);
-  box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+  border: 1.5px solid var(--om-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.75rem;
   transition: transform 0.2s ease;
   animation: orbPulse 2s infinite ease-in-out;
 }
 
 .pip-reactor-orb:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 @keyframes orbPulse {
   0%, 100% {
-    box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
   }
   50% {
-    box-shadow: 0 0 24px rgba(6, 182, 212, 0.9), 0 0 35px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.9), 0 0 28px rgba(56, 189, 248, 0.4);
   }
 }
 
 .pip-info-wrap {
   display: flex;
   flex-direction: column;
-  min-width: 130px;
-  max-width: 170px;
+  min-width: 75px;
+  max-width: 110px;
+  overflow: hidden;
 }
 
 .pip-header-line {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .pip-persona-title {
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: var(--om-cyan);
   white-space: nowrap;
 }
 
 .pip-hud-state {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 1px 5px;
-  border-radius: 4px;
+  letter-spacing: 0.04em;
+  padding: 1px 4px;
+  border-radius: 3px;
   background: rgba(255, 255, 255, 0.08);
   color: #94a3b8;
 }
 
 .pip-live-speech-ticker {
-  font-size: 0.72rem;
-  color: #cbd5e1;
+  font-size: 0.66rem;
+  color: #94a3b8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .pip-controls-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .pip-action-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .pip-action-btn:hover {
-  background: rgba(6, 182, 212, 0.2);
+  background: rgba(6, 182, 212, 0.25);
   border-color: var(--om-cyan);
   color: #fff;
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .pip-action-btn.active {
@@ -2640,6 +2647,19 @@ h1, h2, h3, h4, h5 {
   background: rgba(239, 68, 68, 0.25);
   border-color: #ef4444;
   color: #ef4444;
+}
+
+/* Mic button pulsating recording indicator */
+#btn-voice-input.recording {
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  animation: pulseMicBtn 1s infinite alternate !important;
+}
+
+@keyframes pulseMicBtn {
+  0% { transform: scale(1); box-shadow: 0 0 4px rgba(239, 68, 68, 0.4); }
+  100% { transform: scale(1.12); box-shadow: 0 0 12px rgba(239, 68, 68, 0.85); }
 }
 
 /* ==========================================================================
@@ -3790,11 +3810,11 @@ h1, h2, h3, h4, h5 {
 
 /* Delete Chat History Button in Sidebar Header */
 .btn-clear-history-all {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 3px 8px;
   border-radius: 6px;
   cursor: pointer;
@@ -3805,8 +3825,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .btn-clear-history-all:hover {
-  background: rgba(239, 68, 68, 0.22);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.6);
   color: #fff;
   transform: translateY(-1px);
 }
