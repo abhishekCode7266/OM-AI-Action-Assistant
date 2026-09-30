@@ -109,14 +109,18 @@ if ($token) {
     $pushUrl = "https://$($token)@github.com/abhishekCode7266/OM-AI-Action-Assistant.git"
     if ($Force) {
         git -c credential.helper= push $pushUrl main --force
+        git -c credential.helper= push $pushUrl main:gh-pages --force
     } else {
         git -c credential.helper= push $pushUrl main
+        git -c credential.helper= push $pushUrl main:gh-pages --force
     }
 } else {
     if ($Force) {
         git push origin main --force
+        git push origin main:gh-pages --force
     } else {
         git push origin main
+        git push origin main:gh-pages --force
     }
 }
 
