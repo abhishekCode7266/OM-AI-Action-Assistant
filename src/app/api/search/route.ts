@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { performWebSearch } from '@/services/search';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
   try {
     const { query } = await req.json();

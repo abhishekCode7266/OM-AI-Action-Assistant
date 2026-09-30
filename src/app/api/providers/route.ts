@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { aiProviderManager } from '@/services/ai/manager';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const providers = aiProviderManager.getStatuses();
   return NextResponse.json({

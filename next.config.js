@@ -4,7 +4,22 @@ const nextConfig = {
   swcMinify: true,
   images: {
     unoptimized: true,
-    domains: ['images.unsplash.com', 'oaidalleapiprodscus.blob.core.windows.net'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   },
 };
 

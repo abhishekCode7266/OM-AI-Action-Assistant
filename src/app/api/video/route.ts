@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateVideo, isVideoGenerationConfigured } from '@/services/video';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 export async function GET() {
   return NextResponse.json({
     configured: isVideoGenerationConfigured(),

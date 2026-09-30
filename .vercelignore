@@ -1,0 +1,18 @@
+# Version control
+.git
+.gitignore
+
+# CI/CD & Local Tests
+.github
+tests
+
+# Dependencies and build caches
+node_modules
+.next
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (never bundle local secrets)
+.env*.local
+.env
