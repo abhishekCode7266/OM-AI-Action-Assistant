@@ -192,7 +192,9 @@ class OMApp {
           e.preventDefault();
           e.stopPropagation();
         }
-        if (this.voice) {
+        if (typeof window.startVoiceRecognition === 'function') {
+          window.startVoiceRecognition();
+        } else if (this.voice) {
           this.voice.toggleRecording();
         } else if (window.omJarvisLive) {
           window.omJarvisLive.startSession();
@@ -283,17 +285,7 @@ class OMApp {
     const clearBtn = document.getElementById('btn-clear-chat');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        const active = this.chatStore.getActiveChat();
-        if (active && active.messages && active.messages.length > 0) {
-          if (confirm('Clear all messages in the current conversation?')) {
-            active.messages = [];
-            this.chatStore.saveChats();
-            this.renderChatMessages();
-            this.showToast('Conversation messages cleared', 'info');
-          }
-        } else {
-          this.showToast('No messages to clear in this chat.', 'info');
-        }
+        this.clearCurrentChat();
       });
     }
 
@@ -2323,17 +2315,28 @@ Key Ideas & Notes:
     }
   }
 
+  clearCurrentChat() {
+    if (confirm("क्या आप यह चैट हिस्ट्री हटाना चाहते हैं?")) {
+      const active = this.chatStore ? this.chatStore.getActiveChat() : null;
+      if (active) {
+        active.messages = [];
+        this.chatStore.saveChats();
+      }
+      localStorage.removeItem("om_chat_history");
+      if (typeof window.setMessages === 'function') {
+        window.setMessages([]);
+      }
+      this.renderChatMessages();
+      this.renderSidebar();
+      this.showToast('🗑️ चैट हिस्ट्री हटा दी गई है।', 'success');
+    }
+  }
+
   toggleInputAttachMenu(e) {
     if (e) {
       if (typeof e.preventDefault === 'function') e.preventDefault();
       if (typeof e.stopPropagation === 'function') e.stopPropagation();
     }
-    const now = Date.now();
-    if (this._lastMenuToggle && (now - this._lastMenuToggle < 250)) {
-      return;
-    }
-    this._lastMenuToggle = now;
-
     const popup = document.getElementById('input-attach-popup');
     if (popup) {
       const isVisible = popup.classList.contains('show') || popup.style.display === 'flex' || popup.style.display === 'block';
@@ -3890,5 +3893,39 @@ if (document.readyState === 'loading') {
 } else {
   initOMApp();
 }
+
+// Global functions for direct UI and external integration
+window.setMessages = function(msgs) {
+  if (window.omChatStore) {
+    const active = window.omChatStore.getActiveChat();
+    if (active) {
+      active.messages = msgs || [];
+      window.omChatStore.saveChats();
+    }
+  }
+  if (window.omApp) {
+    window.omApp.renderChatMessages();
+  }
+};
+
+window.clearCurrentChat = function() {
+  if (window.omApp) {
+    window.omApp.clearCurrentChat();
+  } else {
+    if (confirm("क्या आप यह चैट हिस्ट्री हटाना चाहते हैं?")) {
+      if (typeof window.setMessages === 'function') {
+        window.setMessages([]);
+      }
+      localStorage.removeItem("om_chat_history");
+    }
+  }
+};
+
+window.handlePlusClick = function(e) {
+  if (window.omApp) {
+    window.omApp.toggleInputAttachMenu(e);
+  }
+};
+
 
 

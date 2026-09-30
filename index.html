@@ -306,7 +306,10 @@
               <span class="profile-location" id="sidebar-profile-location">Global</span>
             </div>
           </div>
-          <div class="profile-gear-icon" title="Settings">⚙️</div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button class="sidebar-clear-chat-btn" onclick="event.stopPropagation(); window.clearCurrentChat && window.clearCurrentChat();" title="🗑️ Clear Chat History" style="background: none; border: none; font-size: 0.95rem; cursor: pointer; padding: 4px 6px; border-radius: 6px; color: var(--om-text-secondary); transition: all 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--om-text-secondary)'">🗑️</button>
+            <div class="profile-gear-icon" title="Settings">⚙️</div>
+          </div>
         </div>
       </div>
     </aside>
@@ -399,7 +402,7 @@
           </button>
 
           <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown">📥 Export</button>
-          <button class="header-icon-btn" id="btn-clear-chat" title="Clear current messages">🗑️</button>
+          <button class="header-icon-btn btn-clear-chat" id="btn-clear-chat" onclick="window.clearCurrentChat && window.clearCurrentChat()" title="🗑️ Clear Chat History (चैट हिस्ट्री हटाएं)"><span>🗑️</span> <span style="font-size: 0.76rem; font-weight: 600;">Clear Chat</span></button>
           <button class="header-icon-btn btn-open-settings" title="Settings">⚙️</button>
         </div>
       </header>
@@ -532,9 +535,9 @@
               </div>
             </div>
 
-            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" title="Add attachments or launch tools" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
-            <button class="input-tool-btn" id="btn-attach-image" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
-            <button class="input-tool-btn" id="btn-attach-file" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
+            <button class="input-tool-btn capsule-plus-btn" id="btn-capsule-plus" onclick="window.handlePlusClick && window.handlePlusClick(event)" title="Add attachments or launch tools (Click to open menu)" style="font-size: 1.25rem; font-weight: bold; width: 34px; height: 34px; border-radius: 50%;">➕</button>
+            <button class="input-tool-btn" id="btn-attach-image" onclick="var fi=document.getElementById('hidden-image-input'); if(fi) fi.click();" title="Upload Image / Screenshot for Vision analysis">🖼️</button>
+            <button class="input-tool-btn" id="btn-attach-file" onclick="var fi=document.getElementById('hidden-file-input'); if(fi) fi.click();" title="Attach Document (PDF, CSV, TXT, JSON)">📎</button>
 
             <textarea id="chat-user-input" class="chat-textarea" rows="1" placeholder="Ask OM anything, write code, analyze data, or generate images..."></textarea>
 
@@ -552,7 +555,7 @@
               </div>
             </div>
 
-            <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Dictate prompt)">🎙️</button>
+            <button class="input-tool-btn" id="btn-voice-input" onclick="window.startVoiceRecognition && window.startVoiceRecognition()" title="Voice Input (Dictate prompt / Start Speaking)">🎙️</button>
             <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
             <button class="btn-stop-message" id="btn-chat-stop" onclick="window.omApp.stopProcessing()" title="Stop Generation" style="display: none; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 0.85rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);">⏹</button>
           </div>
@@ -2940,6 +2943,11 @@
       </button>
     </div>
   </nav>
+
+  <!-- Ultra-Small Floating Voice Orb Widget (Compact Glowing Voice Ball) -->
+  <div class="orb-widget-mini" id="orb-widget-mini" title="Voice AI Assistant • Click to Speak / Interrupt" onclick="window.handleVoiceOrbClick && window.handleVoiceOrbClick(event)">
+    <span class="orb-icon" id="orb-widget-icon">🎙️</span>
+  </div>
 
   <!-- Floating Minimized PiP Widget (Small form / Background Voice & Tasks) -->
   <div class="floating-live-pip-widget" id="floating-live-pip-widget">

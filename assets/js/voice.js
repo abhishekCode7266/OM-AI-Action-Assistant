@@ -74,10 +74,12 @@ class OMVoiceEngine {
 
         if (finalTranscript) {
           this.lastSpokenText = (this.lastSpokenText ? this.lastSpokenText + ' ' : '') + finalTranscript.trim();
-          const input = document.getElementById('chat-user-input');
-          if (input) {
-            input.value = this.lastSpokenText;
-          }
+        }
+
+        const currentDisplay = this.lastSpokenText ? (interim ? this.lastSpokenText + ' ' + interim : this.lastSpokenText) : interim;
+        const input = document.getElementById('chat-user-input');
+        if (input && currentDisplay) {
+          input.value = currentDisplay;
         }
 
         const pulseText = document.getElementById('voice-transcript-preview');
@@ -232,6 +234,14 @@ class OMVoiceEngine {
     }
     if (orb) {
       orb.setAttribute('data-state', state);
+    }
+    const miniOrb = document.getElementById('orb-widget-mini');
+    if (miniOrb) {
+      miniOrb.classList.toggle('speaking', state === 'speaking');
+      const miniIcon = document.getElementById('orb-widget-icon');
+      if (miniIcon) {
+        miniIcon.textContent = state === 'speaking' ? '🔊' : (recording ? '🎙️' : '🎙️');
+      }
     }
     if (preview && !recording) {
       preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;
@@ -641,4 +651,34 @@ class OMVoiceEngine {
 }
 
 window.omVoice = new OMVoiceEngine();
+
+// Global Voice Recognition helper for instant Mic trigger
+window.startVoiceRecognition = function() {
+  if (window.omVoice) {
+    window.omVoice.toggleRecording();
+  }
+};
+
+// Global Handler for Ultra-Small Floating Voice Orb Widget
+window.handleVoiceOrbClick = function(e) {
+  if (e) {
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+  }
+  if (window.omVoice && (window.omVoice.isRecording || window.omVoice.isStarting)) {
+    window.omVoice.stopRecording();
+    return;
+  }
+  if (window.omVoice && window.omVoice.isPlayingTTS) {
+    window.omVoice.stopSpeaking();
+    return;
+  }
+  if (window.omJarvisLive && window.omJarvisLive.isActive) {
+    if (window.omJarvisLive.isSpeaking) {
+      window.omJarvisLive.stopSpeaking();
+      return;
+    }
+  }
+  window.startVoiceRecognition();
+};
 

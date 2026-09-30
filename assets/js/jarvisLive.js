@@ -824,6 +824,16 @@ class OMJarvisLiveEngine {
       else if (status === 'PROCESSING') pipState.style.color = '#f59e0b';
       else pipState.style.color = '#94a3b8';
     }
+
+    // Mini floating voice orb sync
+    const miniOrb = document.getElementById('orb-widget-mini');
+    if (miniOrb) {
+      miniOrb.classList.toggle('speaking', status === 'SPEAKING');
+      const miniIcon = document.getElementById('orb-widget-icon');
+      if (miniIcon) {
+        miniIcon.textContent = status === 'SPEAKING' ? '🔊' : '🎙️';
+      }
+    }
   }
 
   initVisualizer() {
