@@ -105,13 +105,19 @@ if (-not $token) {
 $env:GIT_TERMINAL_PROMPT = "0"
 $env:GCM_INTERACTIVE = "never"
 
-$forceArgs = if ($Force) { @("--force") } else { @() }
-
 if ($token) {
     $pushUrl = "https://$($token)@github.com/abhishekCode7266/OM-AI-Action-Assistant.git"
-    git -c credential.helper= push $pushUrl main @forceArgs
+    if ($Force) {
+        git -c credential.helper= push $pushUrl main --force
+    } else {
+        git -c credential.helper= push $pushUrl main
+    }
 } else {
-    git push origin main @forceArgs
+    if ($Force) {
+        git push origin main --force
+    } else {
+        git push origin main
+    }
 }
 
 if ($LASTEXITCODE -eq 0) {
