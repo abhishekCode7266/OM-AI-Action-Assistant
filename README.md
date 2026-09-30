@@ -13,9 +13,11 @@
 
 > 💡 **Why did the Vercel link ask for login?** Vercel enables "Deployment Protection" by default on preview URLs for private accounts. To make the Vercel URL open publicly for everyone: In [Vercel Settings ➔ Deployment Protection](https://vercel.com/abhishek-ef1f/om-ai/settings/deployment-protection), set **Vercel Authentication** to **Disabled** and click **Save**!
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2FOM-AI-Action-Assistant)
+
 [![Status: Online](https://img.shields.io/badge/OM%20Engine-v3.0%20Nexus%20Ready-06B6D4?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Active%20%26%20Passing-10B981?style=flat-square&logo=github)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed%20%26%20Passing-10B981?style=flat-square&logo=vercel)](https://om-ai-eight.vercel.app/)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deploy%20Ready-10B981?style=flat-square&logo=vercel)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FabhishekCode7266%2FOM-AI-Action-Assistant)
 [![AI Models](https://img.shields.io/badge/Models-Nexus%202.0%20%7C%201.5%20Pro-10B981?style=flat-square)](https://abhishekcode7266.github.io/OM-AI-Action-Assistant/)
 [![Test Suite](https://img.shields.io/badge/Tests-35%2F35%20Passing-10B981?style=flat-square)](tests/)
 

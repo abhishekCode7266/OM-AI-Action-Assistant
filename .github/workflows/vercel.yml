@@ -1,0 +1,44 @@
+name: Vercel Production Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "api/**"
+      - "vercel.json"
+      - ".github/workflows/vercel.yml"
+
+jobs:
+  deploy-vercel:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Vercel Token Configuration
+        id: check_token
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "::notice ::VERCEL_TOKEN secret is not configured. Skipping automated Vercel CLI deployment. Use 1-Click Vercel Import or configure repository secrets."
+            echo "has_token=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Vercel CLI
+        if: steps.check_token.outputs.has_token == 'true'
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        if: steps.check_token.outputs.has_token == 'true'
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        if: steps.check_token.outputs.has_token == 'true'
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        if: steps.check_token.outputs.has_token == 'true'
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
