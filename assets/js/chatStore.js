@@ -16,6 +16,9 @@ class OMChatStore {
     this.settings = this.loadSettings();
     this.currentUser = this.loadUser();
 
+    this.listeners = {};
+    this._saveTimer = null;
+
     // Ensure at least one active chat exists
     if (!this.activeChatId || !this.getChat(this.activeChatId)) {
       if (this.chats.length > 0) {
@@ -26,6 +29,47 @@ class OMChatStore {
       }
       localStorage.setItem(this.ACTIVE_CHAT_KEY, this.activeChatId);
     }
+
+    this.initStorageListener();
+  }
+
+  // Centralized Event Bus for Reactive State Architecture
+  on(event, callback) {
+    if (!this.listeners[event]) this.listeners[event] = [];
+    this.listeners[event].push(callback);
+    return () => this.off(event, callback);
+  }
+
+  off(event, callback) {
+    if (!this.listeners[event]) return;
+    this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+  }
+
+  emit(event, data) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach(cb => {
+        try { cb(data); } catch (err) { console.warn(`Error in state listener for ${event}:`, err); }
+      });
+    }
+    if (this.listeners['*']) {
+      this.listeners['*'].forEach(cb => {
+        try { cb({ event, data }); } catch (err) {}
+      });
+    }
+  }
+
+  initStorageListener() {
+    window.addEventListener('storage', (e) => {
+      if (e.key === this.STORAGE_KEY && e.newValue) {
+        try {
+          this.chats = JSON.parse(e.newValue);
+          this.emit('chats:synced', { chats: this.chats });
+        } catch (_) {}
+      } else if (e.key === this.ACTIVE_CHAT_KEY && e.newValue) {
+        this.activeChatId = e.newValue;
+        this.emit('chat:activeChanged', { id: this.activeChatId });
+      }
+    });
   }
 
   getSeedChats() {
@@ -374,11 +418,28 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
     } catch (e) {}
   }
 
-  saveChats() {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.chats));
-    } catch (e) {
-      console.error("Error saving chats to localStorage", e);
+  saveChats(immediate = false) {
+    const doSave = () => {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.chats));
+        this.emit('chats:saved', { activeChatId: this.activeChatId, total: this.chats.length });
+      } catch (e) {
+        console.error("Error saving chats to localStorage", e);
+      }
+    };
+
+    if (immediate) {
+      if (this._saveTimer) {
+        clearTimeout(this._saveTimer);
+        this._saveTimer = null;
+      }
+      doSave();
+    } else {
+      if (this._saveTimer) clearTimeout(this._saveTimer);
+      this._saveTimer = setTimeout(() => {
+        this._saveTimer = null;
+        doSave();
+      }, 120);
     }
   }
 
@@ -810,8 +871,12 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
 
   setActiveChat(id) {
     if (this.getChat(id)) {
+      const prevId = this.activeChatId;
       this.activeChatId = id;
       localStorage.setItem(this.ACTIVE_CHAT_KEY, id);
+      if (prevId !== id) {
+        this.emit('chat:switched', { id, previousId: prevId });
+      }
       return true;
     }
     return false;
@@ -836,6 +901,7 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
     }
 
     this.saveChats();
+    this.emit('message:added', { chatId, message: fullMsg });
     return fullMsg;
   }
 

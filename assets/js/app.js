@@ -35,6 +35,21 @@ class OMApp {
     this.updateDeveloperTierBadge();
     this.initLanguageAndVoice();
     this.hideLoadingScreen();
+
+    // Centralized State Architecture Subscriptions
+    if (this.chatStore && typeof this.chatStore.on === 'function') {
+      this.chatStore.on('chats:synced', () => {
+        this.renderSidebar();
+        this.renderChatMessages();
+        this.updateHeaderInfo();
+      });
+      this.chatStore.on('chat:activeChanged', () => {
+        this.renderSidebar();
+        this.renderChatMessages();
+        this.updateHeaderInfo();
+      });
+    }
+
     window.addEventListener('hashchange', () => this.handleHashRoute());
     if (window.location.hash) {
       setTimeout(() => this.handleHashRoute(), 200);
@@ -527,13 +542,7 @@ class OMApp {
       });
       this.removeTypingIndicator();
 
-      const fallbackResp = {
-        sender: 'om',
-        text: "AI service is currently unavailable. Please check the backend configuration.",
-        reasoning: `Inference error: ${err.message || 'Network request failed'}. Please check backend configuration or API key in Settings.`,
-        verified: false,
-        actions: []
-      };
+      const fallbackResp = this.assistant.diagnoseAndSuggestFix(err, { prompt: text, mode: activeChat.mode });
       this.chatStore.addMessage(activeChat.id, fallbackResp);
       this.renderChatMessages();
 
@@ -546,6 +555,20 @@ class OMApp {
       this.removeTypingIndicator();
       if (sendBtn) sendBtn.style.display = 'inline-flex';
       if (stopBtn) stopBtn.style.display = 'none';
+    }
+  }
+
+  retryLastMessage() {
+    const activeChat = this.chatStore.getActiveChat();
+    if (!activeChat || !activeChat.messages || activeChat.messages.length === 0) return;
+    const lastUserMsg = [...activeChat.messages].reverse().find(m => m.sender === 'user');
+    if (lastUserMsg && lastUserMsg.text) {
+      const input = document.getElementById('chat-user-input');
+      if (input) {
+        input.value = lastUserMsg.text;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      this.handleSendMessage();
     }
   }
 

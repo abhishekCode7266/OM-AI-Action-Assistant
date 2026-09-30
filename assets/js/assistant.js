@@ -222,20 +222,14 @@ class OMAssistant {
         try {
           const errData = await serverResp.json();
           const errMsg = errData.error || errData.message || `Backend request failed with status ${serverResp.status}`;
-          return this.formatStructuredResponse(errMsg, "Backend Service Error", [], mode, 'OM Backend Error');
+          return this.diagnoseAndSuggestFix(new Error(errMsg), { prompt, mode, status: serverResp.status, source: 'backend' });
         } catch (_) {
-          return this.formatStructuredResponse(`Backend request failed with status ${serverResp.status}`, "HTTP Error", [], mode, 'OM Backend Error');
+          return this.diagnoseAndSuggestFix(new Error(`Backend service responded with HTTP ${serverResp.status}`), { prompt, mode, status: serverResp.status, source: 'backend' });
         }
       }
     } catch (netErr) {
       console.warn("Backend fetch error:", netErr);
-      return this.formatStructuredResponse(
-        `Unable to reach AI backend (${netErr.message || 'Network Error'}). Please verify that ${chatEndpoint} is online.`,
-        "Network Connectivity Issue",
-        [],
-        mode,
-        'Connection Error'
-      );
+      return this.diagnoseAndSuggestFix(netErr, { prompt, mode, endpoint: chatEndpoint, source: 'network' });
     }
   }
 
@@ -3277,6 +3271,118 @@ if __name__ == "__main__":
     }
 
     return actions;
+  }
+
+  /**
+   * Proactive Diagnostic & Fix Recommendation Engine
+   * Categorizes errors (API auth, quota, network, syntax, permissions) and generates actionable fix steps in chat.
+   */
+  diagnoseAndSuggestFix(error, context = {}) {
+    const errMsg = (error && (error.message || error.toString())) || 'Unknown operational error occurred';
+    const errLower = errMsg.toLowerCase();
+    const prompt = context.prompt || '';
+    const mode = context.mode || this.currentMode || 'general';
+
+    let diagnosisTitle = "⚠️ System Diagnostics & Error Report";
+    let rootCause = "An unexpected runtime exception interrupted the operation.";
+    let technicalDetails = errMsg;
+    let suggestedFixes = [];
+    let actions = [];
+
+    // 1. API Key / Authentication / Quota issues
+    if (errLower.includes('api_key') || errLower.includes('401') || errLower.includes('403') || errLower.includes('unauthorized') || errLower.includes('forbidden') || errLower.includes('key not valid')) {
+      diagnosisTitle = "🔑 AI API Authentication Notice";
+      rootCause = "The AI service is missing a valid API key, or the provided key is unauthorized.";
+      suggestedFixes = [
+        "Configure your Google Gemini API key in **⚙️ Settings** > **API Configuration**.",
+        "Alternatively, switch to **🤖 OM Offline Autonomous Mode** to operate locally without cloud credentials.",
+        "Generate a free API key at [Google AI Studio](https://aistudio.google.com/app/apikey)."
+      ];
+      actions = [
+        { stage: 'act', title: 'Open Settings to Configure API Key', estimate: '1m', command: 'settings' },
+        { stage: 'act', title: 'Switch to OM Offline Autonomous Engine', estimate: '10s', command: 'offline' }
+      ];
+    }
+    // 2. Quota / Rate Limiting (429)
+    else if (errLower.includes('429') || errLower.includes('quota') || errLower.includes('rate limit')) {
+      diagnosisTitle = "⏱️ Rate Limit / Quota Exceeded";
+      rootCause = "The active model quota or requests-per-minute threshold was exceeded.";
+      suggestedFixes = [
+        "Wait 15–30 seconds and retry your request.",
+        "Switch to **⚡ Flash-Lite** or **🤖 OM Offline Engine** for instantaneous zero-wait responses.",
+        "Check your plan limits under **Profile ➔ Plan & Tier**."
+      ];
+      actions = [
+        { stage: 'act', title: 'Retry Request', estimate: '10s', command: 'retry' },
+        { stage: 'act', title: 'Switch to Flash-Lite Mode', estimate: '5s', command: 'model_flash' }
+      ];
+    }
+    // 3. Network / Serverless Unreachable
+    else if (errLower.includes('network') || errLower.includes('fetch') || errLower.includes('failed to fetch') || errLower.includes('abort') || errLower.includes('timeout')) {
+      diagnosisTitle = "🌐 Network / Backend Unreachable";
+      rootCause = "The browser cannot establish a connection to the AI backend or Vercel serverless function.";
+      suggestedFixes = [
+        "Check your internet connection.",
+        "If running locally, ensure the backend is active: `python server.py`.",
+        "If deployed on GitHub Pages, enter your personal API Key in **⚙️ Settings** for direct client-to-Gemini connection.",
+        "Click **[🔄 Retry Message]** once your connection stabilizes."
+      ];
+      actions = [
+        { stage: 'act', title: 'Retry Message Synthesis', estimate: '5s', command: 'retry' },
+        { stage: 'act', title: 'Inspect Diagnostics', estimate: '1m', command: 'developer' }
+      ];
+    }
+    // 4. Code Execution / Sandbox Error
+    else if (errLower.includes('syntaxerror') || errLower.includes('typeerror') || errLower.includes('nameerror') || errLower.includes('indexerror') || errLower.includes('keyerror') || errLower.includes('runtime')) {
+      diagnosisTitle = "💻 Code Execution Runtime Diagnostics";
+      rootCause = `Execution halted due to a Python/JavaScript exception: \`${errMsg.split('\n')[0]}\`.`;
+      suggestedFixes = [
+        "Check variable initialization and argument types.",
+        "Ensure imported libraries are available in the sandbox.",
+        "Click **[💻 Open Coding Sandbox]** to inspect and step through the code."
+      ];
+      actions = [
+        { stage: 'plan', title: 'Inspect code in Coding Studio', estimate: '2m', command: 'coding' },
+        { stage: 'act', title: 'Auto-refactor code for exception safety', estimate: '1m', command: 'refactor' }
+      ];
+    }
+    // 5. Speech / Microphone Error
+    else if (errLower.includes('speech') || errLower.includes('mic') || errLower.includes('audio') || errLower.includes('not-allowed')) {
+      diagnosisTitle = "🎙️ Voice Input Diagnostics";
+      rootCause = "Microphone capture was interrupted or blocked by browser security permissions.";
+      suggestedFixes = [
+        "Click the padlock icon in your browser URL bar and set **Microphone** to 'Allow'.",
+        "Ensure no other application is holding an exclusive hardware lock on your mic.",
+        "Alternatively, type your message directly in the prompt dock below."
+      ];
+      actions = [
+        { stage: 'act', title: 'Test Voice Synthesizer & Mic', estimate: '30s', command: 'voice' }
+      ];
+    }
+    // 6. Generic Fallback
+    else {
+      diagnosisTitle = "⚙️ Assistant Diagnostic Notice";
+      rootCause = "An issue occurred during prompt inference.";
+      suggestedFixes = [
+        "Try rephrasing your request.",
+        "Switch to **General Assistant** or **Coding** mode.",
+        "Check Developer Diagnostics for full event logs."
+      ];
+      actions = [
+        { stage: 'act', title: 'Retry with simplified prompt', estimate: '15s', command: 'retry' }
+      ];
+    }
+
+    const fixesMarkdown = suggestedFixes.map((fix, idx) => `${idx + 1}. ${fix}`).join('\n');
+    const responseText = `### ${diagnosisTitle}\n\n**Diagnosis**: ${rootCause}\n\n**Suggested Fixes:**\n${fixesMarkdown}\n\n*Technical Details: \`${technicalDetails}\`*`;
+
+    return this.formatStructuredResponse(
+      responseText,
+      `Proactive Diagnostics: Analyzed error "${errMsg}" and generated targeted remediation steps.`,
+      actions,
+      mode,
+      'OM Proactive Diagnostics'
+    );
   }
 
   formatStructuredResponse(text, reasoning, actions, mode, source) {

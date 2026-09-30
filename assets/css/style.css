@@ -3849,28 +3849,30 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================================================
-   Listening Animation Ring (Centered at Viewport when Listening, Gracefully Above Chat Input Area when Speaking)
+   Floating Voice Orb Animation (Gracefully Centered Above Chat View)
+   Mimics Original Listening Ring Visual Style • Keeps Chat Messages Visible
    ========================================================================== */
 .listening-animation-ring,
 .orb-widget-mini {
   position: fixed;
-  top: 50%;
+  top: 74px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90px;
-  height: 90px;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 242, 254, 0.95) 0%, rgba(79, 172, 254, 0.85) 100%);
-  box-shadow: 0 0 25px rgba(0, 195, 255, 0.85), 0 0 65px rgba(0, 195, 255, 0.45);
+  box-shadow: 0 0 20px rgba(0, 195, 255, 0.85), 0 0 45px rgba(0, 195, 255, 0.45);
   cursor: pointer;
-  z-index: 10000;
+  z-index: 9999;
   display: none;
   align-items: center;
   justify-content: center;
-  animation: pulse-ring 2s infinite ease-in-out;
-  transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease, height 0.3s ease, box-shadow 0.25s ease, background 0.3s ease;
+  animation: orb-gentle-float 2.8s infinite ease-in-out;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   pointer-events: auto;
+  backdrop-filter: blur(8px);
 }
 
 .listening-animation-ring.active,
@@ -3880,97 +3882,130 @@ h1, h2, h3, h4, h5 {
 
 .listening-animation-ring:hover,
 .orb-widget-mini:hover {
-  transform: translate(-50%, -50%) scale(1.08);
-  box-shadow: 0 0 35px rgba(0, 195, 255, 0.95), 0 0 80px rgba(0, 195, 255, 0.6);
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 0 28px rgba(0, 195, 255, 0.95), 0 0 60px rgba(0, 195, 255, 0.6);
 }
 
 .listening-animation-ring:active,
 .orb-widget-mini:active {
-  transform: translate(-50%, -50%) scale(0.94);
+  transform: translateX(-50%) scale(0.92);
 }
 
-/* Gracefully positioned above the chat input dock when speaking */
+/* Concentric Listening Waves mimicking original ring style */
+.listening-ring-wave {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 242, 254, 0.65);
+  pointer-events: none;
+  animation: listening-wave-pulse 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.listening-ring-wave.wave-2 {
+  animation-delay: 1s;
+}
+
+/* Glowing Inner Core */
+.listening-ring-core {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(0, 195, 255, 0.9);
+  animation: ringCorePulse 1.4s infinite alternate ease-in-out;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
+/* Speaking State (Dynamic rose/coral gradient with soundwave pulsation) */
 .listening-animation-ring.speaking,
 .orb-widget-mini.speaking {
-  top: auto;
-  bottom: 112px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 74px;
-  height: 74px;
   background: radial-gradient(circle, rgba(244, 63, 94, 0.95) 0%, rgba(251, 113, 133, 0.85) 100%);
-  box-shadow: 0 0 30px rgba(244, 63, 94, 0.85), 0 0 75px rgba(244, 63, 94, 0.5);
-  animation: pulse-ring-speaking 1.8s infinite ease-in-out;
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.85), 0 0 52px rgba(244, 63, 94, 0.45);
+  animation: orb-speaking-pulse 1.8s infinite ease-in-out;
+}
+
+.listening-animation-ring.speaking .listening-ring-wave {
+  border-color: rgba(244, 63, 94, 0.65);
+}
+
+.listening-animation-ring.speaking .listening-ring-core {
+  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(244, 63, 94, 0.9);
 }
 
 .listening-animation-ring.speaking:hover,
 .orb-widget-mini.speaking:hover {
-  transform: translateX(-50%) scale(1.08);
-  box-shadow: 0 0 40px rgba(244, 63, 94, 0.95), 0 0 85px rgba(244, 63, 94, 0.6);
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 0 32px rgba(244, 63, 94, 0.95), 0 0 70px rgba(244, 63, 94, 0.6);
 }
 
 .listening-animation-ring.speaking:active,
 .orb-widget-mini.speaking:active {
-  transform: translateX(-50%) scale(0.94);
+  transform: translateX(-50%) scale(0.92);
 }
 
 @media (max-width: 768px) {
-  .listening-animation-ring.speaking,
-  .orb-widget-mini.speaking {
-    bottom: calc(142px + env(safe-area-inset-bottom, 0px));
-    width: 64px;
-    height: 64px;
+  .listening-animation-ring,
+  .orb-widget-mini {
+    top: 68px;
+    width: 48px;
+    height: 48px;
+  }
+  .listening-ring-core {
+    width: 18px;
+    height: 18px;
   }
 }
 
-.listening-ring-core {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9), 0 0 30px rgba(0, 195, 255, 0.8);
-  animation: ringCorePulse 1.4s infinite alternate ease-in-out;
-  pointer-events: none;
+/* Keyframes */
+@keyframes orb-gentle-float {
+  0% {
+    transform: translateX(-50%) translateY(0px) scale(0.98);
+    box-shadow: 0 0 16px rgba(0, 195, 255, 0.75), 0 0 35px rgba(0, 195, 255, 0.35);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px) scale(1.03);
+    box-shadow: 0 0 24px rgba(0, 195, 255, 0.95), 0 0 55px rgba(0, 195, 255, 0.55);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0px) scale(0.98);
+    box-shadow: 0 0 16px rgba(0, 195, 255, 0.75), 0 0 35px rgba(0, 195, 255, 0.35);
+  }
 }
 
-.listening-animation-ring.speaking .listening-ring-core,
-.orb-widget-mini.speaking .listening-ring-core {
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9), 0 0 30px rgba(244, 63, 94, 0.8);
+@keyframes orb-speaking-pulse {
+  0% {
+    transform: translateX(-50%) translateY(0px) scale(0.96);
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.75), 0 0 40px rgba(244, 63, 94, 0.35);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-2px) scale(1.05);
+    box-shadow: 0 0 28px rgba(244, 63, 94, 0.95), 0 0 65px rgba(244, 63, 94, 0.55);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0px) scale(0.96);
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.75), 0 0 40px rgba(244, 63, 94, 0.35);
+  }
+}
+
+@keyframes listening-wave-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
 }
 
 @keyframes ringCorePulse {
-  0% { transform: scale(0.85); opacity: 0.75; }
+  0% { transform: scale(0.85); opacity: 0.8; }
   100% { transform: scale(1.15); opacity: 1; }
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: translate(-50%, -50%) scale(0.92);
-    box-shadow: 0 0 0 0 rgba(0, 195, 255, 0.8);
-  }
-  70% {
-    transform: translate(-50%, -50%) scale(1.06);
-    box-shadow: 0 0 0 30px rgba(0, 195, 255, 0);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(0.92);
-    box-shadow: 0 0 0 0 rgba(0, 195, 255, 0);
-  }
-}
-
-@keyframes pulse-ring-speaking {
-  0% {
-    transform: translateX(-50%) scale(0.94);
-    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8);
-  }
-  70% {
-    transform: translateX(-50%) scale(1.06);
-    box-shadow: 0 0 0 24px rgba(244, 63, 94, 0);
-  }
-  100% {
-    transform: translateX(-50%) scale(0.94);
-    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
-  }
 }
 
 /* Hide legacy microphone icon from input capsule */
