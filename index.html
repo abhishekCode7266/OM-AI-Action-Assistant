@@ -554,7 +554,7 @@
               </div>
             </div>
 
-            <button class="input-tool-btn" id="btn-voice-input" style="display: none !important;" aria-hidden="true"></button>
+            <button class="input-tool-btn" id="btn-voice-input" title="Voice Input (Speech-to-Text)">🎙️</button>
             <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
             <button class="btn-stop-message" id="btn-chat-stop" onclick="window.omApp.stopProcessing()" title="Stop Generation" style="display: none; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 0.85rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);">⏹</button>
           </div>
@@ -618,7 +618,49 @@
           </span>
         </div>
 
-        <!-- Model Selection -->
+        <!-- Appearance Settings (Dark, Light, Cyber) -->
+        <div class="om-input-group">
+          <label for="settings-theme-select">🎨 Appearance & Theme</label>
+          <select id="settings-theme-select" class="om-input" onchange="window.omApp && window.omApp.setAppTheme(this.value)">
+            <option value="dark">Dark Theme (Default Futuristic)</option>
+            <option value="cyber">Cyber Cyan High-Contrast</option>
+            <option value="light">Light Theme (Minimalist Clean)</option>
+          </select>
+        </div>
+
+        <!-- Chat Preferences (Enter to Send & Auto-Scroll) -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: var(--om-radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+            <span>⌨️ Press Enter to Send (Shift+Enter for New Line)</span>
+            <input type="checkbox" id="settings-enter-send-chk" checked>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+            <span>📜 Auto-scroll to latest response</span>
+            <input type="checkbox" id="settings-autoscroll-chk" checked>
+          </div>
+        </div>
+
+        <!-- Voice Settings (Persona, Speed, Volume) -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: var(--om-radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-weight: 700; font-size: 0.82rem; color: #fff;">🎙️ Voice & Audio Preferences</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+            <span>Voice Persona</span>
+            <select id="settings-voice-gender-select" class="om-input" style="width: 150px; padding: 4px 8px; font-size: 0.78rem;" onchange="window.omVoice && window.omVoice.setVoiceGender(this.value)">
+              <option value="male">👨 J.A.R.V.I.S. (Male)</option>
+              <option value="female">👩 F.R.I.D.A.Y. (Female)</option>
+            </select>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+            <span>Speech Speed: <strong id="voice-speed-val">1.0x</strong></span>
+            <input type="range" id="settings-voice-speed-slider" min="0.8" max="1.5" step="0.1" value="1.0" style="width: 140px;" oninput="document.getElementById('voice-speed-val').textContent = this.value + 'x'">
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+            <span>🔊 Automatically read assistant responses aloud</span>
+            <input type="checkbox" id="settings-auto-speech-chk">
+          </div>
+        </div>
+
+        <!-- Model Selection & Temperature -->
         <div class="om-input-group">
           <label for="settings-model-select">Active AI Model</label>
           <select id="settings-model-select" class="om-input">
@@ -627,6 +669,10 @@
             <option value="nexus-1.5-flash">Nexus 1.5 Flash (Fast & Balanced)</option>
             <option value="om-autonomous">OM Built-in Autonomous Action Engine (Offline)</option>
           </select>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; margin-top: 8px;">
+            <span>Creativity / Temperature: <strong id="settings-temp-val">0.7</strong></span>
+            <input type="range" id="settings-temperature-slider" min="0.0" max="1.0" step="0.1" value="0.7" style="width: 140px;" oninput="document.getElementById('settings-temp-val').textContent = this.value">
+          </div>
         </div>
 
         <!-- System Prompt Custom Instructions -->
@@ -651,10 +697,13 @@
           </div>
         </div>
 
-        <!-- Voice Auto-Speech Toggle -->
-        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
-          <span>🔊 Automatically read assistant responses aloud</span>
-          <input type="checkbox" id="settings-auto-speech-chk">
+        <!-- Privacy & Local Data Storage -->
+        <div style="background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--om-radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-weight: 700; font-size: 0.82rem; color: #f87171;">🔒 Privacy & Storage Management</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp && window.omApp.handleClearAllHistory()">🗑️ Clear All Chat History</button>
+            <button class="om-btn om-btn-xs om-btn-danger" style="background: rgba(239,68,68,0.2); color: #fca5a5;" onclick="if(confirm('Reset all OM local settings, cache, and notebooks?')){ localStorage.clear(); location.reload(); }">⚠️ Reset All Local Data</button>
+          </div>
         </div>
 
         <!-- Action Buttons -->
@@ -1085,11 +1134,13 @@
             <input type="text" id="notebook-title-input" class="om-input" placeholder="Notebook Title..." style="font-weight: 700; font-size: 0.95rem; flex: 1;">
           </div>
           <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.addCurrentChatToActiveNotebook()">+ Add Active Chat</button>
+            <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.askOmAboutNotebook()" title="Ask OM to analyze, summarize, or extract ideas from notes">💬 Ask OM</button>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.convertNotebookToTasks()" title="Convert note action items into planner tasks">📋 To Tasks</button>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.addCurrentChatToActiveNotebook()">+ Add Chat</button>
             <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.exportActiveNotebook()">📥 Export .MD</button>
             <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp.saveActiveNotebook()">💾 Save</button>
-            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openAllNotebooksModal()">⋯ All Notebooks</button>
-            <button class="om-btn om-btn-xs om-btn-danger" style="color: #f87171; background: rgba(239,68,68,0.15);" onclick="window.omApp.deleteActiveNotebook()">🗑️ Delete</button>
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openAllNotebooksModal()">⋯ All</button>
+            <button class="om-btn om-btn-xs om-btn-danger" style="color: #f87171; background: rgba(239,68,68,0.15);" onclick="window.omApp.deleteActiveNotebook()">🗑️</button>
           </div>
         </div>
         <textarea id="notebook-content-textarea" class="om-input" rows="15" style="font-family: var(--om-font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical;" placeholder="Type your notebook research notes, synthesized prompts, and project blueprints..."></textarea>

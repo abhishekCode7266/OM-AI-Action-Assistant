@@ -1560,6 +1560,32 @@ Key Ideas & Notes:
     if (promptInput) promptInput.value = settings.systemPrompt || '';
     if (autoSpeechCheck) autoSpeechCheck.checked = !!settings.autoSpeech;
 
+    const themeSelect = document.getElementById('settings-theme-select');
+    if (themeSelect) themeSelect.value = localStorage.getItem('om_theme') || settings.theme || 'dark';
+
+    const enterSendCheck = document.getElementById('settings-enter-send-chk');
+    if (enterSendCheck) enterSendCheck.checked = settings.enterToSend !== false;
+
+    const autoScrollCheck = document.getElementById('settings-autoscroll-chk');
+    if (autoScrollCheck) autoScrollCheck.checked = settings.autoScroll !== false;
+
+    const voiceGenderSelect = document.getElementById('settings-voice-gender-select');
+    if (voiceGenderSelect) voiceGenderSelect.value = localStorage.getItem('om_voice_gender') || 'male';
+
+    const voiceSpeedSlider = document.getElementById('settings-voice-speed-slider');
+    const voiceSpeedVal = document.getElementById('voice-speed-val');
+    if (voiceSpeedSlider) {
+      voiceSpeedSlider.value = settings.voiceSpeed || 1.0;
+      if (voiceSpeedVal) voiceSpeedVal.textContent = (settings.voiceSpeed || 1.0) + 'x';
+    }
+
+    const tempSlider = document.getElementById('settings-temperature-slider');
+    const tempVal = document.getElementById('settings-temp-val');
+    if (tempSlider) {
+      tempSlider.value = settings.temperature !== undefined ? settings.temperature : 0.7;
+      if (tempVal) tempVal.textContent = String(tempSlider.value);
+    }
+
     if (devBtn) {
       devBtn.textContent = isDev ? "⚡ Developer Active" : "Activate Developer Mode";
       devBtn.className = isDev ? "om-btn om-btn-xs om-btn-primary" : "om-btn om-btn-xs om-btn-secondary";
@@ -1613,17 +1639,34 @@ Key Ideas & Notes:
         const autoSpeechCheck = document.getElementById('settings-auto-speech-chk');
         const memToggle = document.getElementById('settings-memory-enabled-chk');
         const quickModelSelect = document.getElementById('chat-model-quick-selector');
+        const themeSelect = document.getElementById('settings-theme-select');
+        const enterSendCheck = document.getElementById('settings-enter-send-chk');
+        const autoScrollCheck = document.getElementById('settings-autoscroll-chk');
+        const voiceGenderSelect = document.getElementById('settings-voice-gender-select');
+        const voiceSpeedSlider = document.getElementById('settings-voice-speed-slider');
+        const tempSlider = document.getElementById('settings-temperature-slider');
 
         const chosenModel = modelSelect ? modelSelect.value : 'nexus-2.0-flash';
         const apiKeyVal = keyInput ? keyInput.value.trim() : '';
+        const themeVal = themeSelect ? themeSelect.value : 'dark';
+        const speedVal = voiceSpeedSlider ? parseFloat(voiceSpeedSlider.value) : 1.0;
+        const tempVal = tempSlider ? parseFloat(tempSlider.value) : 0.7;
 
         this.chatStore.saveSettings({
           apiKey: apiKeyVal,
           model: chosenModel,
           systemPrompt: promptInput ? promptInput.value : '',
-          autoSpeech: autoSpeechCheck ? autoSpeechCheck.checked : false
+          autoSpeech: autoSpeechCheck ? autoSpeechCheck.checked : false,
+          theme: themeVal,
+          enterToSend: enterSendCheck ? enterSendCheck.checked : true,
+          autoScroll: autoScrollCheck ? autoScrollCheck.checked : true,
+          voiceSpeed: speedVal,
+          voiceRate: speedVal,
+          temperature: tempVal
         });
 
+        if (this.setAppTheme) this.setAppTheme(themeVal);
+        if (voiceGenderSelect && window.omVoice) window.omVoice.setVoiceGender(voiceGenderSelect.value);
         if (quickModelSelect) quickModelSelect.value = chosenModel;
         if (memToggle) this.chatStore.toggleMemoryEnabled(memToggle.checked);
 
@@ -2129,6 +2172,61 @@ Key Ideas & Notes:
     link.download = `${nb.title.replace(/\s+/g, '_')}_notes.md`;
     link.click();
     this.showToast('Exported notebook as Markdown (.md)', 'success');
+  }
+
+  askOmAboutNotebook() {
+    if (!this.activeNotebookId) return;
+    const nbs = this.chatStore.getNotebooks();
+    const nb = nbs.find(n => n.id === this.activeNotebookId);
+    if (!nb || !nb.content || !nb.content.trim()) {
+      this.showToast('Notebook is empty. Add notes first.', 'info');
+      return;
+    }
+    const modal = document.getElementById('notebook-workspace-modal');
+    if (modal) modal.classList.remove('active');
+
+    const promptText = `Please analyze and summarize my notebook notes for "${nb.title}":\n\n${nb.content.trim()}`;
+    const input = document.getElementById('chat-user-input');
+    if (input) {
+      input.value = promptText;
+      this.handleSendMessage();
+    }
+  }
+
+  convertNotebookToTasks() {
+    if (!this.activeNotebookId) return;
+    const nbs = this.chatStore.getNotebooks();
+    const nb = nbs.find(n => n.id === this.activeNotebookId);
+    if (!nb || !nb.content || !nb.content.trim()) {
+      this.showToast('Notebook is empty. Add notes first.', 'info');
+      return;
+    }
+
+    const lines = nb.content.split('\n');
+    let addedCount = 0;
+    const stages = ['think', 'plan', 'act', 'achieve'];
+
+    lines.forEach((line) => {
+      const clean = line.replace(/^[-*•\d.]+\s*(\[[ xX]\])?\s*/, '').trim();
+      if (clean.length > 5 && !clean.startsWith('#')) {
+        const stage = stages[addedCount % stages.length];
+        this.chatStore.addTask({
+          title: clean.slice(0, 80),
+          desc: `Extracted from notebook: ${nb.title}`,
+          stage: stage,
+          priority: addedCount === 0 ? 'high' : 'medium',
+          estimate: '1d'
+        });
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      this.showToast(`Converted ${addedCount} action items into Task Planner!`, 'success');
+      this.openTasksModal();
+    } else {
+      this.showToast('No task-like lines found. Add bullet points to convert.', 'info');
+    }
   }
 
   openAllNotebooksModal() {
@@ -3264,28 +3362,12 @@ Key Ideas & Notes:
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        this.showToast('ℹ️ Server video provider unconfigured. Launching 3D Studio video recording pipeline...', 'info');
-        if (window.omDismantler) {
-          window.omDismantler.openModal('drone');
-          setTimeout(() => {
-            if (typeof window.omDismantler.generateAssemblyVideo === 'function') {
-              window.omDismantler.generateAssemblyVideo();
-            }
-          }, 800);
-        }
+        this.showToast('Video generation requires a configured video-generation provider (set VIDEO_API_KEY).', 'info');
         return;
       }
       this.showToast('Video generated successfully!', 'success');
     } catch (err) {
-      this.showToast('ℹ️ Server video provider unconfigured. Launching 3D Studio video recording pipeline...', 'info');
-      if (window.omDismantler) {
-        window.omDismantler.openModal('drone');
-        setTimeout(() => {
-          if (typeof window.omDismantler.generateAssemblyVideo === 'function') {
-            window.omDismantler.generateAssemblyVideo();
-          }
-        }, 800);
-      }
+      this.showToast('Video generation requires a configured video-generation provider (set VIDEO_API_KEY).', 'info');
     }
   }
 

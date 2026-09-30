@@ -564,12 +564,17 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         model: (parsed.model && !parsed.model.includes('gemini')) ? parsed.model : 'nexus-2.0-flash',
         autoSpeech: parsed.autoSpeech !== undefined ? parsed.autoSpeech : false,
         voiceRate: parsed.voiceRate || 1.0,
+        voiceSpeed: parsed.voiceSpeed || parsed.voiceRate || 1.0,
+        voiceVolume: parsed.voiceVolume !== undefined ? parsed.voiceVolume : 1.0,
         voicePitch: parsed.voicePitch || 1.0,
+        enterToSend: parsed.enterToSend !== undefined ? parsed.enterToSend : true,
+        autoScroll: parsed.autoScroll !== undefined ? parsed.autoScroll : true,
+        temperature: parsed.temperature !== undefined ? parsed.temperature : 0.7,
         userPlan: localStorage.getItem('om_user_plan') || parsed.userPlan || 'standard',
         isDeveloper: localStorage.getItem('om_dev_mode') === 'true',
         developerTier: 'Standard',
         systemPrompt: parsed.systemPrompt || DEFAULT_PROMPT,
-        theme: 'dark'
+        theme: localStorage.getItem('om_theme') || parsed.theme || 'dark'
       };
     } catch (e) {
       return {
@@ -577,7 +582,12 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
         model: 'nexus-2.0-flash',
         autoSpeech: false,
         voiceRate: 1.0,
+        voiceSpeed: 1.0,
+        voiceVolume: 1.0,
         voicePitch: 1.0,
+        enterToSend: true,
+        autoScroll: true,
+        temperature: 0.7,
         userPlan: 'standard',
         isDeveloper: false,
         developerTier: 'Standard',

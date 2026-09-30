@@ -25,8 +25,9 @@ export default function handler(req, res) {
     return res.status(200).end();
   }
 
-  const geminiConfigured = Boolean(process.env.GEMINI_API_KEY || process.env.NEXUS_API_KEY);
+  const geminiConfigured = Boolean(process.env.GEMINI_API_KEY || process.env.AI_API_KEY || process.env.NEXUS_API_KEY);
   const openaiConfigured = Boolean(process.env.OPENAI_API_KEY);
+  const searchConfigured = Boolean(process.env.SEARCH_API_KEY);
   const githubConfigured = Boolean(process.env.GITHUB_TOKEN);
   const vercelConfigured = Boolean(process.env.VERCEL_TOKEN);
   const imageConfigured = Boolean(process.env.IMAGE_API_KEY || process.env.OPENAI_API_KEY);
@@ -44,6 +45,7 @@ export default function handler(req, res) {
     providers: {
       gemini: geminiConfigured,
       openai: openaiConfigured,
+      search: searchConfigured,
       ai_configured: geminiConfigured || openaiConfigured,
       github: githubConfigured,
       vercel: vercelConfigured,

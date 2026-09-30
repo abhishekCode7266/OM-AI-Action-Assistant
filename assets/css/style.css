@@ -4008,9 +4008,17 @@ h1, h2, h3, h4, h5 {
   100% { transform: scale(1.15); opacity: 1; }
 }
 
-/* Hide legacy microphone icon from input capsule */
+/* Modern microphone voice input button */
 #btn-voice-input {
-  display: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+#btn-voice-input:hover {
+  transform: scale(1.08);
+  color: var(--om-cyan);
 }
 
 .header-icon-btn.btn-clear-chat {

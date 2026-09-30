@@ -410,6 +410,65 @@ User Profile & Memory: ${memoryCtx || "None"}`;
     }
 
     // =========================================================================
+    // 00. Natural Conversational Openers & Greetings (Direct & Helpful)
+    // =========================================================================
+    const isPureGreeting = (
+      /^(hello|hi|hey|greetings|namaste|नमस्ते|hola|good\s*(morning|afternoon|evening)|kaise\s*ho|who\s*are\s*you|how\s*are\s*you)\b/i.test(lower) ||
+      lower === 'hello' || lower === 'hi' || lower === 'hey' || lower === 'namaste' || lower === 'नमस्ते' || lower === 'kaise ho' || lower === 'who are you'
+    );
+
+    if (isPureGreeting) {
+      if (hasDevanagari || lower.includes('namaste') || lower.includes('kaise ho')) {
+        text = `### नमस्ते! मैं OM हूँ — आपका AI Action Assistant।
+
+मैं आपकी किस प्रकार सहायता कर सकता हूँ?
+
+* **💻 कोडिंग और डिबगिंग**: Python, JavaScript, HTML/CSS, SQL, या अन्य भाषाओं में कोड लिखें व ठीक करें।
+* **📊 डेटा विश्लेषण**: अपनी CSV या JSON फाइल अपलोड करें और तुरंत सांख्यिकी व चार्ट्स देखें।
+* **🚀 प्रोजेक्ट आर्किटेक्चर**: किसी भी नए विचार को *Think ➔ Plan ➔ Act ➔ Achieve* में बदलें।
+* **📝 रिसर्च और राइटिंग**: रिपोर्ट्स, ईमेल, और विस्तृत तकनीकी अध्ययन तैयार करें।
+
+आप नीचे दिए गए विकल्पों में से चुन सकते हैं या सीधे अपना सवाल लिख सकते हैं:`;
+      } else {
+        text = `### Hello! I'm OM, your AI Action Assistant.
+
+How can I help you today?
+
+* **💻 Code & Debug**: Write, optimize, and test code across Python, JavaScript, HTML/CSS, SQL, and more.
+* **📊 Data Analysis**: Upload CSV/JSON files for instant descriptive statistics, summaries, and charts.
+* **🚀 Project Builder**: Deconstruct ambitious ideas into *Think ➔ Plan ➔ Act ➔ Achieve* execution steps.
+* **🔎 Deep Research & Writing**: Generate structured analyses, technical documentation, and professional prose.
+
+Feel free to ask a question, upload a document, or tell me what you'd like to build!`;
+      }
+
+      reasoning = [
+        "1. Natural Greeting Recognition: Handled conversational opener with zero latency.",
+        "2. Core Capabilities: Highlighted coding, data analytics, project execution, and deep research.",
+        "3. Action Readiness: Armed multimodal tools and primed prompt dock for user instruction."
+      ];
+
+      actions = [
+        { stage: 'think', title: 'Scope your project or question', estimate: 'Instant' },
+        { stage: 'plan', title: 'Deconstruct requirements into actionable steps', estimate: '1m' },
+        { stage: 'act', title: 'Execute code, data analysis, or documentation', estimate: 'Live' },
+        { stage: 'achieve', title: 'Verify deliverables and benchmark accuracy', estimate: 'Verified' }
+      ];
+
+      tools = ["OM Conversational Core", "Intent Router", "Action Planner"];
+
+      return {
+        sender: 'om',
+        text: text,
+        reasoning: reasoning.join('\n'),
+        verified: true,
+        actions: actions,
+        citations: ["OM Assistant v3.0", "Core Directives"],
+        toolsUsed: tools
+      };
+    }
+
+    // =========================================================================
     // 000. Master Development Prompt & "OM, ye kar do" Action Execution
     // =========================================================================
     const isMasterPromptRequest = lower.includes('development prompt') || lower.includes('complete prompt') || lower.includes('prompt likho') || lower.includes('agent prompt');

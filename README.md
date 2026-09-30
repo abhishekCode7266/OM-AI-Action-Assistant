@@ -123,7 +123,44 @@ Selectable via the top-header pill selector or auto-detected based on user inten
 - **Dual Engine**:
   - **Autonomous Action Engine**: 100% offline, zero-configuration engine built-in.
   - **Google Gemini 2.0 / 1.5 Integration**: Optional free Gemini API key support in Settings for live cloud LLM reasoning and multimodal vision.
-- **Long-Term Memory**: Stores user facts and preferences across conversations with full review and deletion controls.
+### 8. Interactive Notebook Workspace
+- Multi-note manager with instant local persistence and keyword search.
+- **💬 Ask OM About Notes**: Injects the active note into the conversation prompt dock for deep AI analysis and expansion.
+- **📋 Convert to Tasks**: Automatically parses notes and bullet points into trackable Think-Plan-Act-Achieve tasks.
+- **Markdown Export**: One-click `.md` file download.
+
+### 9. Creative Media Studios
+- **Image Studio**: Prompt-based image generation powered by dynamic visual prompts with instant preview and download.
+- **Video Studio & 3D WebM Recorder**: Built-in 3D Studio Canvas recording to `.webm` plus support for external video providers via `VIDEO_API_KEY`.
+
+### 10. Comprehensive Settings & Personalization
+- **Appearance & Theme**: Switch between Obsidian Dark, Cyber Cyan, and Clean Light themes.
+- **Chat Preferences**: Toggle Enter-to-Send and Auto-scroll behavior.
+- **Voice Preferences**: Toggle J.A.R.V.I.S. (male) and F.R.I.D.A.Y. (female) personas, voice speed slider (0.8x to 1.5x), and auto-speech output.
+- **AI Creativity & Temperature**: Real-time slider from 0.0 (Precise & deterministic) to 1.0 (Creative & expressive).
+- **Long-Term Memory**: View and manage persistent user facts with clear privacy controls.
+
+---
+
+## ⚙️ Environment Variables & Configuration
+
+Create a `.env` file in the root directory (refer to `.env.example`):
+
+| Variable | Description | Status / Default |
+| :--- | :--- | :--- |
+| `AI_API_KEY` | Primary AI provider API key | Optional (`gemini` / `openai`) |
+| `AI_PROVIDER` | AI provider identifier | `gemini` |
+| `AI_MODEL` | AI model target | `gemini-2.0-flash` |
+| `GEMINI_API_KEY` | Google Gemini API key | Optional |
+| `OPENAI_API_KEY` | OpenAI API key | Optional |
+| `SEARCH_API_KEY` | Real-time live web search key | Optional |
+| `IMAGE_API_KEY` | Image generation provider key | Optional (Pollinations built-in) |
+| `VIDEO_API_KEY` | Video generation provider key | Optional (3D WebM built-in) |
+| `GITHUB_TOKEN` | GitHub personal access token | Optional |
+| `VERCEL_TOKEN` | Vercel deployment token | Optional |
+| `PORT` | Local server port | `8000` |
+
+> 💡 **Offline Autonomous Mode**: OM is fully operational with zero configuration or API keys required, using the internal Autonomous Cognitive Engine.
 
 ---
 
