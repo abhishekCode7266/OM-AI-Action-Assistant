@@ -4,10 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    paths:
-      - "api/**"
-      - "vercel.json"
-      - ".github/workflows/vercel.yml"
 
 jobs:
   deploy-vercel:
