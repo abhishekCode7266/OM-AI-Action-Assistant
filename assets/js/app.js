@@ -81,6 +81,12 @@ class OMApp {
         this.closeInputAttachMenu();
         this.closeProfilePopover();
       }
+      if ((e.ctrlKey && e.key === 'm') || (e.altKey && (e.key === 'v' || e.key === 'V'))) {
+        e.preventDefault();
+        if (typeof window.startVoiceRecognition === 'function') {
+          window.startVoiceRecognition();
+        }
+      }
     });
 
     // Search Chats
@@ -590,8 +596,17 @@ class OMApp {
 
     // Attach click listeners to select chat
     container.querySelectorAll('.sidebar-chat-item').forEach(item => {
-      item.addEventListener('click', () => {
+      item.addEventListener('click', (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         const chatId = item.getAttribute('data-chat-id');
+        // Prevent reloading or redirecting away from the current chat
+        if (chatId === this.chatStore.activeChatId) {
+          this.closeMobileDrawer();
+          return;
+        }
         this.chatStore.setActiveChat(chatId);
         this.renderSidebar();
         this.renderChatMessages();
@@ -2432,17 +2447,16 @@ Key Ideas & Notes:
   // =========================================================================
   // Focus Chat History
   // =========================================================================
-  focusChatHistory() {
+  focusChatHistory(e) {
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    }
     const search = document.getElementById('sidebar-chat-search');
     if (search) {
-      search.focus();
-      search.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      search.focus({ preventScroll: true });
     }
-    const historyContainer = document.getElementById('sidebar-history-container');
-    if (historyContainer) {
-      historyContainer.scrollIntoView({ behavior: 'smooth' });
-    }
-    this.showToast('Browsing chat history', 'info');
+    // Keeps view locked on the current conversation without redirecting or scrolling away
   }
 
   // =========================================================================

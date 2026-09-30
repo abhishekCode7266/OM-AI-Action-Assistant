@@ -825,14 +825,17 @@ class OMJarvisLiveEngine {
       else pipState.style.color = '#94a3b8';
     }
 
-    // Mini floating voice orb sync
+    // Centered listening animation ring sync
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      miniOrb.classList.toggle('speaking', status === 'SPEAKING');
-      const miniIcon = document.getElementById('orb-widget-icon');
-      if (miniIcon) {
-        miniIcon.textContent = status === 'SPEAKING' ? '🔊' : '🎙️';
+      if (this.isActive || status === 'SPEAKING' || status === 'LISTENING') {
+        miniOrb.classList.add('active');
+        miniOrb.style.display = 'flex';
+      } else {
+        miniOrb.classList.remove('active');
+        miniOrb.style.display = 'none';
       }
+      miniOrb.classList.toggle('speaking', status === 'SPEAKING');
     }
   }
 

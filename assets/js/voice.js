@@ -58,7 +58,14 @@ class OMVoiceEngine {
         this.isStarting = false;
         this.isRecording = true;
         this.lastSpokenText = '';
-        this.updateVisualState(true);
+        this.updateVisualState(true, 'listening');
+      };
+
+      this.recognition.onspeechend = () => {
+        // Immediate termination on silence to trigger prompt generation with zero delay
+        try {
+          this.recognition.stop();
+        } catch (e) {}
       };
 
       this.recognition.onresult = (event) => {
@@ -90,6 +97,7 @@ class OMVoiceEngine {
 
       this.recognition.onerror = (e) => {
         this.isStarting = false;
+        this.isRecording = false;
         console.warn("Speech recognition notice:", e.error);
         this.stopRecording();
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
@@ -117,8 +125,10 @@ class OMVoiceEngine {
 
       this.recognition.onend = () => {
         this.isStarting = false;
-        const spoken = (this.lastSpokenText || '').trim();
-        this.stopRecording();
+        this.isRecording = false;
+        const input = document.getElementById('chat-user-input');
+        const spoken = (this.lastSpokenText || (input ? input.value : '') || '').trim();
+        this.updateVisualState(false);
         if (spoken.length > 0) {
           this.lastSpokenText = '';
           if (window.omApp && typeof window.omApp.sendVoiceCommand === 'function') {
@@ -224,7 +234,7 @@ class OMVoiceEngine {
 
     if (voiceBtn) {
       voiceBtn.classList.toggle('recording', recording);
-      voiceBtn.innerHTML = recording ? '<span class="mic-orb-circle"></span>' : '🎙️';
+      voiceBtn.innerHTML = recording ? '<span class="mic-orb-circle"></span>' : '';
     }
     if (visualizer) {
       visualizer.style.display = recording ? 'flex' : 'none';
@@ -237,11 +247,14 @@ class OMVoiceEngine {
     }
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      miniOrb.classList.toggle('speaking', state === 'speaking');
-      const miniIcon = document.getElementById('orb-widget-icon');
-      if (miniIcon) {
-        miniIcon.textContent = state === 'speaking' ? '🔊' : (recording ? '🎙️' : '🎙️');
+      if (recording || state === 'speaking') {
+        miniOrb.classList.add('active');
+        miniOrb.style.display = 'flex';
+      } else {
+        miniOrb.classList.remove('active');
+        miniOrb.style.display = 'none';
       }
+      miniOrb.classList.toggle('speaking', state === 'speaking');
     }
     if (preview && !recording) {
       preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;

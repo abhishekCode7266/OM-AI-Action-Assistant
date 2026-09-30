@@ -191,7 +191,7 @@
             <span class="nav-item-title">Tasks</span>
           </div>
           <div class="sidebar-nav-item" onclick="window.omApp.openVoiceModal()" title="Voice Assistant & Live Voice HUD">
-            <span class="nav-item-icon">🎙️</span>
+            <span class="nav-item-icon">⚡</span>
             <span class="nav-item-title">Voice</span>
           </div>
           <div class="sidebar-nav-item" onclick="window.omApp.openGemsModal()" title="Gems – Specialized AI Personas & Custom Agents">
@@ -384,8 +384,7 @@
             </select>
           </div>
 
-          <button class="om-btn om-btn-primary om-btn-sm" id="btn-header-nexus-live" onclick="window.omJarvisLive.startSession()" title="Nexus Live Voice Conversation (9 Personas)" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
-            <span>🎙️</span>
+          <button class="om-btn om-btn-primary om-btn-sm" id="btn-header-nexus-live" onclick="window.startVoiceRecognition ? window.startVoiceRecognition() : window.omJarvisLive.startSession()" title="Nexus Live Voice Conversation" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
             <span>Nexus Live</span>
           </button>
           <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-3d-dismantle" onclick="window.omDismantler.openModal('drone')" title="3D Text-to-3D Assemblable Studio" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
@@ -555,7 +554,7 @@
               </div>
             </div>
 
-            <button class="input-tool-btn" id="btn-voice-input" onclick="window.startVoiceRecognition && window.startVoiceRecognition()" title="Voice Input (Dictate prompt / Start Speaking)">🎙️</button>
+            <button class="input-tool-btn" id="btn-voice-input" style="display: none !important;" aria-hidden="true"></button>
             <button class="btn-send-message" id="btn-chat-send" title="Send (Enter)">➔</button>
             <button class="btn-stop-message" id="btn-chat-stop" onclick="window.omApp.stopProcessing()" title="Stop Generation" style="display: none; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 0.85rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);">⏹</button>
           </div>
@@ -2944,9 +2943,9 @@
     </div>
   </nav>
 
-  <!-- Ultra-Small Floating Voice Orb Widget (Compact Glowing Voice Ball) -->
-  <div class="orb-widget-mini" id="orb-widget-mini" title="Voice AI Assistant • Click to Speak / Interrupt" onclick="window.handleVoiceOrbClick && window.handleVoiceOrbClick(event)">
-    <span class="orb-icon" id="orb-widget-icon">🎙️</span>
+  <!-- Centered Listening Animation Ring -->
+  <div class="orb-widget-mini listening-animation-ring" id="orb-widget-mini" title="Voice AI Active • Click to Stop & Send" onclick="window.handleVoiceOrbClick && window.handleVoiceOrbClick(event)">
+    <div class="listening-ring-core"></div>
   </div>
 
   <!-- Floating Minimized PiP Widget (Small form / Background Voice & Tasks) -->
