@@ -53,19 +53,18 @@ class OMVoiceEngine {
       this.recognition.lang = this.currentLanguage;
 
       this.lastSpokenText = '';
+      this.lastInterimText = '';
+      this.hasSpoken = false;
+      this.silenceTimer = null;
 
       this.recognition.onstart = () => {
         this.isStarting = false;
         this.isRecording = true;
         this.lastSpokenText = '';
+        this.lastInterimText = '';
+        this.hasSpoken = false;
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
         this.updateVisualState(true, 'listening');
-      };
-
-      this.recognition.onspeechend = () => {
-        // Immediate termination on silence to trigger prompt generation with zero delay
-        try {
-          this.recognition.stop();
-        } catch (e) {}
       };
 
       this.recognition.onresult = (event) => {
@@ -82,20 +81,50 @@ class OMVoiceEngine {
         if (finalTranscript) {
           this.lastSpokenText = (this.lastSpokenText ? this.lastSpokenText + ' ' : '') + finalTranscript.trim();
         }
+        this.lastInterimText = interim.trim();
 
-        const currentDisplay = this.lastSpokenText ? (interim ? this.lastSpokenText + ' ' + interim : this.lastSpokenText) : interim;
+        if (this.lastSpokenText || this.lastInterimText) {
+          this.hasSpoken = true;
+        }
+
+        const currentDisplay = this.lastSpokenText 
+          ? (this.lastInterimText ? this.lastSpokenText + ' ' + this.lastInterimText : this.lastSpokenText) 
+          : this.lastInterimText;
+
         const input = document.getElementById('chat-user-input');
         if (input && currentDisplay) {
           input.value = currentDisplay;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
         const pulseText = document.getElementById('voice-transcript-preview');
         if (pulseText) {
-          pulseText.textContent = interim || this.lastSpokenText || `Listening in ${this.getLanguageDisplayName()}...`;
+          pulseText.textContent = this.lastInterimText || this.lastSpokenText || `Listening in ${this.getLanguageDisplayName()}...`;
+        }
+
+        // Silence timeout: auto-finalize if pause is detected after user has spoken
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
+        if (this.hasSpoken) {
+          this.silenceTimer = setTimeout(() => {
+            if (this.isRecording && this.recognition) {
+              try { this.recognition.stop(); } catch (e) {}
+            }
+          }, 1400);
         }
       };
 
+      this.recognition.onspeechend = () => {
+        // Natural end of speech: allow final packet to be processed then stop
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
+        this.silenceTimer = setTimeout(() => {
+          if (this.isRecording && this.recognition) {
+            try { this.recognition.stop(); } catch (e) {}
+          }
+        }, 500);
+      };
+
       this.recognition.onerror = (e) => {
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
         this.isStarting = false;
         this.isRecording = false;
         console.warn("Speech recognition notice:", e.error);
@@ -124,13 +153,17 @@ class OMVoiceEngine {
       };
 
       this.recognition.onend = () => {
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
         this.isStarting = false;
         this.isRecording = false;
         const input = document.getElementById('chat-user-input');
-        const spoken = (this.lastSpokenText || (input ? input.value : '') || '').trim();
+        const spoken = (this.lastSpokenText || this.lastInterimText || (this.hasSpoken && input ? input.value : '') || '').trim();
+        this.lastSpokenText = '';
+        this.lastInterimText = '';
+        const wasSpoken = this.hasSpoken;
+        this.hasSpoken = false;
         this.updateVisualState(false);
-        if (spoken.length > 0) {
-          this.lastSpokenText = '';
+        if (spoken.length > 0 && wasSpoken) {
           if (window.omApp && typeof window.omApp.sendVoiceCommand === 'function') {
             window.omApp.sendVoiceCommand(spoken);
           }
@@ -198,6 +231,9 @@ class OMVoiceEngine {
     if (this.isPlayingTTS) {
       this.stopSpeaking();
     }
+    if (window.omJarvisLive && window.omJarvisLive.isActive) {
+      window.omJarvisLive.stopSession();
+    }
     if (!this.recognition || this.isRecording || this.isStarting) {
       return;
     }
@@ -218,6 +254,7 @@ class OMVoiceEngine {
   }
 
   stopRecording() {
+    if (this.silenceTimer) clearTimeout(this.silenceTimer);
     this.isStarting = false;
     this.isRecording = false;
     if (this.recognition) {

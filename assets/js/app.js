@@ -415,7 +415,7 @@ class OMApp {
     this.updateHeaderInfo();
 
     const input = document.getElementById('chat-user-input');
-    if (input) input.focus();
+    if (input) input.focus({ preventScroll: true });
 
     // Close mobile drawer if open
     this.closeMobileDrawer();
@@ -569,8 +569,8 @@ class OMApp {
             <span class="chat-item-icon">${modeIcon}</span>
             <span class="chat-item-title" title="${this.escapeHTML(chat.title)}">${this.escapeHTML(chat.title)}</span>
             <div class="chat-item-actions">
-              <button class="chat-action-btn chat-item-delete-btn" onclick="event.stopPropagation(); window.omApp.deleteChat('${chat.id}')" title="Delete conversation" style="font-size: 0.85rem; color: #ef4444; opacity: 0.85; margin-right: 4px; padding: 2px 4px;">🗑️</button>
-              <button class="chat-action-btn chat-item-menu-btn" onclick="event.stopPropagation(); window.omApp.openChatContextMenu(event, '${chat.id}')" title="More options">⋮</button>
+              <button type="button" class="chat-action-btn chat-item-delete-btn" onclick="event.preventDefault(); event.stopPropagation(); window.omApp.deleteChat('${chat.id}')" title="Delete conversation" style="font-size: 0.85rem; color: #ef4444; opacity: 0.85; margin-right: 4px; padding: 2px 4px;">🗑️</button>
+              <button type="button" class="chat-action-btn chat-item-menu-btn" onclick="event.preventDefault(); event.stopPropagation(); window.omApp.openChatContextMenu(event, '${chat.id}')" title="More options">⋮</button>
             </div>
           </div>
         `;
@@ -589,7 +589,9 @@ class OMApp {
       html = `<div style="text-align: center; padding: 2rem 1rem; color: var(--om-text-muted); font-size: 0.8rem;">No conversations found</div>`;
     }
 
+    const savedScrollTop = container.scrollTop;
     container.innerHTML = html;
+    container.scrollTop = savedScrollTop;
 
     // Render Notebooks in sidebar section
     this.renderNotebooks();
@@ -2456,6 +2458,10 @@ Key Ideas & Notes:
     if (search) {
       search.focus({ preventScroll: true });
     }
+    const historyContainer = document.getElementById('sidebar-history-container');
+    if (historyContainer) {
+      historyContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     // Keeps view locked on the current conversation without redirecting or scrolling away
   }
 
@@ -3753,8 +3759,17 @@ Key Ideas & Notes:
   // =========================================================================
   handleHashRoute() {
     const hash = window.location.hash.toLowerCase();
-    if (!hash || hash === '#chat') {
+    if (!hash || hash.startsWith('#chat')) {
       document.querySelectorAll('.om-modal-overlay').forEach(m => m.classList.remove('active'));
+      if (hash.startsWith('#chat=')) {
+        const id = decodeURIComponent(window.location.hash.substring(6));
+        if (id && this.chatStore && this.chatStore.getChat(id) && id !== this.chatStore.activeChatId) {
+          this.chatStore.setActiveChat(id);
+          this.renderSidebar();
+          this.renderChatMessages();
+          this.updateHeaderInfo();
+        }
+      }
       return;
     }
     if (hash === '#projects') this.openProjectsModal();

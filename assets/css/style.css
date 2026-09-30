@@ -3849,7 +3849,7 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================================================
-   Listening Animation Ring (Centered at Viewport)
+   Listening Animation Ring (Centered at Viewport when Listening, Gracefully Above Chat Input Area when Speaking)
    ========================================================================== */
 .listening-animation-ring,
 .orb-widget-mini {
@@ -3868,7 +3868,7 @@ h1, h2, h3, h4, h5 {
   align-items: center;
   justify-content: center;
   animation: pulse-ring 2s infinite ease-in-out;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background 0.3s ease;
+  transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease, height 0.3s ease, box-shadow 0.25s ease, background 0.3s ease;
   user-select: none;
   pointer-events: auto;
 }
@@ -3889,10 +3889,38 @@ h1, h2, h3, h4, h5 {
   transform: translate(-50%, -50%) scale(0.94);
 }
 
+/* Gracefully positioned above the chat input dock when speaking */
 .listening-animation-ring.speaking,
 .orb-widget-mini.speaking {
+  top: auto;
+  bottom: 112px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 74px;
+  height: 74px;
   background: radial-gradient(circle, rgba(244, 63, 94, 0.95) 0%, rgba(251, 113, 133, 0.85) 100%);
   box-shadow: 0 0 30px rgba(244, 63, 94, 0.85), 0 0 75px rgba(244, 63, 94, 0.5);
+  animation: pulse-ring-speaking 1.8s infinite ease-in-out;
+}
+
+.listening-animation-ring.speaking:hover,
+.orb-widget-mini.speaking:hover {
+  transform: translateX(-50%) scale(1.08);
+  box-shadow: 0 0 40px rgba(244, 63, 94, 0.95), 0 0 85px rgba(244, 63, 94, 0.6);
+}
+
+.listening-animation-ring.speaking:active,
+.orb-widget-mini.speaking:active {
+  transform: translateX(-50%) scale(0.94);
+}
+
+@media (max-width: 768px) {
+  .listening-animation-ring.speaking,
+  .orb-widget-mini.speaking {
+    bottom: calc(142px + env(safe-area-inset-bottom, 0px));
+    width: 64px;
+    height: 64px;
+  }
 }
 
 .listening-ring-core {
@@ -3903,6 +3931,11 @@ h1, h2, h3, h4, h5 {
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.9), 0 0 30px rgba(0, 195, 255, 0.8);
   animation: ringCorePulse 1.4s infinite alternate ease-in-out;
   pointer-events: none;
+}
+
+.listening-animation-ring.speaking .listening-ring-core,
+.orb-widget-mini.speaking .listening-ring-core {
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9), 0 0 30px rgba(244, 63, 94, 0.8);
 }
 
 @keyframes ringCorePulse {
@@ -3922,6 +3955,21 @@ h1, h2, h3, h4, h5 {
   100% {
     transform: translate(-50%, -50%) scale(0.92);
     box-shadow: 0 0 0 0 rgba(0, 195, 255, 0);
+  }
+}
+
+@keyframes pulse-ring-speaking {
+  0% {
+    transform: translateX(-50%) scale(0.94);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8);
+  }
+  70% {
+    transform: translateX(-50%) scale(1.06);
+    box-shadow: 0 0 0 24px rgba(244, 63, 94, 0);
+  }
+  100% {
+    transform: translateX(-50%) scale(0.94);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
   }
 }
 
