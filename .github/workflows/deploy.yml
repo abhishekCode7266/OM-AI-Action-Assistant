@@ -73,17 +73,24 @@ jobs:
           print('Allowing 10s for CDN and cache synchronization...')
           time.sleep(10)
 
-          # 1. Verify GitHub Pages
+          # 1. Verify GitHub Pages (with retry loop for CDN propagation)
           gh_url = 'https://abhishekcode7266.github.io/OM-AI-Action-Assistant/'
-          try:
-              req = urllib.request.Request(gh_url, headers={'User-Agent': 'OM-Deploy-Checker'})
-              with urllib.request.urlopen(req, timeout=25) as r:
-                  html = r.read().decode('utf-8', errors='ignore')
-                  assert r.status == 200, f'GitHub Pages status: {r.status}'
-                  assert 'omApp' in html, 'omApp missing from index.html'
-                  print(f'✅ SUCCESS: GitHub Pages is live at {gh_url} (HTTP 200, {len(html)} bytes)')
-          except Exception as e:
-              print(f'❌ ERROR verifying GitHub Pages: {e}', file=sys.stderr)
+          gh_verified = False
+          for attempt in range(1, 6):
+              try:
+                  req = urllib.request.Request(gh_url, headers={'User-Agent': 'OM-Deploy-Checker'})
+                  with urllib.request.urlopen(req, timeout=25) as r:
+                      html = r.read().decode('utf-8', errors='ignore')
+                      if r.status == 200 and 'omApp' in html:
+                          print(f'✅ SUCCESS: GitHub Pages is live at {gh_url} (HTTP 200, {len(html)} bytes)')
+                          gh_verified = True
+                          break
+              except Exception as e:
+                  print(f'Attempt {attempt}/5: waiting for GitHub Pages propagation... ({e})')
+                  time.sleep(10)
+
+          if not gh_verified:
+              print(f'❌ ERROR verifying GitHub Pages after 5 attempts', file=sys.stderr)
               sys.exit(1)
 
           # 2. Verify Vercel Backend

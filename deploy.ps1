@@ -12,7 +12,9 @@
 
 param(
     [Parameter(Position=0, Mandatory=$false)]
-    [string]$Message = ""
+    [string]$Message = "",
+    [Parameter(Mandatory=$false)]
+    [switch]$Force = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -103,11 +105,13 @@ if (-not $token) {
 $env:GIT_TERMINAL_PROMPT = "0"
 $env:GCM_INTERACTIVE = "never"
 
+$forceArgs = if ($Force) { @("--force") } else { @() }
+
 if ($token) {
     $pushUrl = "https://$($token)@github.com/abhishekCode7266/OM-AI-Action-Assistant.git"
-    git -c credential.helper= push $pushUrl main
+    git -c credential.helper= push $pushUrl main @forceArgs
 } else {
-    git push origin main
+    git push origin main @forceArgs
 }
 
 if ($LASTEXITCODE -eq 0) {
