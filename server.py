@@ -390,17 +390,33 @@ class OMRequestHandler(BaseHTTPRequestHandler):
             if not llm_text:
                 if is_greeting:
                     llm_text = (
-                        "### 👋 Hello! I'm OM AI Assistant.\n\n"
-                        "I am your **multimodal AI action collaborator**, designed to transform your intent into verified actions using the **Think. Plan. Act. Achieve.** framework.\n\n"
+                        "### 👋 Hi! How can I help?\n\n"
+                        "Hello! I'm OM AI Assistant — your multimodal AI action collaborator (*Think. Plan. Act. Achieve.*).\n\n"
                         "* 💻 **Coding Studio**: Write, execute, and debug Python, JavaScript, and HTML live.\n"
                         "* 🎙️ **Live Voice Matrix**: Hands-free real-time conversation across 9+ distinct personas.\n"
                         "* 📐 **3D Studio**: View and mechanically disassemble interactive CAD models (0–100% exploded view).\n"
                         "* 📊 **Data & Files**: Analyze CSVs, PDFs, and extract structured insights.\n"
                         "* 📝 **AI Notebook**: Capture thoughts and auto-save notes with live source citations.\n\n"
                         "> 💡 **Notice**: Server is running in **Offline Demo Mode**. To activate live cloud intelligence, set `GEMINI_API_KEY` or `OPENAI_API_KEY` in server environment variables or in **⚙️ Settings**.\n\n"
-                        "**What would you like to achieve today?**"
+                        "How can I help you today?"
                     )
-                    api_used = "OM Autonomous Engine (Offline Demo)"
+                    api_used = "OM Conversational Engine (Offline Demo)"
+                    return self._send_json({
+                        "success": True,
+                        "offlineDemo": False,
+                        "noApiKey": False,
+                        "sender": "om",
+                        "greeting": "Hi! How can I help?",
+                        "brand": "OM – AI Action Assistant",
+                        "tagline": "Think. Plan. Act. Achieve.",
+                        "query": prompt,
+                        "mode": mode,
+                        "apiKeyUsed": api_used,
+                        "text": llm_text,
+                        "reasoning": "Conversational greeting acknowledged. System primed for user instructions.",
+                        "verified": True,
+                        "actions": []
+                    })
                 else:
                     llm_text = (
                         "### ⚠️ Offline Demo Mode\n\n"

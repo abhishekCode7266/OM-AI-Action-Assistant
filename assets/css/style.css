@@ -575,11 +575,50 @@ h1, h2, h3, h4, h5 {
   cursor: pointer;
   font-size: 0.8rem;
   transition: var(--om-transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-icon-btn:hover {
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
+}
+
+#btn-export-chat {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-width: 78px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #f1f5f9 !important;
+  border-radius: var(--om-radius-sm) !important;
+  cursor: pointer !important;
+  overflow: visible !important;
+  transition: all 0.2s ease !important;
+}
+
+#btn-export-chat:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(6, 182, 212, 0.6) !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+}
+
+.export-btn-label {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  font-weight: 600 !important;
 }
 
 /* ==========================================================================
@@ -2845,13 +2884,23 @@ h1, h2, h3, h4, h5 {
 /* ==========================================================================
    Universal Responsive Media Queries (Mobile, Tablet, Desktop)
    ========================================================================== */
+@media (max-width: 1200px) {
+  #chat-mode-selector,
+  #btn-header-cyber-terminal,
+  #btn-header-neural-canvas {
+    display: none !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .pricing-tiers-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
   .header-btn-text,
-  #header-gender-label {
-    display: none;
+  #header-gender-label,
+  #btn-header-3d-dismantle,
+  #btn-toggle-voice-gender {
+    display: none !important;
   }
   .om-chat-header {
     padding: 0 1rem;
@@ -2907,11 +2956,10 @@ h1, h2, h3, h4, h5 {
     box-shadow: 10px 0 45px rgba(0, 0, 0, 0.9);
   }
 
-  /* Header decluttering on mobile / small tablets */
+  /* Header decluttering on mobile / small tablets - Keep Export visible & non-clipped */
   #btn-header-3d-dismantle,
   #btn-header-neural-canvas,
   #btn-header-cyber-terminal,
-  #btn-export-chat,
   #chat-mode-selector,
   #global-lang-selector,
   #btn-toggle-voice-gender {
@@ -2919,8 +2967,8 @@ h1, h2, h3, h4, h5 {
   }
 
   .chat-header-title {
-    max-width: 140px;
-    font-size: 0.88rem;
+    max-width: 120px;
+    font-size: 0.86rem;
   }
 
   /* Increase touch targets for mobile thumb usability */
@@ -2931,6 +2979,23 @@ h1, h2, h3, h4, h5 {
   .gemini-tab-pill {
     min-height: 42px;
     touch-action: manipulation;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-header-title {
+    display: none;
+  }
+  .header-left-group {
+    gap: 4px;
+  }
+  .header-right-group {
+    gap: 6px;
+  }
+  #btn-export-chat {
+    min-width: 70px !important;
+    padding: 0 8px !important;
+    font-size: 0.76rem !important;
   }
 }
 

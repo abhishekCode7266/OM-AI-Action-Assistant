@@ -430,9 +430,9 @@ User Profile & Memory: ${memoryCtx || "None"}`;
 
 आप नीचे दिए गए विकल्पों में से चुन सकते हैं या सीधे अपना सवाल लिख सकते हैं:`;
       } else {
-        text = `### Hello! I'm OM, your AI Action Assistant.
+        text = `### 👋 Hi! How can I help?
 
-How can I help you today?
+I am **OM**, your multimodal AI action collaborator (*Think. Plan. Act. Achieve.*).
 
 * **💻 Code & Debug**: Write, optimize, and test code across Python, JavaScript, HTML/CSS, SQL, and more.
 * **📊 Data Analysis**: Upload CSV/JSON files for instant descriptive statistics, summaries, and charts.

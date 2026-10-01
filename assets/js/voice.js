@@ -502,7 +502,7 @@ class OMVoiceEngine {
     return [
       {
         id: 'voice-jarvis',
-        name: 'J.A.R.V.I.S.',
+        name: 'Jarvis',
         provider: 'Stark Neural Engine',
         providerId: 'stark-jarvis-01',
         language: 'en-GB',
@@ -510,6 +510,18 @@ class OMVoiceEngine {
         gender: 'male',
         pitch: 0.92,
         rate: 1.04,
+        enabled: true
+      },
+      {
+        id: 'voice-orvis',
+        name: 'Orvis',
+        provider: 'OM Neural Engine',
+        providerId: 'om-orvis-02',
+        language: 'en-US',
+        style: 'Intelligent Resonant Assistant',
+        gender: 'male',
+        pitch: 1.0,
+        rate: 1.02,
         enabled: true
       },
       {
@@ -687,11 +699,19 @@ class OMVoiceEngine {
     const raw = localStorage.getItem('om_custom_voice_profiles');
     if (raw) {
       try {
-        const parsed = jsonParse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      } catch (e) {
-        try { return JSON.parse(raw); } catch (err) {}
-      }
+        let parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const hasJarvis = parsed.some(p => p.id === 'voice-jarvis');
+          const hasOrvis = parsed.some(p => p.id === 'voice-orvis');
+          if (!hasJarvis || !hasOrvis) {
+            const def = this.getDefaultVoiceProfiles();
+            if (!hasJarvis) parsed.unshift(def[0]);
+            if (!hasOrvis) parsed.splice(1, 0, def[1]);
+            localStorage.setItem('om_custom_voice_profiles', JSON.stringify(parsed));
+          }
+          return parsed;
+        }
+      } catch (e) {}
     }
     const def = this.getDefaultVoiceProfiles();
     localStorage.setItem('om_custom_voice_profiles', JSON.stringify(def));
@@ -747,6 +767,24 @@ class OMVoiceEngine {
       localStorage.setItem('om_voice_language', target.language);
       this.voiceGender = target.gender;
       localStorage.setItem('om_voice_gender', target.gender);
+
+      // Highlight active button in Voice Selection Grid
+      const grid = document.getElementById('voice-profiles-selection-grid');
+      if (grid) {
+        grid.querySelectorAll('button').forEach(btn => {
+          const onclickAttr = btn.getAttribute('onclick') || '';
+          if (onclickAttr.includes(profileId)) {
+            btn.style.background = 'rgba(6, 182, 212, 0.25)';
+            btn.style.borderColor = 'var(--om-cyan)';
+            btn.style.color = '#fff';
+          } else {
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }
+        });
+      }
+
       if (window.omApp) {
         window.omApp.showToast(`Active AI Voice set to: ${target.name} (${target.style})`, 'success');
       }

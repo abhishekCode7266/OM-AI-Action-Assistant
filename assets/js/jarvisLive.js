@@ -132,9 +132,8 @@ class OMJarvisLiveEngine {
           : `Skies clear! Astrid tactical flight systems operational. All vectors locked on your target. Ready for launch!`
       },
 
-      // MALE PERSONAS
       jarvis: {
-        name: 'J.A.R.V.I.S.',
+        name: 'Jarvis',
         gender: 'male',
         pitch: 0.92,
         rate: 1.04,
@@ -143,8 +142,21 @@ class OMJarvisLiveEngine {
         title: 'J.A.R.V.I.S. PROTOCOL',
         sub: 'MALE STARK AI',
         greeting: (isHindi) => isHindi
-          ? `प्रणाम। J.A.R.V.I.S. प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है?`
-          : `At your service. J.A.R.V.I.S. protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today?`
+          ? `प्रणाम। Jarvis प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है?`
+          : `At your service. Jarvis protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today?`
+      },
+      orvis: {
+        name: 'Orvis',
+        gender: 'male',
+        pitch: 0.98,
+        rate: 1.02,
+        primaryColor: '#0ea5e9',
+        secondaryColor: '#38bdf8',
+        title: 'ORVIS SYSTEM',
+        sub: 'MALE INTELLIGENT COMPANION',
+        greeting: (isHindi) => isHindi
+          ? `नमस्ते! ओर्विस वॉइस असिस्टेंट ऑनलाइन है। मैं आपकी सहायता के लिए तैयार हूँ। बताइए, आज क्या करना है?`
+          : `Hello! Orvis voice assistant is online and ready. How can I assist you today?`
       },
       onyx: {
         name: 'Onyx Deep',
@@ -527,60 +539,21 @@ class OMJarvisLiveEngine {
       lower.includes('3d') || lower.includes('cad') || lower.includes('model') || lower.includes('dismantle') || lower.includes('assemble') ||
       lower.includes('notebook') || lower.includes('नोटबुक') || lower.includes('pdf');
 
-    if (isTaskAction) {
-      setTimeout(() => {
-        this.minimizeToPiP();
-      }, 350);
-    }
-
+    // Section 4: Pure Natural Conversation Flow (no extra auto sections or unsolicited modals)
     const replyText = this.generatePersonaResponse(userSpeech, isHindi, isCodeExecution);
 
-    // Hands-Free Autonomous Program & Work Execution Trigger via Voice ("gola")
-    if (isCodeExecution) {
-      // Execute the program live immediately and populate HUD & Chat History
-      if (window.omAssistant) {
-        window.omAssistant.executeLiveCodeFromVoice(userSpeech);
+    // Record message in active chat store
+    const chatStore = window.omChatStore;
+    if (chatStore) {
+      let active = chatStore.getActiveChat();
+      if (!active) active = chatStore.createChat("Live Voice Conversation");
+      chatStore.addMessage(active.id, { sender: 'user', text: userSpeech });
+      chatStore.addMessage(active.id, { sender: 'assistant', text: replyText });
+      if (window.omApp) {
+        window.omApp.renderSidebar();
+        window.omApp.renderChatMessages();
       }
-    } else if (lower.includes('terminal') || lower.includes('कमांड') || lower.includes('cli')) {
-      if (window.omApp) window.omApp.openCyberTerminal();
-    } else if (lower.includes('thought map') || lower.includes('neural canvas') || lower.includes('माइंड मैप')) {
-      if (window.omApp) window.omApp.openNeuralCanvas();
-    } else if (lower.includes('screen share') || lower.includes('स्क्रीन शेयर')) {
-      if (window.omMediaVision) window.omMediaVision.startScreenShare();
-    } else if (lower.includes('camera') || lower.includes('कैमरा')) {
-      if (window.omMediaVision) window.omMediaVision.startCamera();
-    } else if (lower.includes('flip camera') || lower.includes('कैमरा बदलो')) {
-      if (window.omMediaVision) window.omMediaVision.flipCamera();
-    } else if ((lower.includes('3d') || lower.includes('cad') || lower.includes('model') || lower.includes('dismantle') || lower.includes('assemble')) && window.omDismantler) {
-      if (lower.includes('assemble') || lower.includes('जोड़ो')) {
-        window.omDismantler.openModal('drone');
-        window.omDismantler.setAssemblyMode('assembly');
-        window.omDismantler.toggleAutoAssemble();
-      } else if (lower.includes('drone')) window.omDismantler.openModal('drone');
-      else if (lower.includes('robot')) window.omDismantler.openModal('robot');
-      else if (lower.includes('car')) window.omDismantler.openModal('car');
-      else if (lower.includes('engine') || lower.includes('turbine')) window.omDismantler.openModal('turbine');
-      else window.omDismantler.openModal('drone');
-    } else if (lower.includes('new notebook') || lower.includes('नोटबुक')) {
-      if (window.omApp) window.omApp.createNewNotebook();
-    } else if (lower.includes('download pdf') || lower.includes('export pdf') || lower.includes('pdf download')) {
-      if (window.omApp) window.omApp.downloadChatPDF();
-    }
-
-    // Record message in active chat store (if not already handled by executeLiveCodeFromVoice)
-    if (!isCodeExecution) {
-      const chatStore = window.omChatStore;
-      if (chatStore) {
-        let active = chatStore.getActiveChat();
-        if (!active) active = chatStore.createChat("Live Voice Conversation");
-        chatStore.addMessage(active.id, { sender: 'user', text: userSpeech });
-        chatStore.addMessage(active.id, { sender: 'assistant', text: replyText });
-        if (window.omApp) {
-          window.omApp.renderSidebar();
-          window.omApp.renderChatMessages();
-        }
-        this.updateChatHistoryOverlay();
-      }
+      this.updateChatHistoryOverlay();
     }
 
     // Speak response out loud
@@ -604,19 +577,24 @@ class OMJarvisLiveEngine {
         : `Your Python project and code have been generated and executed live! The source code and terminal output are running on your screen right now.`;
     }
 
-    // 3D dismantle / exploded view request
+    // 3D dismantle / mechanical analysis conversational response
     if (lower.includes('dismantle') || lower.includes('exploded') || lower.includes('car') || lower.includes('डिसमेंटल') || lower.includes('parts') || lower.includes('3d') || lower.includes('मॉडल') || lower.includes('assemble')) {
-      setTimeout(() => {
-        if (window.omDismantler) window.omDismantler.openModal('car');
-      }, 1200);
       return isHindi
-        ? `बिल्कुल! मैंने 3D CAD डिसमेंटल स्टूडियो खोल दिया है। आप पूरे मॉडल को असेंबल और एक्सप्लोड करके देख सकते हैं।`
-        : `Right on it! Launching the 3D CAD Assemblable Deconstructor. Every sub-component is ready for interactive explosion and step-by-step assembly!`;
+        ? `बिल्कुल! 3D CAD सिस्टम्स और मैकेनिकल मॉडल्स का विश्लेषण तैयार है। आप जिस भी कंपोनेंट या प्रोजेक्ट पर काम करना चाहें, बताइए।`
+        : `Right on it! The 3D CAD modeling and mechanical analysis pipelines are primed. Let me know which component or assembly you'd like to explore.`;
     }
 
     // Status or greeting request
     if (lower.includes('hello') || lower.includes('hi') || lower.includes('नमस्ते') || lower.includes('status') || lower.includes('diagnostic')) {
       switch (this.persona) {
+        case 'jarvis':
+          return isHindi
+            ? `प्रणाम! Jarvis ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। मैं आपकी क्या मदद करूँ?`
+            : `Hello! Jarvis protocol is online. All diagnostic sub-routines report nominal status. Hi! How can I help you today?`;
+        case 'orvis':
+          return isHindi
+            ? `नमस्ते! Orvis वॉइस असिस्टेंट तैयार है। मैं आपकी सहायता के लिए उपस्थित हूँ। बताइए, आज क्या करना है?`
+            : `Hello! Orvis voice assistant is online and ready. Hi! How can I help?`;
         case 'samantha':
           return isHindi
             ? `नमस्ते! सामन्था यहाँ है। मैं आपकी बात सुनने और हर काम में मदद करने के लिए तैयार हूँ। बताइए क्या करना है?`
@@ -661,10 +639,10 @@ class OMJarvisLiveEngine {
           return isHindi
             ? `ऑपरेशनल स्थिति पूर्ण हरी है। स्क्वाड आपके आदेश की प्रतीक्षा में है।`
             : `Operational status is all green. Tactical grid synced and awaiting your directive.`;
-        default: // jarvis
+        default:
           return isHindi
-            ? `प्रणाम। जे.ए.आर.वी.आई.एस. की सभी प्रणालियाँ 100% क्षमता पर कार्य कर रही हैं। आज आपकी क्या आज्ञा है?`
-            : `At your service. All diagnostic subroutines report nominal efficiency. How may I assist your engineering today?`;
+            ? `नमस्ते! मैं OM AI असिस्टेंट हूँ। बताइए मैं आपकी क्या सहायता कर सकता हूँ?`
+            : `Hi! How can I help you today?`;
       }
     }
 

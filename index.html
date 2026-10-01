@@ -383,7 +383,7 @@
             </select>
           </div>
 
-          <button class="om-btn om-btn-primary om-btn-sm" id="btn-header-nexus-live" onclick="window.startVoiceRecognition ? window.startVoiceRecognition() : window.omJarvisLive.startSession()" title="Nexus Live Voice Conversation" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
+          <button class="om-btn om-btn-primary om-btn-sm" id="btn-header-nexus-live" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession();" title="Nexus Live Voice Conversation" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem; white-space: nowrap; flex-shrink: 0;">
             <span>Nexus Live</span>
           </button>
           <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-3d-dismantle" onclick="window.omDismantler.openModal('drone')" title="3D Text-to-3D Assemblable Studio" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
@@ -399,7 +399,7 @@
             <span class="header-btn-text">Terminal</span>
           </button>
 
-          <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown">📥 Export</button>
+          <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown"><span>📥</span> <span class="export-btn-label">Export</span></button>
           <button class="header-icon-btn btn-clear-chat" id="btn-clear-chat" onclick="window.clearCurrentChat && window.clearCurrentChat()" title="🗑️ Clear Chat History (चैट हिस्ट्री हटाएं)"><span>🗑️</span> <span style="font-size: 0.76rem; font-weight: 600;">Clear Chat</span></button>
           <button class="header-icon-btn btn-open-settings" title="Settings">⚙️</button>
         </div>
@@ -2318,26 +2318,29 @@
           <span>🎙️ Selectable AI Voice Profiles</span>
           <span style="font-size: 0.7rem; color: var(--om-cyan);">Natural Speech-to-Speech Flow</span>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px;" id="voice-profiles-selection-grid">
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-jarvis')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
-            <span>⚡ <strong>J.A.R.V.I.S.</strong></span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;" id="voice-profiles-selection-grid">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-jarvis')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Tactical Resonant Baritone Voice">
+            <span>⚡ <strong>Jarvis</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-friday')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-orvis')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Intelligent Companion Voice">
+            <span>🌐 <strong>Orvis</strong></span>
+          </button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-friday')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Female Tactical Voice">
             <span>🛡️ <strong>F.R.I.D.A.Y.</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-nova')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-nova')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
             <span>✨ <strong>Nova</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-atlas')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-atlas')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
             <span>🏛️ <strong>Atlas</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-echo')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-echo')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
             <span>🌊 <strong>Echo</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-onyx')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-onyx')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
             <span>💎 <strong>Onyx</strong></span>
           </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-aarya')" style="justify-content: flex-start; text-align: left; padding: 6px 8px;">
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-aarya')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
             <span>🇮🇳 <strong>Aarya (Hindi)</strong></span>
           </button>
         </div>
