@@ -2575,6 +2575,17 @@ Key Ideas & Notes:
       if (typeof e.preventDefault === 'function') e.preventDefault();
       if (typeof e.stopPropagation === 'function') e.stopPropagation();
     }
+    // Expand sidebar if collapsed on desktop or closed on mobile
+    const sidebar = document.getElementById('om-sidebar');
+    const overlay = document.getElementById('om-sidebar-overlay');
+    if (sidebar && sidebar.classList.contains('collapsed')) {
+      sidebar.classList.remove('collapsed');
+      document.body.classList.remove('sidebar-collapsed');
+    }
+    if (sidebar && window.innerWidth <= 768 && !sidebar.classList.contains('open')) {
+      sidebar.classList.add('open');
+      if (overlay) overlay.classList.add('active');
+    }
     const search = document.getElementById('sidebar-chat-search');
     if (search) {
       search.focus({ preventScroll: true });

@@ -128,7 +128,7 @@ class OMVoiceEngine {
         this.isStarting = false;
         this.isRecording = false;
         console.warn("Speech recognition notice:", e.error);
-        this.stopRecording();
+        this.stopRecording(false);
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
           if (window.omApp) {
             window.omApp.showToast("Microphone permission was denied. Please allow microphone access in your browser settings.", "error");
@@ -253,29 +253,42 @@ class OMVoiceEngine {
     }
   }
 
-  stopRecording() {
+  stopRecording(sendIfAvailable = true) {
     if (this.silenceTimer) clearTimeout(this.silenceTimer);
+    const input = document.getElementById('chat-user-input');
+    const spoken = (this.lastSpokenText || this.lastInterimText || (this.hasSpoken && input ? input.value : '') || '').trim();
+    const wasSpoken = this.hasSpoken;
     this.isStarting = false;
     this.isRecording = false;
     if (this.recognition) {
       try { this.recognition.stop(); } catch (e) {}
     }
     this.updateVisualState(false);
+    if (sendIfAvailable && spoken.length > 0 && wasSpoken) {
+      this.lastSpokenText = '';
+      this.lastInterimText = '';
+      this.hasSpoken = false;
+      if (window.omApp && typeof window.omApp.sendVoiceCommand === 'function') {
+        window.omApp.sendVoiceCommand(spoken);
+      }
+    }
   }
 
   updateVisualState(recording, state = 'listening') {
+    const isRecording = Boolean(recording && state === 'listening');
+    const isSpeaking = Boolean(recording && state === 'speaking');
     const voiceBtn = document.getElementById('btn-voice-input');
     const visualizer = document.getElementById('voice-visualizer-bar');
     const orb = document.getElementById('om-voice-orb');
     const preview = document.getElementById('voice-transcript-preview');
 
     if (voiceBtn) {
-      voiceBtn.classList.toggle('recording', recording);
-      voiceBtn.innerHTML = recording ? '<span class="mic-orb-circle"></span>' : '';
+      voiceBtn.classList.toggle('recording', isRecording);
+      voiceBtn.innerHTML = isRecording ? '<span class="mic-orb-circle"></span>' : '🎙️';
     }
     if (visualizer) {
-      visualizer.style.display = recording ? 'flex' : 'none';
-      if (recording) {
+      visualizer.style.display = (isRecording || isSpeaking) ? 'flex' : 'none';
+      if (isRecording || isSpeaking) {
         visualizer.setAttribute('data-state', state);
       }
     }
@@ -284,16 +297,16 @@ class OMVoiceEngine {
     }
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      if (recording || state === 'speaking') {
+      if (isRecording || isSpeaking) {
         miniOrb.classList.add('active');
         miniOrb.style.display = 'flex';
       } else {
         miniOrb.classList.remove('active');
         miniOrb.style.display = 'none';
       }
-      miniOrb.classList.toggle('speaking', state === 'speaking');
+      miniOrb.classList.toggle('speaking', isSpeaking);
     }
-    if (preview && !recording) {
+    if (preview && !isRecording && !isSpeaking) {
       preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;
     }
   }

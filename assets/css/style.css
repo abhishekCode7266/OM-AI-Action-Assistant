@@ -3857,9 +3857,10 @@ h1, h2, h3, h4, h5 {
   position: fixed;
   top: 74px;
   left: 50%;
+  margin-left: 130px; /* Gracefully centers above chat view workspace on desktop */
   transform: translateX(-50%);
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 242, 254, 0.95) 0%, rgba(79, 172, 254, 0.85) 100%);
   box-shadow: 0 0 20px rgba(0, 195, 255, 0.85), 0 0 45px rgba(0, 195, 255, 0.45);
@@ -3873,6 +3874,12 @@ h1, h2, h3, h4, h5 {
   user-select: none;
   pointer-events: auto;
   backdrop-filter: blur(8px);
+}
+
+body.sidebar-collapsed .listening-animation-ring,
+body.sidebar-collapsed .orb-widget-mini,
+.om-sidebar.collapsed ~ .om-main-workspace .orb-widget-mini {
+  margin-left: 0;
 }
 
 .listening-animation-ring.active,
@@ -3952,6 +3959,7 @@ h1, h2, h3, h4, h5 {
   .listening-animation-ring,
   .orb-widget-mini {
     top: 68px;
+    margin-left: 0;
     width: 48px;
     height: 48px;
   }
