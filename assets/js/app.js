@@ -496,7 +496,7 @@ class OMApp {
     });
 
     this.renderSidebar(); // update title
-    this.renderChatMessages();
+    this.renderChatMessages(true);
     this.updateHeaderInfo();
 
     // Show Typing Indicator & toggle Send/Stop button
@@ -522,7 +522,7 @@ class OMApp {
 
       if (assistantResponse) {
         this.chatStore.addMessage(activeChat.id, assistantResponse);
-        this.renderChatMessages();
+        this.renderChatMessages(true);
         this.renderSidebar();
 
         // Spoken audio read-out if voice command or auto-speech enabled
@@ -642,7 +642,7 @@ class OMApp {
     });
   }
 
-  renderChatMessages() {
+  renderChatMessages(forceScroll = false) {
     const container = document.getElementById('chat-messages-container');
     const welcomeScreen = document.getElementById('om-welcome-screen');
     if (!container) return;
@@ -656,6 +656,10 @@ class OMApp {
 
     if (welcomeScreen) welcomeScreen.style.display = 'none';
 
+    // Preserve scroll position if user scrolled up to read earlier messages
+    const isNearBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) < 140;
+    const previousScrollTop = container.scrollTop;
+
     let html = '';
     activeChat.messages.forEach(msg => {
       if (msg.sender === 'user') {
@@ -666,7 +670,12 @@ class OMApp {
     });
 
     container.innerHTML = html;
-    container.scrollTop = container.scrollHeight;
+
+    if (forceScroll || isNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    } else {
+      container.scrollTop = previousScrollTop;
+    }
   }
 
   renderUserMessage(msg) {

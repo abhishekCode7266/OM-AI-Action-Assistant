@@ -41,7 +41,69 @@ class OMVoiceEngine {
       'tr-TR': { name: 'Türkçe (Turkish)', flag: '🇹🇷' }
     };
 
+    this.cachedVoices = [];
+    if (this.synth) {
+      if (typeof this.synth.onvoiceschanged !== 'undefined') {
+        this.synth.onvoiceschanged = () => {
+          this.cachedVoices = this.synth.getVoices();
+        };
+      }
+      this.cachedVoices = this.synth.getVoices();
+    }
+
     this.initRecognition();
+  }
+
+  setOrbState(state) {
+    this.voiceState = state; // 'idle', 'listening', 'processing', 'speaking', 'interrupted'
+    const miniOrb = document.getElementById('orb-widget-mini');
+    const visualizer = document.getElementById('voice-visualizer-bar');
+    const voiceBtn = document.getElementById('btn-voice-input');
+    const preview = document.getElementById('voice-transcript-preview');
+
+    if (!miniOrb) return;
+
+    miniOrb.classList.remove('listening', 'processing', 'speaking', 'interrupted');
+
+    if (state === 'idle') {
+      miniOrb.classList.remove('active');
+      miniOrb.style.display = 'none';
+      if (visualizer) visualizer.style.display = 'none';
+      if (voiceBtn) {
+        voiceBtn.classList.remove('recording');
+        voiceBtn.innerHTML = '🎙️';
+      }
+      return;
+    }
+
+    miniOrb.classList.add('active', state);
+    miniOrb.style.display = 'flex';
+    miniOrb.setAttribute('data-state', state);
+
+    if (visualizer) {
+      visualizer.style.display = 'flex';
+      visualizer.setAttribute('data-state', state);
+    }
+
+    if (voiceBtn) {
+      voiceBtn.classList.toggle('recording', state === 'listening');
+      voiceBtn.innerHTML = (state === 'listening') ? '<span class="mic-orb-circle"></span>' : '🎙️';
+    }
+
+    if (preview) {
+      if (state === 'listening') preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;
+      else if (state === 'processing') preview.textContent = `Processing speech...`;
+      else if (state === 'speaking') preview.textContent = `AI speaking response...`;
+      else if (state === 'interrupted') preview.textContent = `Speech interrupted.`;
+    }
+
+    if (state === 'interrupted') {
+      setTimeout(() => {
+        if (this.voiceState === 'interrupted') {
+          this.setOrbState('idle');
+        }
+      }, 700);
+    }
   }
 
   initRecognition() {
@@ -268,6 +330,7 @@ class OMVoiceEngine {
       this.lastSpokenText = '';
       this.lastInterimText = '';
       this.hasSpoken = false;
+      this.setOrbState('processing');
       if (window.omApp && typeof window.omApp.sendVoiceCommand === 'function') {
         window.omApp.sendVoiceCommand(spoken);
       }
@@ -275,45 +338,18 @@ class OMVoiceEngine {
   }
 
   updateVisualState(recording, state = 'listening') {
-    const isRecording = Boolean(recording && state === 'listening');
-    const isSpeaking = Boolean(recording && state === 'speaking');
-    const voiceBtn = document.getElementById('btn-voice-input');
-    const visualizer = document.getElementById('voice-visualizer-bar');
-    const orb = document.getElementById('om-voice-orb');
-    const preview = document.getElementById('voice-transcript-preview');
-
-    if (voiceBtn) {
-      voiceBtn.classList.toggle('recording', isRecording);
-      voiceBtn.innerHTML = isRecording ? '<span class="mic-orb-circle"></span>' : '🎙️';
-    }
-    if (visualizer) {
-      visualizer.style.display = (isRecording || isSpeaking) ? 'flex' : 'none';
-      if (isRecording || isSpeaking) {
-        visualizer.setAttribute('data-state', state);
-      }
-    }
-    if (orb) {
-      orb.setAttribute('data-state', state);
-    }
-    const miniOrb = document.getElementById('orb-widget-mini');
-    if (miniOrb) {
-      if (isRecording || isSpeaking) {
-        miniOrb.classList.add('active');
-        miniOrb.style.display = 'flex';
-      } else {
-        miniOrb.classList.remove('active');
-        miniOrb.style.display = 'none';
-      }
-      miniOrb.classList.toggle('speaking', isSpeaking);
-    }
-    if (preview && !isRecording && !isSpeaking) {
-      preview.textContent = `Listening in ${this.getLanguageDisplayName()}...`;
+    if (recording) {
+      this.setOrbState(state);
+    } else {
+      this.setOrbState('idle');
     }
   }
 
   findBestVoice(langCode, gender) {
     if (!this.synth) return null;
-    const voices = this.synth.getVoices();
+    const voices = (this.cachedVoices && this.cachedVoices.length > 0)
+      ? this.cachedVoices
+      : this.synth.getVoices();
     if (!voices || voices.length === 0) return null;
 
     const langPrefix = (langCode || 'en-US').split('-')[0].toLowerCase();
@@ -433,15 +469,20 @@ class OMVoiceEngine {
     }
   }
 
-  stopSpeaking() {
+  stopSpeaking(wasInterrupted = false) {
     if (this.synth) {
+      const hadSpeech = this.isPlayingTTS;
       this.synth.cancel();
       this.isPlayingTTS = false;
       if (this.activeTTSMsgId) {
         this.updateTTSButtonState(this.activeTTSMsgId, false);
         this.activeTTSMsgId = null;
       }
-      this.updateVisualState(false);
+      if (hadSpeech || wasInterrupted) {
+        this.setOrbState('interrupted');
+      } else {
+        this.setOrbState('idle');
+      }
     }
   }
 

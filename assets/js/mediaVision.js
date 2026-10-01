@@ -257,9 +257,11 @@ class OMMediaVisionEngine {
     if (window.omApp) {
       window.omApp.showToast('🔍 Analyzing live visual feed frame...', 'info');
       const attachment = {
+        id: 'mv_' + Date.now(),
         name: this.isScreenSharing ? 'live_screen_stream.jpg' : 'optical_camera_view.jpg',
         isImage: true,
         type: 'image/jpeg',
+        size: Math.round((base64Data.length * 3) / 4),
         base64Data: base64Data,
         previewUrl: dataUrl
       };
@@ -269,8 +271,12 @@ class OMMediaVisionEngine {
         input.value = this.isScreenSharing 
           ? 'Analyze this live screen view and provide actionable debugging and architectural suggestions' 
           : 'Analyze this optical camera view and describe what you observe';
-        window.omApp.attachedFiles = [attachment];
-        window.omApp.renderAttachmentsPreview();
+        if (window.omApp.fileManager) {
+          window.omApp.fileManager.pendingFiles = [attachment];
+        }
+        if (typeof window.omApp.renderAttachmentPreviews === 'function') {
+          window.omApp.renderAttachmentPreviews();
+        }
         window.omApp.handleSendMessage();
       }
 

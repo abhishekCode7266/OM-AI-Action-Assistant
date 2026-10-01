@@ -153,7 +153,7 @@
         <button class="nexus-tab-pill" id="tab-pill-spark" onclick="window.omApp.switchAppTab('spark')">Spark</button>
       </div>
 
-      <!-- Controls: New Chat, Search & 11 Core Navigation Items (Section 8 & 9) -->
+      <!-- Controls: New Chat & Search (Pinned Top) -->
       <div class="sidebar-controls">
         <button class="btn-new-chat" id="btn-sidebar-new-chat" title="Create a new conversation (Ctrl+K)">
           <span style="display: flex; align-items: center; gap: 8px;">
@@ -167,9 +167,12 @@
           <span class="sidebar-search-icon">🔍</span>
           <input type="text" class="sidebar-search-input" id="sidebar-chat-search" placeholder="Search chats...">
         </div>
+      </div>
 
+      <!-- Scrollable Sidebar Body: Core Tools, Creative Hub, Notebooks, Recents & History -->
+      <div class="sidebar-scrollable-body" id="sidebar-scrollable-body">
         <!-- 11 Core Functional Tools Suite (Section 8) -->
-        <div class="sidebar-core-nav-list" id="sidebar-core-nav-list">
+        <div class="sidebar-core-nav-list" id="sidebar-core-nav-list" style="padding: 4px 1rem 0;">
           <div class="sidebar-nav-item" onclick="window.omApp.focusChatHistory(event)" title="View and manage recent conversations">
             <span class="nav-item-icon">💬</span>
             <span class="nav-item-title">Chat History</span>
@@ -233,7 +236,7 @@
         </div>
 
         <!-- Quick Creative Tools (Images, Videos, Library) -->
-        <div class="sidebar-quick-nav-list" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+        <div class="sidebar-quick-nav-list" style="margin-top: 6px; padding: 6px 1rem 0; border-top: 1px solid rgba(255,255,255,0.06);">
           <div class="sidebar-nav-item" onclick="window.omApp.openImagesModal()" title="AI Generated & Vision Images">
             <span class="nav-item-icon">🖼️</span>
             <span class="nav-item-title">Images</span>
@@ -247,10 +250,6 @@
             <span class="nav-item-title">Library</span>
           </div>
         </div>
-      </div>
-
-      <!-- Scrollable Sidebar Body: Notebooks, Recents & History -->
-      <div class="sidebar-scrollable-body" id="sidebar-scrollable-body">
         <!-- Notebooks Section ("+ wali line me add sabhi bhag" - Matching Gemini Image 2) -->
         <div class="sidebar-section-container">
           <div class="sidebar-section-header">
@@ -303,7 +302,7 @@
             </div>
             <div class="profile-sub-row">
               <span class="profile-tier-badge" id="sidebar-profile-badge">Standard</span>
-              <span class="profile-location" id="sidebar-profile-location">Global</span>
+              <span class="profile-location" id="sidebar-profile-location" title="OM AI Assistant Build v3.2.0-20261001">v3.2.0</span>
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 4px;">
@@ -502,6 +501,20 @@
                 <div>
                   <div class="attach-item-title">Attach Document</div>
                   <div class="attach-item-desc">PDF, CSV, TXT, JSON, Code</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omMediaVision) window.omMediaVision.toggleCameraShare();">
+                <span class="attach-item-icon">📷</span>
+                <div>
+                  <div class="attach-item-title">Camera Feed Analysis</div>
+                  <div class="attach-item-desc">Live Video Frame Snapshot & Vision AI</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omMediaVision) window.omMediaVision.toggleScreenShare();">
+                <span class="attach-item-icon">🖥️</span>
+                <div>
+                  <div class="attach-item-title">Share Screen</div>
+                  <div class="attach-item-desc">Capture & Inspect Workspace / Display</div>
                 </div>
               </div>
               <div class="attach-popup-item" onclick="if(window.omApp) { window.omApp.closeInputAttachMenu(); window.omApp.openImagesModal(); }">
@@ -2549,7 +2562,7 @@
         <!-- TAB 5: System Telemetry & Terminal -->
         <div id="dev-pane-terminal" class="dev-tab-pane" style="display: none;">
           <div style="background: #020617; border: 1px solid #10b981; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.8rem; color: #10b981;">
-            <div>[OM AI QUANTUM KERNEL v3.0.0]</div>
+            <div>[OM AI QUANTUM KERNEL v3.2.0 • Build 20261001]</div>
             <div id="telemetry-status-line">STATUS: CHECKING...</div>
             <div>OPERATOR: System Operator | STATUS: Standard Active</div>
             <div style="margin-top: 8px;">Type 'help' in Cyber Terminal for command list.</div>
@@ -3042,5 +3055,29 @@
   <script src="assets/js/assistant.js"></script>
   <script src="assets/js/app.js"></script>
 
+  <!-- Service Worker Registration with Cache Busting Lifecycle -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((registration) => {
+            console.log('[OM SW] Registered successfully with scope:', registration.scope);
+            registration.onupdatefound = () => {
+              const installingWorker = registration.installing;
+              if (installingWorker) {
+                installingWorker.onstatechange = () => {
+                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[OM SW] New build available. Updating cache...');
+                  }
+                };
+              }
+            };
+          })
+          .catch((err) => {
+            console.warn('[OM SW] Service worker registration failed:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
