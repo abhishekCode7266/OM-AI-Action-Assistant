@@ -32,8 +32,8 @@
   }
 
   const OM_CONFIG = {
-    VERSION: '3.2.0',
-    BUILD_ID: 'v3.2.0-build.20261001',
+    VERSION: '3.3.0',
+    BUILD_ID: 'v3.3.0-build.20261002',
     BRAND: 'OM',
     TAGLINE: 'Think. Plan. Act. Achieve.',
     DEFAULT_VERCEL_API: DEFAULT_VERCEL_API,

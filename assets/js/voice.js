@@ -219,10 +219,10 @@ class OMVoiceEngine {
         this.isStarting = false;
         this.isRecording = false;
         const input = document.getElementById('chat-user-input');
-        const spoken = (this.lastSpokenText || this.lastInterimText || (this.hasSpoken && input ? input.value : '') || '').trim();
+        const spoken = (this.lastSpokenText || this.lastInterimText || (input ? input.value : '') || '').trim();
         this.lastSpokenText = '';
         this.lastInterimText = '';
-        const wasSpoken = this.hasSpoken;
+        const wasSpoken = this.hasSpoken || spoken.length > 0;
         this.hasSpoken = false;
         this.updateVisualState(false);
         if (spoken.length > 0 && wasSpoken) {

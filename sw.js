@@ -1,10 +1,10 @@
 /**
  * OM AI Action Assistant — Production Service Worker
- * Build: v3.2.0-build.20261001
+ * Build: v3.3.0-build.20261002
  * Tagline: "Think. Plan. Act. Achieve."
  */
 
-const CACHE_NAME = 'om-assistant-v3.2.0-build.20261001';
+const CACHE_NAME = 'om-assistant-v3.3.0-build.20261002';
 
 const STATIC_ASSETS = [
   './',
