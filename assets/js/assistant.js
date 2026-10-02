@@ -418,30 +418,21 @@ User Profile & Memory: ${memoryCtx || "None"}`;
     );
 
     if (isPureGreeting) {
-      if (hasDevanagari || lower.includes('namaste') || lower.includes('kaise ho')) {
-        text = `### नमस्ते! मैं आपकी किस प्रकार सहायता कर सकता हूँ?
-
-मैं कोडिंग, डेटा विश्लेषण, प्रोजेक्ट क्रिएशन और रिसर्च में सीधे आपकी मदद कर सकता हूँ। अपना सवाल या कमांड बताएं।`;
-      } else if (lower.startsWith('hola') || lower.includes('como estas') || lower.includes('qué tal')) {
-        text = `### ¡Hola! ¿En qué puedo ayudarte hoy?
-
-Puedo ayudarte directamente con programación, análisis de datos, proyectos y redacción. Dime tu objetivo.`;
-      } else if (lower.startsWith('bonjour') || lower.startsWith('salut') || lower.includes('comment vas')) {
-        text = `### Bonjour ! Comment puis-je vous aider aujourd'hui ?
-
-Je peux exécuter directement vos tâches de code, d'analyse et de projets. Indiquez-moi votre objectif.`;
-      } else if (lower.startsWith('hallo') || lower.startsWith('guten') || lower.includes('wie geht')) {
-        text = `### Hallo! Wie kann ich Ihnen heute helfen?
-
-Ich unterstütze Sie direkt bei Programmierung, Datenanalyse und Projekten. Was ist Ihr Ziel?`;
-      } else if (lower.includes('こんにちは') || lower.includes('はじめまして')) {
-        text = `### こんにちは！今日はどのようなご用件でしょうか？
-
-コーディング、データ分析、プロジェクト作成など、直接サポートいたします。`;
+      const convLang = localStorage.getItem('om_conversation_language') || localStorage.getItem('om_voice_language') || 'en-US';
+      if (hasDevanagari || lower.includes('namaste') || lower.includes('kaise ho') || convLang.startsWith('hi')) {
+        text = `नमस्ते! मैं आज आपकी क्या सहायता कर सकता हूँ?`;
+      } else if (lower.includes('你好') || lower.includes('您好') || convLang.startsWith('zh')) {
+        text = `您好！请问今天有什么我可以协助您的吗？`;
+      } else if (lower.startsWith('hola') || lower.includes('como estas') || lower.includes('qué tal') || convLang.startsWith('es')) {
+        text = `¡Hola! ¿Cómo puedo ayudarte hoy?`;
+      } else if (lower.startsWith('bonjour') || lower.startsWith('salut') || convLang.startsWith('fr')) {
+        text = `Bonjour ! Comment puis-je vous aider aujourd'hui ?`;
+      } else if (lower.startsWith('hallo') || lower.startsWith('guten') || convLang.startsWith('de')) {
+        text = `Hallo! Wie kann ich Ihnen heute helfen?`;
+      } else if (lower.includes('こんにちは') || lower.includes('はじめまして') || convLang.startsWith('ja')) {
+        text = `こんにちは！今日はどのようなご用件でしょうか？`;
       } else {
-        text = `### 👋 Hi! How can I help you today?
-
-I can assist you directly with coding, debugging, project creation, data analysis, and technical research. Tell me what you'd like to achieve.`;
+        text = `Hello! How can I help you today?`;
       }
 
       return {
@@ -489,18 +480,19 @@ I can assist you directly with coding, debugging, project creation, data analysi
     }
 
     // =========================================================================
-    // Multi-Language Writing & Professional Composition Engine (Goal 4)
+    // Multi-Language Writing & Professional Composition Engine (Goal 4 & 9)
     // =========================================================================
     const isWritingTask = mode === 'writing' || 
       lower.startsWith('write an email') || lower.startsWith('write a letter') || lower.startsWith('write an essay') ||
       lower.startsWith('write a story') || lower.startsWith('write a report') || lower.startsWith('write a blog') ||
       lower.includes('email likho') || lower.includes('patra likho') || lower.includes('nibandh likho') ||
       lower.includes('पत्र लिखो') || lower.includes('निबंध लिखो') || lower.includes('ईमेल लिखो') ||
+      lower.includes('写邮件') || lower.includes('写一封信') || lower.includes('写文章') || lower.includes('写报告') ||
       lower.startsWith('escribe un') || lower.startsWith('redacta') || lower.startsWith('écris un') || lower.startsWith('schreibe');
 
     if (isWritingTask) {
-      const activeLang = localStorage.getItem('om_voice_language') || 'en-US';
-      text = this.generateMultiLanguageWriting(prompt, lower, activeLang);
+      const writingLang = localStorage.getItem('om_writing_language') || localStorage.getItem('om_conversation_language') || 'en-US';
+      text = this.generateMultiLanguageWriting(prompt, lower, writingLang);
       return {
         sender: 'om',
         text: text,
@@ -4571,13 +4563,26 @@ Open \`index.html\` directly in any modern browser.`
     const isHindi = lang.startsWith('hi') || /[\u0900-\u097F]/.test(prompt) || lower.includes('hindi') || lower.includes('हिन्दी');
     const isSpanish = lang.startsWith('es') || lower.includes('español');
     const isFrench = lang.startsWith('fr') || lower.includes('français');
-    const isGerman = lang.startsWith('de') || lower.includes('deutsch');
-    const isJapanese = lang.startsWith('ja') || /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(prompt);
+    const isChinese = lang.startsWith('zh') || /[\u4e00-\u9fff]/.test(prompt) || lower.includes('chinese') || lower.includes('中文');
+    const isJapanese = lang.startsWith('ja') || /[\u3040-\u30ff\u3400-\u4dbf]/.test(prompt);
 
-    const isEmail = lower.includes('email') || lower.includes('ईमेल') || lower.includes('correo') || lower.includes('courriel');
-    const isLetter = lower.includes('letter') || lower.includes('पत्र') || lower.includes('carta') || lower.includes('lettre') || lower.includes('brief');
-    const isEssay = lower.includes('essay') || lower.includes('निबंध') || lower.includes('ensayo') || lower.includes('essai') || lower.includes('aufsatz');
-    const isStory = lower.includes('story') || lower.includes('कहानी') || lower.includes('historia') || lower.includes('histoire') || lower.includes('geschichte');
+    const isEmail = lower.includes('email') || lower.includes('ईमेल') || lower.includes('correo') || lower.includes('courriel') || lower.includes('邮件');
+    const isLetter = lower.includes('letter') || lower.includes('पत्र') || lower.includes('carta') || lower.includes('lettre') || lower.includes('brief') || lower.includes('信');
+    const isEssay = lower.includes('essay') || lower.includes('निबंध') || lower.includes('ensayo') || lower.includes('essai') || lower.includes('aufsatz') || lower.includes('文章') || lower.includes('论文');
+    const isStory = lower.includes('story') || lower.includes('कहानी') || lower.includes('historia') || lower.includes('histoire') || lower.includes('geschichte') || lower.includes('故事');
+
+    if (isChinese) {
+      if (isEmail) {
+        return `**主题：** 项目执行进展与阶段性工作汇报\n\n尊敬的团队及负责人：\n\n您好！特此向您呈报当前项目的执行进展与阶段性里程碑。所有核心架构模块已按既定规划高质量完成，系统基准测试与自动化验证均已全面通过。\n\n**核心要点：**\n* **阶段进展：** 核心功能模块达到 100% 交付就绪状态。\n* **质量验证：** 单元测试与端到端自动化测试零回归。\n* **后续行动：** 预计将于明日进行生产环境同步与最终联调验收。\n\n如您有任何疑问或需要进一步的详细技术指标，请随时联系。\n\n此致，\n**[您的姓名 / OM AI 团队]**`;
+      }
+      if (isLetter) {
+        return `尊敬的领导/同事：\n\n您好！\n\n特此呈交本次项目任务的正式交付文件与相关技术成果。各项功能均严格依据规范标准完成深度验证，架构完整，文档齐备。恳请审阅并提出宝贵意见。\n\n顺祝商祺，\n**[您的姓名]**`;
+      }
+      if (isEssay) {
+        return `### 📝 论文综述：自主认知智能系统的架构演进与实践\n\n人工智能（AI）正经历从单一被动对话向端到端自主协同的深刻演化。现代智能助手通过融合多模态感知、自适应推理与确定性沙箱执行，正在系统性重构人机协作的生产力边界。\n\n#### 1. 上下文协同与动态工具链调度\n现代智能体突破了静态文本生成的局限，能够实时解析意图、智能编排工具矩阵并执行代码沙箱与数据探索。\n\n#### 2. 安全对齐与多语言普惠生态\n在拓展自动化边界的同时，透明的系统遥测与确定性验证机制构成了可信赖AI的坚实基石，推动全场景智能化的高效落地。`;
+      }
+      return `### 📝 专业中文写作成果\n\n针对关于“${prompt}”的要求：\n\n本项目任务已通过系统性结构化分析梳理完毕。通过科学的方法论、严密的技术逻辑与高质量的文本组织，能够确保在各维度上均呈现出清晰严谨、具备高度可执行性的专业交付标准。`;
+    }
 
     if (isHindi) {
       if (isEmail) {

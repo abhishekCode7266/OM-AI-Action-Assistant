@@ -11,7 +11,6 @@ class OMChatStore {
     this.SETTINGS_KEY = 'om_settings_v2';
     
     this.chats = this.loadChats();
-    this.activeChatId = localStorage.getItem(this.ACTIVE_CHAT_KEY) || null;
     this.memory = this.loadMemory();
     this.settings = this.loadSettings();
     this.currentUser = this.loadUser();
@@ -19,16 +18,16 @@ class OMChatStore {
     this.listeners = {};
     this._saveTimer = null;
 
-    // Ensure at least one active chat exists
-    if (!this.activeChatId || !this.getChat(this.activeChatId)) {
-      if (this.chats.length > 0) {
-        this.activeChatId = this.chats[0].id;
-      } else {
-        const newChat = this.createChat("New Chat");
-        this.activeChatId = newChat.id;
-      }
-      localStorage.setItem(this.ACTIVE_CHAT_KEY, this.activeChatId);
+    // Requirement 10: Start with a clean new-chat view by default on reload/open
+    // Reuses an existing empty conversation if present, otherwise creates a fresh new chat
+    const emptyChat = this.chats.find(c => (!c.messages || c.messages.length === 0));
+    if (emptyChat) {
+      this.activeChatId = emptyChat.id;
+    } else {
+      const freshChat = this.createChat("New Chat");
+      this.activeChatId = freshChat.id;
     }
+    localStorage.setItem(this.ACTIVE_CHAT_KEY, this.activeChatId);
 
     this.initStorageListener();
   }

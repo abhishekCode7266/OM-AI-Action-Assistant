@@ -532,7 +532,28 @@ h1, h2, h3, h4, h5 {
 .header-right-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.header-right-group::-webkit-scrollbar {
+  display: none;
+}
+
+.header-right-group > * {
+  flex-shrink: 0;
+}
+
+#btn-header-cyber-terminal,
+#btn-export-chat,
+#btn-clear-chat,
+#btn-header-nexus-live {
+  flex-shrink: 0 !important;
 }
 
 .mode-dropdown-wrap {

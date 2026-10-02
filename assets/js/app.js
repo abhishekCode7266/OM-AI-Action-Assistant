@@ -205,7 +205,7 @@ class OMApp {
       }
     });
 
-    // Voice Dictation Button (Mic) - Exclusively Nexus Live (Rule 7 & 8)
+    // Standard Microphone Dictation Button (Mic) - Speech-to-Text Input Only (Requirement 7)
     const voiceBtn = document.getElementById('btn-voice-input');
     if (voiceBtn) {
       voiceBtn.onclick = (e) => {
@@ -213,12 +213,8 @@ class OMApp {
           e.preventDefault();
           e.stopPropagation();
         }
-        if (window.omJarvisLive) {
-          if (window.omJarvisLive.isActive) {
-            window.omJarvisLive.stopSession();
-          } else {
-            window.omJarvisLive.startSession();
-          }
+        if (window.omVoice) {
+          window.omVoice.toggleRecording();
         }
       };
     }
@@ -1818,8 +1814,10 @@ Key Ideas & Notes:
   }
 
   initLanguageAndVoice() {
-    const lang = localStorage.getItem('om_voice_language') || 'en-US';
+    const lang = localStorage.getItem('om_voice_language') || localStorage.getItem('om_conversation_language') || 'en-US';
     const gender = localStorage.getItem('om_voice_gender') || 'male';
+    const uiLang = localStorage.getItem('om_ui_language') || 'en';
+    const writingLang = localStorage.getItem('om_writing_language') || 'en-US';
 
     const headerLangSelect = document.getElementById('global-lang-selector');
     if (headerLangSelect) headerLangSelect.value = lang;
@@ -1827,7 +1825,20 @@ Key Ideas & Notes:
     const liveLangSelect = document.getElementById('live-voice-lang-select');
     if (liveLangSelect) liveLangSelect.value = lang;
 
+    const uiLangSelect = document.getElementById('settings-ui-lang-select');
+    if (uiLangSelect) uiLangSelect.value = uiLang;
+
+    const convLangSelect = document.getElementById('settings-conv-lang-select');
+    if (convLangSelect) convLangSelect.value = lang;
+
+    const writingLangSelect = document.getElementById('settings-writing-lang-select');
+    if (writingLangSelect) writingLangSelect.value = writingLang;
+
     this.updateVoiceGenderUI(gender);
+
+    if (window.omI18n) {
+      window.omI18n.applyTranslations();
+    }
   }
 
   toggleVoiceGender() {

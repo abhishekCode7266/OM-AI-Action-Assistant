@@ -274,14 +274,11 @@ class OMVoiceEngine {
     }
     this._lastToggleTime = now;
 
-    // Operational Rule 7 & 8: Deactivate separate voice assistant; utilize ONLY Nexus Live
-    if (window.omJarvisLive) {
-      if (window.omJarvisLive.isActive) {
-        window.omJarvisLive.stopSession();
-      } else {
-        window.omJarvisLive.startSession();
-      }
-      return;
+    // Requirement 7: Standard Microphone performs speech-to-text input only (never activate Nexus Live)
+    if (this.isRecording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
     }
   }
 

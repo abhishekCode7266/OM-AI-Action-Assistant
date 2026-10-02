@@ -361,6 +361,11 @@ class OMJarvisLiveEngine {
       this.voiceGender = this.personas[persona].gender;
     }
 
+    // Stop standard mic recording cleanly if running to prevent concurrent recording
+    if (window.omVoice && window.omVoice.isRecording) {
+      window.omVoice.stopRecording();
+    }
+
     this.isActive = true;
     const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
     if (modal) {
@@ -399,12 +404,7 @@ class OMJarvisLiveEngine {
       headerLiveBtn.title = "Cut active Nexus Live voice session";
     }
 
-    const voiceBtn = document.getElementById('btn-voice-input');
-    if (voiceBtn) {
-      voiceBtn.classList.add('recording', 'active-cut');
-      voiceBtn.innerHTML = '<span class="mic-orb-circle" style="background:#ef4444; width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:3px;"></span><span style="font-size:0.75rem; font-weight:700; color:#ef4444;">Cut</span>';
-      voiceBtn.title = "Cut Nexus Live Session";
-    }
+
 
     const isHindi = this.currentLanguage.startsWith('hi');
     const p = this.personas[this.persona] || this.personas.friday;
@@ -499,15 +499,8 @@ class OMJarvisLiveEngine {
     if (headerLiveBtn) {
       headerLiveBtn.style.background = '';
       headerLiveBtn.style.borderColor = '';
-      headerLiveBtn.innerHTML = '<span>Nexus Live</span>';
+      headerLiveBtn.innerHTML = '<span>🎙️ Nexus Live</span>';
       headerLiveBtn.title = "Nexus Live Voice Conversation";
-    }
-
-    const voiceBtn = document.getElementById('btn-voice-input');
-    if (voiceBtn) {
-      voiceBtn.classList.remove('recording', 'active-cut');
-      voiceBtn.innerHTML = '🎙️';
-      voiceBtn.title = "Voice Input (Nexus Live)";
     }
 
     const miniOrb = document.getElementById('orb-widget-mini');
