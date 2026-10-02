@@ -376,6 +376,30 @@ class OMJarvisLiveEngine {
     this.updatePersonaBadge();
     this.initVisualizer();
 
+    // Display the pulsing voice visualizer on the left as a small orb
+    const miniOrb = document.getElementById('orb-widget-mini');
+    if (miniOrb) {
+      miniOrb.classList.add('active', 'listening');
+      miniOrb.style.display = 'flex';
+      miniOrb.title = "Nexus Live Active • Click to Cut";
+    }
+
+    // Keep visible 'Cut' option active across header and prompt dock
+    const headerLiveBtn = document.getElementById('btn-header-nexus-live');
+    if (headerLiveBtn) {
+      headerLiveBtn.style.background = '#ef4444';
+      headerLiveBtn.style.borderColor = '#dc2626';
+      headerLiveBtn.innerHTML = '<span>✂️ Cut Nexus Live</span>';
+      headerLiveBtn.title = "Cut active Nexus Live voice session";
+    }
+
+    const voiceBtn = document.getElementById('btn-voice-input');
+    if (voiceBtn) {
+      voiceBtn.classList.add('recording', 'active-cut');
+      voiceBtn.innerHTML = '<span class="mic-orb-circle" style="background:#ef4444; width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:3px;"></span><span style="font-size:0.75rem; font-weight:700; color:#ef4444;">Cut</span>';
+      voiceBtn.title = "Cut Nexus Live Session";
+    }
+
     const isHindi = this.currentLanguage.startsWith('hi');
     const p = this.personas[this.persona] || this.personas.friday;
     const welcomeGreeting = p.greeting(isHindi);
@@ -462,6 +486,29 @@ class OMJarvisLiveEngine {
     if (window.omMediaVision) {
       window.omMediaVision.stopScreenShare();
       window.omMediaVision.stopCamera();
+    }
+
+    // Revert external UI elements
+    const headerLiveBtn = document.getElementById('btn-header-nexus-live');
+    if (headerLiveBtn) {
+      headerLiveBtn.style.background = '';
+      headerLiveBtn.style.borderColor = '';
+      headerLiveBtn.innerHTML = '<span>Nexus Live</span>';
+      headerLiveBtn.title = "Nexus Live Voice Conversation";
+    }
+
+    const voiceBtn = document.getElementById('btn-voice-input');
+    if (voiceBtn) {
+      voiceBtn.classList.remove('recording', 'active-cut');
+      voiceBtn.innerHTML = '🎙️';
+      voiceBtn.title = "Voice Input (Nexus Live)";
+    }
+
+    const miniOrb = document.getElementById('orb-widget-mini');
+    if (miniOrb) {
+      miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
+      miniOrb.style.display = 'none';
+      miniOrb.title = "Voice AI Active • Click to Stop & Send";
     }
 
     if (window.omApp) {

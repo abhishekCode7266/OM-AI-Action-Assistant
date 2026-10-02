@@ -2886,7 +2886,6 @@ h1, h2, h3, h4, h5 {
    ========================================================================== */
 @media (max-width: 1200px) {
   #chat-mode-selector,
-  #btn-header-cyber-terminal,
   #btn-header-neural-canvas {
     display: none !important;
   }
@@ -2956,14 +2955,21 @@ h1, h2, h3, h4, h5 {
     box-shadow: 10px 0 45px rgba(0, 0, 0, 0.9);
   }
 
-  /* Header decluttering on mobile / small tablets - Keep Export visible & non-clipped */
+  /* Header decluttering on mobile / small tablets - Keep Terminal and Export visible side-by-side */
   #btn-header-3d-dismantle,
   #btn-header-neural-canvas,
-  #btn-header-cyber-terminal,
   #chat-mode-selector,
   #global-lang-selector,
   #btn-toggle-voice-gender {
     display: none !important;
+  }
+  #btn-header-cyber-terminal {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 8px !important;
+    height: 32px !important;
+    font-size: 0.8rem !important;
   }
 
   .chat-header-title {

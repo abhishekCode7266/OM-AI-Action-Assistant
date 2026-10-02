@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.112855">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1727,9 +1727,12 @@
             <option value="it-IT">🇮🇹 Italiano</option>
           </select>
 
-          <!-- Minimize to Small PiP Orb and Close button -->
+          <!-- Prominent Cut Button & Minimize to Small PiP Orb -->
+          <button class="om-btn om-btn-danger om-btn-xs" id="btn-live-cut-header" onclick="window.omJarvisLive.stopSession()" title="Cut Live Session" style="background: #ef4444; border: 1px solid #dc2626; color: #fff; font-weight: 700; border-radius: 6px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(239,68,68,0.5); cursor: pointer;">
+            <span>✂️</span> <span>Cut</span>
+          </button>
           <button class="chat-action-btn" id="btn-live-minimize" onclick="window.omJarvisLive.minimizeToPiP()" title="Minimize to Small PiP Orb" style="font-size: 1.15rem; color: #38bdf8; margin-left: 4px;">🗕</button>
-          <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;">✕</button>
+          <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;" title="Cut / Close">✕</button>
         </div>
 
         <!-- Persona Selection Roster (Matching Screenshot) -->
@@ -1866,8 +1869,8 @@
           <button class="om-btn om-btn-secondary" onclick="window.omJarvisLive.minimizeToPiP()" title="Minimize to Floating PiP Orb">
             🗕 Minimize
           </button>
-          <button class="om-btn om-btn-danger" onclick="window.omJarvisLive.stopSession()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171;">
-            End Session
+          <button class="om-btn om-btn-danger" id="btn-live-cut-footer" onclick="window.omJarvisLive.stopSession()" style="background: #ef4444; border: 1px solid #dc2626; color: #fff; font-weight: 700; padding: 6px 16px; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); cursor: pointer;" title="Cut Live Session">
+            ✂️ Cut Session
           </button>
         </div>
       </div>
@@ -3034,43 +3037,47 @@
       <button class="pip-action-btn" id="pip-btn-camera" title="Toggle Camera">📷</button>
       <button class="pip-action-btn" id="pip-btn-stop" onclick="window.omJarvisLive && window.omJarvisLive.stopSpeaking(); if(window.omVoice) window.omVoice.stopSpeaking();" title="Interrupt / Cancel Speech" style="color: #fbbf24;">🛑</button>
       <button class="pip-action-btn" id="pip-btn-expand" title="Expand to Full Screen">🗖</button>
-      <button class="pip-action-btn close-btn" id="pip-btn-close" title="End Voice Session">✕</button>
+      <button class="pip-action-btn close-btn" id="pip-btn-cut" onclick="window.omJarvisLive.stopSession()" title="Cut Live Voice Session" style="background: #ef4444; border: 1px solid #dc2626; color: #fff; font-weight: 700; padding: 2px 8px; border-radius: 6px; font-size: 0.74rem;">✂️ Cut</button>
     </div>
   </div>
 
   <!-- Toast Container -->
   <div id="om-toast-container"></div>
 
-  <!-- Scripts -->
-  <script src="assets/js/config.js"></script>
-  <script src="assets/js/chatStore.js"></script>
-  <script src="assets/js/analytics.js"></script>
-  <script src="assets/js/files.js"></script>
-  <script src="assets/js/voice.js"></script>
-  <script src="assets/js/jarvisLive.js"></script>
-  <script src="assets/js/mediaVision.js"></script>
-  <script src="assets/js/dismantler3d.js"></script>
-  <script src="assets/js/neuralCanvas.js"></script>
-  <script src="assets/js/cyberTerminal.js"></script>
-  <script src="assets/js/projects.js"></script>
-  <script src="assets/js/planner.js"></script>
-  <script src="assets/js/dashboard.js"></script>
-  <script src="assets/js/assistant.js"></script>
-  <script src="assets/js/app.js"></script>
+  <!-- Scripts (Strict Cache Busting Enabled) -->
+  <script src="assets/js/config.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261002.112855"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.112855')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
+            registration.update();
             registration.onupdatefound = () => {
               const installingWorker = registration.installing;
               if (installingWorker) {
                 installingWorker.onstatechange = () => {
-                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log('[OM SW] New build available. Updating cache...');
+                  if (installingWorker.state === 'installed') {
+                    if (navigator.serviceWorker.controller) {
+                      console.log('[OM SW] New build available. Updating cache immediately...');
+                      installingWorker.postMessage({ type: 'SKIP_WAITING' });
+                    }
                   }
                 };
               }

@@ -1,35 +1,19 @@
 /**
  * OM AI Action Assistant — Production Service Worker
- * Build: v3.3.0-build.20261002
+ * Build: v3.3.1-build.20261002.1
  * Tagline: "Think. Plan. Act. Achieve."
  */
 
-const CACHE_NAME = 'om-assistant-v3.3.0-build.20261002';
+const CACHE_NAME = 'om-assistant-v3.3.1-build.20261002.112855';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './assets/css/style.css',
-  './assets/icons/logo.svg',
-  './assets/js/config.js',
-  './assets/js/chatStore.js',
-  './assets/js/analytics.js',
-  './assets/js/files.js',
-  './assets/js/voice.js',
-  './assets/js/jarvisLive.js',
-  './assets/js/mediaVision.js',
-  './assets/js/dismantler3d.js',
-  './assets/js/neuralCanvas.js',
-  './assets/js/cyberTerminal.js',
-  './assets/js/projects.js',
-  './assets/js/planner.js',
-  './assets/js/dashboard.js',
-  './assets/js/assistant.js',
-  './assets/js/app.js'
+  './assets/icons/logo.svg'
 ];
 
-// 1. Install Event: Cache Core Assets
+// 1. Install Event: Cache Core Assets immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -46,7 +30,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Activate Event: Clean Old Caches & Claim Clients
+// 2. Activate Event: Clean Old Caches & Claim Clients immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -62,7 +46,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch Event: API calls network-first; Static assets cache-first / stale-while-revalidate
+// Listen for message events (e.g. skipWaiting trigger from client)
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// 3. Fetch Event: Strict Cache Busting & Fresh Updates
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -89,34 +80,33 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static Assets: Cache-first, fallback to network and update cache
-  event.respondWith(
-    caches.match(req).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch in background to revalidate cache for next visit
-        fetch(req).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, networkResponse));
-          }
-        }).catch(() => {/* offline silent fallback */});
-        return cachedResponse;
-      }
-
-      return fetch(req).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+  // HTML Navigation Requests: Network-First (Enforces instant updates on GitHub deployments)
+  const isHtmlRequest = req.mode === 'navigate' || (req.headers.get('accept') && req.headers.get('accept').includes('text/html'));
+  if (isHtmlRequest) {
+    event.respondWith(
+      fetch(req).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const toCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, toCache));
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(req, responseToCache);
-        });
         return networkResponse;
-      }).catch((err) => {
-        if (req.headers.get('accept') && req.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
-        }
-        throw err;
-      });
+      }).catch(() => {
+        return caches.match('./index.html') || caches.match('./');
+      })
+    );
+    return;
+  }
+
+  // Static Assets (CSS, JS, Icons): Network-First if versioned or Cache-First with revalidate
+  event.respondWith(
+    fetch(req).then((networkResponse) => {
+      if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        const toCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, toCache));
+      }
+      return networkResponse;
+    }).catch(() => {
+      return caches.match(req);
     })
   );
 });

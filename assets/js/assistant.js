@@ -419,27 +419,29 @@ User Profile & Memory: ${memoryCtx || "None"}`;
 
     if (isPureGreeting) {
       if (hasDevanagari || lower.includes('namaste') || lower.includes('kaise ho')) {
-        text = `### नमस्ते! मैं OM हूँ — आपका AI Action Assistant।
+        text = `### नमस्ते! मैं आपकी किस प्रकार सहायता कर सकता हूँ?
 
-मैं आपकी किस प्रकार सहायता कर सकता हूँ?
+मैं कोडिंग, डेटा विश्लेषण, प्रोजेक्ट क्रिएशन और रिसर्च में सीधे आपकी मदद कर सकता हूँ। अपना सवाल या कमांड बताएं।`;
+      } else if (lower.startsWith('hola') || lower.includes('como estas') || lower.includes('qué tal')) {
+        text = `### ¡Hola! ¿En qué puedo ayudarte hoy?
 
-* **💻 कोडिंग और डिबगिंग**: Python, JavaScript, HTML/CSS, SQL, या अन्य भाषाओं में कोड लिखें व ठीक करें।
-* **📊 डेटा विश्लेषण**: अपनी CSV या JSON फाइल अपलोड करें और तुरंत सांख्यिकी व चार्ट्स देखें।
-* **🚀 प्रोजेक्ट आर्किटेक्चर**: किसी भी नए विचार को *Think ➔ Plan ➔ Act ➔ Achieve* में बदलें।
-* **📝 रिसर्च और राइटिंग**: रिपोर्ट्स, ईमेल, और विस्तृत तकनीकी अध्ययन तैयार करें।
+Puedo ayudarte directamente con programación, análisis de datos, proyectos y redacción. Dime tu objetivo.`;
+      } else if (lower.startsWith('bonjour') || lower.startsWith('salut') || lower.includes('comment vas')) {
+        text = `### Bonjour ! Comment puis-je vous aider aujourd'hui ?
 
-आप नीचे दिए गए विकल्पों में से चुन सकते हैं या सीधे अपना सवाल लिख सकते हैं:`;
+Je peux exécuter directement vos tâches de code, d'analyse et de projets. Indiquez-moi votre objectif.`;
+      } else if (lower.startsWith('hallo') || lower.startsWith('guten') || lower.includes('wie geht')) {
+        text = `### Hallo! Wie kann ich Ihnen heute helfen?
+
+Ich unterstütze Sie direkt bei Programmierung, Datenanalyse und Projekten. Was ist Ihr Ziel?`;
+      } else if (lower.includes('こんにちは') || lower.includes('はじめまして')) {
+        text = `### こんにちは！今日はどのようなご用件でしょうか？
+
+コーディング、データ分析、プロジェクト作成など、直接サポートいたします。`;
       } else {
-        text = `### 👋 Hi! How can I help?
+        text = `### 👋 Hi! How can I help you today?
 
-I am **OM**, your multimodal AI action collaborator (*Think. Plan. Act. Achieve.*).
-
-* **💻 Code & Debug**: Write, optimize, and test code across Python, JavaScript, HTML/CSS, SQL, and more.
-* **📊 Data Analysis**: Upload CSV/JSON files for instant descriptive statistics, summaries, and charts.
-* **🚀 Project Builder**: Deconstruct ambitious ideas into *Think ➔ Plan ➔ Act ➔ Achieve* execution steps.
-* **🔎 Deep Research & Writing**: Generate structured analyses, technical documentation, and professional prose.
-
-Feel free to ask a question, upload a document, or tell me what you'd like to build!`;
+I can assist you directly with coding, debugging, project creation, data analysis, and technical research. Tell me what you'd like to achieve.`;
       }
 
       return {
@@ -2321,12 +2323,9 @@ Need another joke, or ready to get back to building?`;
       reasoning = ["1. Physics Synthesis: Stated exact speed of light and relativistic implications."];
       actions = [{ stage: 'achieve', title: 'Deliver verified physical constant c', estimate: 'Instant' }];
     } else if (hasDevanagari || lower.includes('kaise ho') || lower.includes('kya haal') || lower.includes('kya chal')) {
-      text = `### 🙏 सब बढ़िया है! आप कैसे हैं?\n\nमैं **OM AI Assistant** हूँ — आपका व्यक्तिगत AI साथी। मैं पूरी तरह सक्रिय हूँ और आपकी सहायता के लिए तैयार हूँ:\n\n* 💻 **कोडिंग**: Python, JavaScript, React में कोड लिखना और एरर फिक्स करना।\n* 📋 **प्लानिंग**: किसी भी नए प्रोजेक्ट या विचार को स्टेप-बाय-स्टेप प्लान में बदलना।\n* 📊 **डेटा एनालिसिस**: डेटा और फाइलों का विश्लेषण करना।\n* 🎙️ **वॉयस व मल्टीमॉडल**: बातचीत और डॉक्यूमेंट समझना।\n\nबताइए, आज आप क्या करना चाहते हैं?`;
-      reasoning = ["1. Colloquial Hindi Greeting: Responded in natural conversational Hindi."];
-      actions = [
-        { stage: 'think', title: 'Select goal or task', estimate: '1m' },
-        { stage: 'act', title: 'Execute action with OM', estimate: '2m' }
-      ];
+      text = `सब बढ़िया है! आप कैसे हैं? बताइए, आज किस काम या कोडिंग में मदद चाहिए?`;
+      reasoning = [];
+      actions = [];
     }
     // =========================================================================
     // 01. Flutter Cross-Platform To-Do App (Full Lifecycle Project & Code)

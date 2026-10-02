@@ -274,17 +274,14 @@ class OMVoiceEngine {
     }
     this._lastToggleTime = now;
 
-    if (!this.recognition) {
-      if (window.omApp) {
-        window.omApp.showToast("Voice dictation is not supported in this browser. Please use Chrome, Edge, or a browser with Web Speech API support.", "info");
+    // Operational Rule 7 & 8: Deactivate separate voice assistant; utilize ONLY Nexus Live
+    if (window.omJarvisLive) {
+      if (window.omJarvisLive.isActive) {
+        window.omJarvisLive.stopSession();
+      } else {
+        window.omJarvisLive.startSession();
       }
       return;
-    }
-
-    if (this.isRecording || this.isStarting) {
-      this.stopRecording();
-    } else {
-      this.startRecording();
     }
   }
 
@@ -794,33 +791,31 @@ class OMVoiceEngine {
 
 window.omVoice = new OMVoiceEngine();
 
-// Global Voice Recognition helper for instant Mic trigger
+// Global Voice Recognition helper for instant Mic trigger (utilizes ONLY Nexus Live)
 window.startVoiceRecognition = function() {
-  if (window.omVoice) {
-    window.omVoice.toggleRecording();
+  if (window.omJarvisLive) {
+    if (window.omJarvisLive.isActive) {
+      window.omJarvisLive.stopSession();
+    } else {
+      window.omJarvisLive.startSession();
+    }
   }
 };
 
-// Global Handler for Ultra-Small Floating Voice Orb Widget
+// Global Handler for Ultra-Small Floating Voice Orb Widget (Left corner visualizer)
 window.handleVoiceOrbClick = function(e) {
   if (e) {
     if (typeof e.preventDefault === 'function') e.preventDefault();
     if (typeof e.stopPropagation === 'function') e.stopPropagation();
   }
-  if (window.omVoice && (window.omVoice.isRecording || window.omVoice.isStarting)) {
-    window.omVoice.stopRecording();
-    return;
-  }
-  if (window.omVoice && window.omVoice.isPlayingTTS) {
-    window.omVoice.stopSpeaking();
-    return;
-  }
+  // Cut active Nexus Live session on click
   if (window.omJarvisLive && window.omJarvisLive.isActive) {
-    if (window.omJarvisLive.isSpeaking) {
-      window.omJarvisLive.stopSpeaking();
-      return;
-    }
+    window.omJarvisLive.stopSession();
+    return;
   }
-  window.startVoiceRecognition();
+  // Otherwise activate Nexus Live session
+  if (window.omJarvisLive) {
+    window.omJarvisLive.startSession();
+  }
 };
 

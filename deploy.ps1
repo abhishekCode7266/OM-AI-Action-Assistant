@@ -34,6 +34,26 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "SUCCESS: All 35 unit tests passed cleanly!" -ForegroundColor Green
 
+# 1.5 Enforce Strict Cache Busting Across Deployments (Operational Rule 5 & 9)
+Write-Host ""
+Write-Host "[1.5/3] Enforcing Strict Cache Busting for Production..." -ForegroundColor Yellow
+$buildTag = (Get-Date).ToString("yyyyMMdd.HHmmss")
+$cacheBust = "v=3.3.1.$buildTag"
+
+if (Test-Path "index.html") {
+    $indexHtml = Get-Content "index.html" -Raw
+    $indexHtml = [regex]::Replace($indexHtml, '(\.css|\.js)\?v=[a-zA-Z0-9_\.]+', "`$1?$cacheBust")
+    Set-Content "index.html" $indexHtml -NoNewline
+    Write-Host "SUCCESS: Stamped index.html with cache buster: $cacheBust" -ForegroundColor Green
+}
+
+if (Test-Path "sw.js") {
+    $swContent = Get-Content "sw.js" -Raw
+    $swContent = [regex]::Replace($swContent, "const CACHE_NAME = 'om-assistant-[^']+';", "const CACHE_NAME = 'om-assistant-v3.3.1-build.$buildTag';")
+    Set-Content "sw.js" $swContent -NoNewline
+    Write-Host "SUCCESS: Stamped sw.js with cache name: om-assistant-v3.3.1-build.$buildTag" -ForegroundColor Green
+}
+
 # 2. Check Git Status
 Write-Host ""
 Write-Host "[2/3] Checking Git Status and Staging Changes..." -ForegroundColor Yellow

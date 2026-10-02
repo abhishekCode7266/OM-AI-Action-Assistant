@@ -205,7 +205,7 @@ class OMApp {
       }
     });
 
-    // Voice Dictation Button (Mic)
+    // Voice Dictation Button (Mic) - Exclusively Nexus Live (Rule 7 & 8)
     const voiceBtn = document.getElementById('btn-voice-input');
     if (voiceBtn) {
       voiceBtn.onclick = (e) => {
@@ -213,12 +213,12 @@ class OMApp {
           e.preventDefault();
           e.stopPropagation();
         }
-        if (typeof window.startVoiceRecognition === 'function') {
-          window.startVoiceRecognition();
-        } else if (this.voice) {
-          this.voice.toggleRecording();
-        } else if (window.omJarvisLive) {
-          window.omJarvisLive.startSession();
+        if (window.omJarvisLive) {
+          if (window.omJarvisLive.isActive) {
+            window.omJarvisLive.stopSession();
+          } else {
+            window.omJarvisLive.startSession();
+          }
         }
       };
     }
