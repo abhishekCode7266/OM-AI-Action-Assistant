@@ -36,6 +36,7 @@ class OMJarvisLiveEngine {
     this.animFrameId = null;
     this.developerName = 'User';
     this.userTitle = 'User';
+    this.isModalOpen = false;
 
     // Roster of 9 Personas (5 Female, 4 Male)
     this.personas = {
@@ -343,26 +344,66 @@ class OMJarvisLiveEngine {
     }
 
     this.updatePersonaBadge();
+    this.applyPersonaToMiniOrb();
 
-    // If modal is active, speak switch greeting immediately
-    if (this.isActive) {
-      const isHindi = this.currentLanguage.startsWith('hi');
-      const switchGreeting = p.greeting(isHindi);
-      this.speakResponse(switchGreeting, () => {
-        if (this.isActive && this.continuousLoop) this.rearmMic();
-      });
+    // If modal is open, re-render visualizer to update colors immediately
+    if (this.isModalOpen) {
+      this.initVisualizer();
     }
+
+    // Update Header button if active
+    if (this.isActive) {
+      const headerLiveBtn = document.getElementById('btn-header-nexus-live');
+      if (headerLiveBtn) {
+        headerLiveBtn.innerHTML = `<span class="nexus-live-docked-orb active listening" id="nexus-live-docked-orb" style="background:${p.primaryColor}; box-shadow:0 0 10px ${p.primaryColor};"></span><span id="nexus-live-header-text">⚡ ${p.name} Live</span>`;
+      }
+    }
+  }
+
+  applyPersonaToMiniOrb() {
+    const p = this.personas[this.persona] || this.personas.friday;
+    const miniOrb = document.getElementById('orb-widget-mini');
+    if (miniOrb) {
+      miniOrb.style.setProperty('--persona-primary', p.primaryColor);
+      miniOrb.style.setProperty('--persona-secondary', p.secondaryColor);
+      miniOrb.title = `${p.name} Active • Click to switch assistant`;
+    }
+    const letterEl = document.getElementById('mini-orb-letter');
+    if (letterEl) {
+      const cleanName = p.name.replace(/[^a-zA-Z]/g, '');
+      letterEl.textContent = cleanName[0] || 'J';
+    }
+  }
+
+  openModal() {
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+    this.isModalOpen = true;
+
+    // Ensure Arc Reactor visualizer container is visible
+    const vis = document.getElementById('live-visualizer-container');
+    if (vis) vis.style.display = 'flex';
+
+    this.updatePersonaBadge();
+    this.initVisualizer();
+  }
+
+  closeModal() {
+    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
+    if (modal) modal.classList.remove('active');
+    this.isModalOpen = false;
   }
 
   toggleSession() {
-    if (this.isActive) {
-      this.stopSession();
+    if (this.isModalOpen) {
+      this.closeModal();
     } else {
-      this.startSession();
+      this.openModal();
     }
   }
 
-  startSession(persona = null) {
+  startConversationView(persona = null) {
     if (persona && this.personas[persona]) {
       this.persona = persona;
       localStorage.setItem('om_live_persona', persona);
@@ -375,12 +416,7 @@ class OMJarvisLiveEngine {
     }
 
     this.isActive = true;
-
-    // Do NOT display oversized blocking modal; keep chat view and chat history panel visible!
-    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
-    if (modal) {
-      modal.classList.remove('active');
-    }
+    this.closeModal();
 
     // Ensure PiP is hidden
     const pip = document.getElementById('floating-live-pip-widget');
@@ -390,82 +426,63 @@ class OMJarvisLiveEngine {
 
     this.updatePersonaBadge();
 
-    // Display the small pulsing animation orb on the left side
+    // Display the small centered animated Arc Reactor orb directly above chat prompt box
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
       miniOrb.className = 'orb-widget-mini listening-animation-ring active listening';
       miniOrb.style.display = 'flex';
-      miniOrb.title = "Nexus Live Active • Click to Stop";
+      this.applyPersonaToMiniOrb();
     }
 
-    // Small pulsing voice visualizer orb docked directly in Header Nexus Live button
+    // Update Header button cleanly without ugly Cut text
     const headerLiveBtn = document.getElementById('btn-header-nexus-live');
     if (headerLiveBtn) {
       headerLiveBtn.classList.add('active', 'listening');
-      headerLiveBtn.style.background = '#ef4444';
-      headerLiveBtn.style.borderColor = '#dc2626';
-      headerLiveBtn.innerHTML = '<span class="nexus-live-docked-orb active listening" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">✂️ Cut Live</span>';
-      headerLiveBtn.title = "Cut active Nexus Live voice session";
+      headerLiveBtn.style.background = 'rgba(6, 182, 212, 0.2)';
+      headerLiveBtn.style.borderColor = 'var(--om-cyan)';
+      const p = this.personas[this.persona] || this.personas.friday;
+      headerLiveBtn.innerHTML = `<span class="nexus-live-docked-orb active listening" id="nexus-live-docked-orb" style="background:${p.primaryColor}; box-shadow:0 0 10px ${p.primaryColor};"></span><span id="nexus-live-header-text">⚡ ${p.name} Live</span>`;
+      headerLiveBtn.title = `Nexus Live (${p.name}) Active • Click to switch assistant`;
     }
 
-    // Start listening immediately - No unsolicited opening monologue
+    // Start listening quietly - zero unsolicited opening monologue
     this.startListening();
 
     const p = this.personas[this.persona] || this.personas.friday;
     if (window.omApp && typeof window.omApp.showToast === 'function') {
-      window.omApp.showToast(`Nexus Live active (${p.name}) • Speak naturally`, 'info');
+      window.omApp.showToast(`Nexus Live connected (${p.name}) • Speak naturally`, 'info');
     }
+  }
+
+  startSession(persona = null) {
+    this.startConversationView(persona);
+  }
+
+  handleMiniOrbClick(event) {
+    if (event && event.target && event.target.classList.contains('mini-orb-close-badge')) {
+      this.stopSession();
+      return;
+    }
+    this.openModal();
   }
 
   minimizeToPiP() {
-    if (!this.isActive) return;
-    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
-    if (modal) {
-      modal.classList.remove('active');
-    }
-    const pip = document.getElementById('floating-live-pip-widget');
-    if (pip) {
-      pip.classList.add('active');
-      this.updatePiPContent();
-    }
-    if (window.omApp) {
-      window.omApp.showToast('Voice session minimized to floating PiP. Tap orb to expand or continue speaking freely across all views!', 'info');
-    }
+    this.startConversationView();
   }
 
   expandFromPiP() {
-    const pip = document.getElementById('floating-live-pip-widget');
-    if (pip) {
-      pip.classList.remove('active');
-    }
-    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
-    if (modal) {
-      modal.classList.add('active');
-    }
+    this.openModal();
   }
 
   updatePiPContent() {
-    const pipPersona = document.getElementById('pip-persona-title');
-    const pipTicker = document.getElementById('pip-live-speech-ticker');
-    const p = this.personas[this.persona] || this.personas.friday;
-    if (pipPersona) {
-      pipPersona.textContent = p.name;
-      pipPersona.style.color = p.primaryColor;
-    }
-    if (pipTicker && !pipTicker.textContent) {
-      pipTicker.textContent = `Active • Listening in ${this.currentLanguage}`;
-    }
-    const orb = document.querySelector('.pip-reactor-orb');
-    if (orb) {
-      orb.style.boxShadow = `0 0 16px ${p.primaryColor}88`;
-      orb.style.borderColor = p.primaryColor;
-    }
+    // No-op
   }
 
   stopSession() {
     this.isActive = false;
     this.isListening = false;
     this.isSpeaking = false;
+    this.closeModal();
 
     if (this.recognition) {
       try { this.recognition.stop(); } catch (e) {}
@@ -476,11 +493,6 @@ class OMJarvisLiveEngine {
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
-    }
-
-    const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
-    if (modal) {
-      modal.classList.remove('active');
     }
 
     const pip = document.getElementById('floating-live-pip-widget');
@@ -500,8 +512,7 @@ class OMJarvisLiveEngine {
       headerLiveBtn.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
       headerLiveBtn.style.background = '';
       headerLiveBtn.style.borderColor = '';
-      const text = window.omI18n ? window.omI18n.t('nexusLive', 'Nexus Live') : 'Nexus Live';
-      headerLiveBtn.innerHTML = `<span class="nexus-live-docked-orb" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">🎙️ ${text}</span>`;
+      headerLiveBtn.innerHTML = `<span class="nexus-live-docked-orb" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">🎙️ Nexus Live</span>`;
       headerLiveBtn.title = "Nexus Live Voice Conversation";
     }
 
@@ -509,7 +520,7 @@ class OMJarvisLiveEngine {
     if (miniOrb) {
       miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
       miniOrb.style.display = 'none';
-      miniOrb.title = "Voice AI Active • Click to Stop & Send";
+      miniOrb.title = "Voice AI Active • Click to switch assistant";
     }
 
     if (window.omApp) {
@@ -524,13 +535,19 @@ class OMJarvisLiveEngine {
       badge.innerHTML = `<span style="color: ${p.primaryColor};">⚡ ${p.title}</span> • <span style="color: ${p.secondaryColor};">${p.sub}</span>`;
     }
 
+    // Update Start Button Label in Modal
+    const btnLabel = document.getElementById('modal-active-persona-label');
+    if (btnLabel) {
+      btnLabel.textContent = p.name;
+    }
+
     // Highlight selected persona pill
     document.querySelectorAll('.persona-pill-btn').forEach(btn => {
       const key = btn.getAttribute('data-persona');
       if (key === this.persona) {
         btn.classList.add('active');
-        btn.style.borderColor = p.primaryColor;
-        btn.style.boxShadow = `0 0 10px ${p.primaryColor}55`;
+        btn.style.borderColor = '#ffffff';
+        btn.style.boxShadow = `0 0 16px ${p.primaryColor}, inset 0 0 8px rgba(255,255,255,0.25)`;
       } else {
         btn.classList.remove('active');
         btn.style.borderColor = '';
@@ -871,11 +888,18 @@ class OMJarvisLiveEngine {
   initVisualizer() {
     const canvas = document.getElementById('jarvis-arc-reactor-canvas');
     if (!canvas) return;
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
     const ctx = canvas.getContext('2d');
     let angle = 0;
 
     const render = () => {
-      if (!this.isActive) return;
+      if (!this.isActive && !this.isModalOpen) {
+        this.animFrameId = null;
+        return;
+      }
 
       const width = canvas.width = 340;
       const height = canvas.height = 340;

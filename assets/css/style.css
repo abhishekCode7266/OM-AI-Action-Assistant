@@ -2515,6 +2515,14 @@ h1, h2, h3, h4, h5 {
   filter: brightness(1.2);
 }
 
+.persona-pill-btn.active {
+  border-width: 1.5px !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 16px var(--om-cyan), inset 0 0 8px rgba(255, 255, 255, 0.25) !important;
+  transform: scale(1.05);
+  font-weight: 800 !important;
+}
+
 .dismantle-part-item {
   display: flex;
   align-items: center;
@@ -4038,198 +4046,204 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================================================
-   Nexus Live Small Floating Orb on Left Side
-   Shows only this compact pulsing animation orb on the left while full chat is visible
+   Nexus Live Small Floating Orb (ChatGPT-style, centered directly above input box)
+   Shows compact miniature Arc Reactor animated orb centered horizontally above chat prompt bar
    ========================================================================== */
 .listening-animation-ring,
 .orb-widget-mini {
   position: fixed;
-  bottom: 96px;
-  left: calc(var(--sidebar-width, 260px) + 20px);
+  bottom: 84px;
+  left: calc(var(--sidebar-width, 260px) + (100vw - var(--sidebar-width, 260px)) / 2);
+  transform: translateX(-50%);
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 242, 254, 0.95) 0%, rgba(14, 165, 233, 0.9) 100%);
-  box-shadow: 0 0 18px rgba(0, 242, 254, 0.8), 0 0 36px rgba(0, 195, 255, 0.45);
   cursor: pointer;
   z-index: 1050;
   display: none;
   align-items: center;
   justify-content: center;
-  transition: left 0.3s ease, bottom 0.3s ease, transform 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   user-select: none;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.95) 0%, rgba(6, 11, 24, 0.98) 100%);
+  border: 1.5px solid var(--persona-primary, #06b6d4);
+  box-shadow: 0 0 20px var(--persona-primary, rgba(6, 182, 212, 0.7)), 0 8px 24px rgba(0, 0, 0, 0.7);
 }
 
 body.sidebar-collapsed .listening-animation-ring,
 body.sidebar-collapsed .orb-widget-mini,
 .om-sidebar.collapsed ~ .om-main-workspace .orb-widget-mini {
-  left: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .listening-animation-ring.active,
 .orb-widget-mini.active {
   display: flex !important;
-  animation: orb-gentle-pulse 2.2s infinite ease-in-out;
-}
-
-@keyframes orb-gentle-pulse {
-  0% { transform: scale(1); box-shadow: 0 0 16px rgba(0, 242, 254, 0.75), 0 0 32px rgba(0, 195, 255, 0.4); }
-  50% { transform: scale(1.08); box-shadow: 0 0 24px rgba(0, 242, 254, 0.95), 0 0 44px rgba(0, 195, 255, 0.6); }
-  100% { transform: scale(1); box-shadow: 0 0 16px rgba(0, 242, 254, 0.75), 0 0 32px rgba(0, 195, 255, 0.4); }
 }
 
 .listening-animation-ring:hover,
 .orb-widget-mini:hover {
-  transform: scale(1.14);
-  box-shadow: 0 0 28px rgba(0, 195, 255, 0.95), 0 0 55px rgba(0, 195, 255, 0.6);
+  transform: translateX(-50%) scale(1.12);
+  box-shadow: 0 0 28px var(--persona-primary, #06b6d4), 0 0 50px var(--persona-secondary, #38bdf8);
 }
 
 .listening-animation-ring:active,
 .orb-widget-mini:active {
-  transform: scale(0.92);
+  transform: translateX(-50%) scale(0.94);
 }
 
-/* Concentric Listening Waves mimicking original ring style */
-.listening-ring-wave {
+/* Outer Rotating Dashed Ring */
+.mini-orb-outer-dashed-ring {
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
+  inset: -6px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 242, 254, 0.65);
+  border: 1.5px dashed var(--persona-primary, #06b6d4);
+  opacity: 0.85;
+  animation: mini-orb-rotate 9s linear infinite;
   pointer-events: none;
-  animation: listening-wave-pulse 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-.listening-ring-wave.wave-2 {
-  animation-delay: 1s;
-}
-
-/* Glowing Inner Core */
-.listening-ring-core {
-  width: 20px;
-  height: 20px;
+/* Spoke / Radar Ring */
+.mini-orb-spokes-ring {
+  position: absolute;
+  inset: -2px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(0, 195, 255, 0.9);
-  animation: ringCorePulse 1.4s infinite alternate ease-in-out;
+  border: 1.5px solid var(--persona-secondary, #38bdf8);
+  opacity: 0.9;
+  box-shadow: 0 0 10px var(--persona-primary, #06b6d4);
+  pointer-events: none;
+}
+
+/* Outward Concentric Pulsing Sound Waves */
+.mini-orb-wave {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--persona-primary, #06b6d4);
+  pointer-events: none;
+  opacity: 0;
+  animation: mini-orb-wave-pulse 2.2s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.mini-orb-wave.wave-2 {
+  animation-delay: 1.1s;
+}
+
+/* Glowing Inner Core with Persona Initial */
+.mini-orb-core {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--persona-secondary, #38bdf8) 45%, var(--persona-primary, #06b6d4) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px var(--persona-secondary, #38bdf8), 0 0 22px var(--persona-primary, #06b6d4);
   pointer-events: none;
   position: relative;
   z-index: 2;
+  transition: all 0.3s ease;
 }
 
-/* Speaking State (Dynamic rose/coral gradient with soundwave pulsation) */
+.mini-orb-letter {
+  font-family: var(--om-font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+  letter-spacing: -0.02em;
+}
+
+/* Close Badge */
+.mini-orb-close-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 1.5px solid #ffffff;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.85);
+  opacity: 0.85;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.mini-orb-close-badge:hover {
+  transform: scale(1.22);
+  opacity: 1;
+}
+
+/* Speaking State (Dynamic pulsating soundwaves) */
 .listening-animation-ring.speaking,
 .orb-widget-mini.speaking {
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.95) 0%, rgba(251, 113, 133, 0.85) 100%);
-  box-shadow: 0 0 24px rgba(244, 63, 94, 0.85), 0 0 52px rgba(244, 63, 94, 0.45);
-  animation: orb-speaking-pulse 1.8s infinite ease-in-out;
+  box-shadow: 0 0 26px var(--persona-primary, #f43f5e), 0 0 55px var(--persona-secondary, #fda4af);
+  animation: orb-speaking-bounce 1s infinite alternate ease-in-out;
+}
+.listening-animation-ring.speaking .mini-orb-core {
+  transform: scale(1.15);
+  box-shadow: 0 0 16px #ffffff, 0 0 30px var(--persona-primary, #f43f5e);
 }
 
-.listening-animation-ring.speaking .listening-ring-wave {
-  border-color: rgba(244, 63, 94, 0.65);
+/* Listening State */
+.listening-animation-ring.listening,
+.orb-widget-mini.listening {
+  animation: orb-listening-breathe 2.4s infinite ease-in-out;
 }
 
-.listening-animation-ring.speaking .listening-ring-core {
-  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(244, 63, 94, 0.9);
-}
-
-.listening-animation-ring.speaking:hover,
-.orb-widget-mini.speaking:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 32px rgba(244, 63, 94, 0.95), 0 0 70px rgba(244, 63, 94, 0.6);
-}
-
-.listening-animation-ring.speaking:active,
-.orb-widget-mini.speaking:active {
-  transform: scale(0.92);
-}
-
-/* Processing State (Violet / Purple thinking glow) */
+/* Processing State */
 .listening-animation-ring.processing,
 .orb-widget-mini.processing {
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.95) 0%, rgba(99, 102, 241, 0.85) 100%);
-  box-shadow: 0 0 24px rgba(168, 85, 247, 0.85), 0 0 54px rgba(99, 102, 241, 0.5);
-  animation: orb-processing-spin 1.4s infinite linear;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.9), 0 0 50px rgba(99, 102, 241, 0.6);
 }
-.listening-animation-ring.processing .listening-ring-wave {
-  border-color: rgba(168, 85, 247, 0.7);
-}
-.listening-animation-ring.processing .listening-ring-core {
-  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(168, 85, 247, 0.9);
+.listening-animation-ring.processing .mini-orb-outer-dashed-ring {
+  animation: mini-orb-rotate 1.5s linear infinite;
 }
 
-/* Interrupted State (Amber / Golden barge-in halt pulse) */
-.listening-animation-ring.interrupted,
-.orb-widget-mini.interrupted {
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.85) 100%);
-  box-shadow: 0 0 28px rgba(245, 158, 11, 0.9), 0 0 60px rgba(245, 158, 11, 0.5);
-  animation: orb-interrupted-flash 0.6s ease-out;
-}
-.listening-animation-ring.interrupted .listening-ring-wave {
-  border-color: rgba(245, 158, 11, 0.8);
-}
-.listening-animation-ring.interrupted .listening-ring-core {
-  box-shadow: 0 0 12px #ffffff, 0 0 25px rgba(245, 158, 11, 0.95);
+/* Keyframes */
+@keyframes mini-orb-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@keyframes orb-slide-to-left {
+@keyframes mini-orb-wave-pulse {
   0% {
-    left: 50%;
-    transform: translateX(-50%) scale(1.15);
-    opacity: 0.6;
+    transform: scale(0.9);
+    opacity: 0.9;
   }
   100% {
-    left: calc(var(--sidebar-width, 260px) + 24px);
-    transform: none;
-    opacity: 1;
+    transform: scale(1.7);
+    opacity: 0;
   }
 }
 
-@keyframes orb-slide-to-left-collapsed {
-  0% {
-    left: 50%;
-    transform: translateX(-50%) scale(1.15);
-    opacity: 0.6;
-  }
-  100% {
-    left: 24px;
-    transform: none;
-    opacity: 1;
-  }
+@keyframes orb-speaking-bounce {
+  0% { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(1.1); }
 }
 
-@keyframes orb-processing-spin {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.04); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-@keyframes orb-interrupted-flash {
-  0% { transform: scale(1.2); opacity: 1; }
-  50% { transform: scale(0.95); opacity: 0.85; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes orb-listening-breathe {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.06); }
 }
 
 @media (max-width: 768px) {
   .listening-animation-ring,
   .orb-widget-mini {
-    top: auto;
-    bottom: 84px;
-    left: 14px;
-    width: 42px;
-    height: 42px;
-  }
-  .listening-animation-ring.active,
-  .orb-widget-mini.active {
-    display: flex !important;
-  }
-}
-  .listening-ring-core {
-    width: 18px;
-    height: 18px;
+    bottom: 78px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
   }
 }
 

@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.165152">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.172141">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -193,7 +193,7 @@
             <span class="nav-item-icon">📋</span>
             <span class="nav-item-title">Tasks</span>
           </div>
-          <div class="sidebar-nav-item" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession();" title="Nexus Live – Unified Conversational AI & Real-time Voice HUD">
+          <div class="sidebar-nav-item" onclick="if(window.omJarvisLive) window.omJarvisLive.openModal();" title="Nexus Live – Unified Conversational AI & Real-time Voice HUD">
             <span class="nav-item-icon">🎙️</span>
             <span class="nav-item-title">Nexus Live</span>
           </div>
@@ -505,7 +505,7 @@
           <div class="input-capsule" style="position: relative;">
             <!-- + Attach Popover Menu -->
             <div class="input-attach-popup" id="input-attach-popup" style="display: none;">
-              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omJarvisLive) window.omJarvisLive.startSession();">
+              <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omJarvisLive) window.omJarvisLive.openModal();">
                 <span class="attach-item-icon">🎙️</span>
                 <div>
                   <div class="attach-item-title">Nexus Live Voice Matrix</div>
@@ -1814,42 +1814,37 @@
             <option value="it-IT">🇮🇹 Italiano</option>
           </select>
 
-          <!-- Prominent Cut Button & Minimize to Small PiP Orb -->
-          <button class="om-btn om-btn-danger om-btn-xs" id="btn-live-cut-header" onclick="window.omJarvisLive.stopSession()" title="Cut Live Session" style="background: #ef4444; border: 1px solid #dc2626; color: #fff; font-weight: 700; border-radius: 6px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(239,68,68,0.5); cursor: pointer;">
-            <span>✂️</span> <span>Cut</span>
-          </button>
-          <button class="chat-action-btn" id="btn-live-minimize" onclick="window.omJarvisLive.minimizeToPiP()" title="Minimize to Small PiP Orb" style="font-size: 1.15rem; color: #38bdf8; margin-left: 4px;">🗕</button>
-          <button class="chat-action-btn" onclick="window.omJarvisLive.stopSession()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;" title="Cut / Close">✕</button>
+          <!-- Close / Dismiss Modal (Clean without ugly Cut button) -->
+          <button class="chat-action-btn" id="btn-live-minimize" onclick="window.omJarvisLive.startConversationView()" title="Minimize to Chat View" style="font-size: 1.15rem; color: #38bdf8; margin-left: 4px;">🗕</button>
+          <button class="chat-action-btn" onclick="window.omJarvisLive.closeModal()" style="font-size: 1.1rem; color: #cbd5e1; margin-left: 4px;" title="Close">✕</button>
         </div>
 
-        <!-- Persona Selection Roster (Matching Screenshot) -->
-        <div class="live-persona-roster-wrap" style="width: 100%; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <!-- Persona Selection Roster (Matching Screenshot Exactly) -->
+        <div class="live-persona-roster-wrap" style="width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="font-size: 0.7rem; font-weight: 800; color: #f472b6; letter-spacing: 0.05em;">👩 FEMALE VOICES:</span>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6;">🛡️ F.R.I.D.A.Y.</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="samantha" onclick="window.omJarvisLive.setPersona('samantha')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: #fda4af;">🌸 Samantha</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="nova" onclick="window.omJarvisLive.setPersona('nova')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">✨ Nova Pro</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="rias" onclick="window.omJarvisLive.setPersona('rias')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(225, 29, 72, 0.15); border: 1px solid rgba(225, 29, 72, 0.4); color: #fb7185;">🌹 Rias</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="asia" onclick="window.omJarvisLive.setPersona('asia')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24;">✨ Asia</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="medusa" onclick="window.omJarvisLive.setPersona('medusa')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399;">🐍 Medusa</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="astrid" onclick="window.omJarvisLive.setPersona('astrid')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #c084fc;">⚡ Astrid</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="rias" onclick="window.omJarvisLive.setPersona('rias')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(225, 29, 72, 0.18); border: 1.5px solid #e11d48; color: #fb7185; border-radius: 8px;">🌹 Rias</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="asia" onclick="window.omJarvisLive.setPersona('asia')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(245, 158, 11, 0.18); border: 1.5px solid #f59e0b; color: #fbbf24; border-radius: 8px;">✨ Asia</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="medusa" onclick="window.omJarvisLive.setPersona('medusa')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(16, 185, 129, 0.18); border: 1.5px solid #10b981; color: #34d399; border-radius: 8px;">🐍 Medusa</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="astrid" onclick="window.omJarvisLive.setPersona('astrid')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(139, 92, 246, 0.18); border: 1.5px solid #8b5cf6; color: #c084fc; border-radius: 8px;">⚡ Astrid</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(236, 72, 153, 0.18); border: 1.5px solid #ec4899; color: #f472b6; border-radius: 8px;">🛡️ F.R.I.D.A.Y.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="samantha" onclick="window.omJarvisLive.setPersona('samantha')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(244, 63, 94, 0.18); border: 1.5px solid #f43f5e; color: #fda4af; border-radius: 8px;">🌸 Samantha</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="nova" onclick="window.omJarvisLive.setPersona('nova')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(56, 189, 248, 0.18); border: 1.5px solid #38bdf8; color: #38bdf8; border-radius: 8px;">✨ Nova Pro</button>
           </div>
-          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="font-size: 0.7rem; font-weight: 800; color: #38bdf8; letter-spacing: 0.05em;">👨 MALE VOICES:</span>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="jarvis" onclick="window.omJarvisLive.setPersona('jarvis')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8;">🎩 J.A.R.V.I.S.</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="orvis" onclick="window.omJarvisLive.setPersona('orvis')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8;">🌐 Orvis</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="onyx" onclick="window.omJarvisLive.setPersona('onyx')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(100, 116, 139, 0.15); border: 1px solid rgba(100, 116, 139, 0.4); color: #cbd5e1;">🎙️ Onyx Deep</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="ultron" onclick="window.omJarvisLive.setPersona('ultron')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.4); color: #f87171;">🤖 Ultron</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="hiro" onclick="window.omJarvisLive.setPersona('hiro')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); color: #fb923c;">⚡ Hiro</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="alpha" onclick="window.omJarvisLive.setPersona('alpha')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa;">🛡️ Alpha</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="custom" onclick="if(window.omApp) window.omApp.openSettings('voice')" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.25); color: #94a3b8;">+ Custom</button>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+            <span style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; letter-spacing: 0.06em;">👨 MALE VOICES:</span>
+            <button class="om-btn om-btn-xs persona-pill-btn active" data-persona="jarvis" onclick="window.omJarvisLive.setPersona('jarvis')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(6, 182, 212, 0.22); border: 1.5px solid #06b6d4; color: #38bdf8; border-radius: 8px; box-shadow: 0 0 12px rgba(6,182,212,0.6);">🧑 J.A.R.V.I.S.</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="ultron" onclick="window.omJarvisLive.setPersona('ultron')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(220, 38, 38, 0.18); border: 1.5px solid #dc2626; color: #f87171; border-radius: 8px;">🤖 Ultron</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="hiro" onclick="window.omJarvisLive.setPersona('hiro')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(249, 115, 22, 0.18); border: 1.5px solid #f97316; color: #fb923c; border-radius: 8px;">⚡ Hiro</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="alpha" onclick="window.omJarvisLive.setPersona('alpha')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(37, 99, 235, 0.18); border: 1.5px solid #2563eb; color: #60a5fa; border-radius: 8px;">🛡️ Alpha</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="orvis" onclick="window.omJarvisLive.setPersona('orvis')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(14, 165, 233, 0.18); border: 1.5px solid #0ea5e9; color: #38bdf8; border-radius: 8px;">🌐 Orvis</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="onyx" onclick="window.omJarvisLive.setPersona('onyx')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(100, 116, 139, 0.18); border: 1.5px solid #64748b; color: #cbd5e1; border-radius: 8px;">🎙️ Onyx Deep</button>
           </div>
         </div>
       </div>
 
-      <div class="live-modal-body">
-        <!-- Live Media Vision Panel (Screen Share & Camera Vision) -->
-        <div class="live-media-vision-panel" id="live-media-vision-panel">
+      <div class="live-modal-body" style="padding: 1.25rem; display: flex; flex-direction: column; align-items: center;">
+        <!-- Live Media Vision Panel (Hidden by default unless screen/camera activated) -->
+        <div class="live-media-vision-panel" id="live-media-vision-panel" style="display: none;">
           <div class="media-stream-box" id="live-screen-container">
             <div class="media-stream-overlay">
               <span class="media-stream-tag">LIVE SCREEN TELEMETRY</span>
@@ -1875,29 +1870,33 @@
           </div>
         </div>
 
-        <!-- Central Arc Reactor / Waveform Canvas (Oversized activation orb removed in favor of compact left pulsing orb) -->
-        <div class="live-visualizer-container" id="live-visualizer-container" style="display: none;">
-          <canvas id="jarvis-arc-reactor-canvas" width="340" height="340"></canvas>
-          <div class="live-hud-state-container">
+        <!-- Central Arc Reactor / Waveform Canvas (Matching Screenshot Exactly) -->
+        <div class="live-visualizer-container" id="live-visualizer-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="window.omJarvisLive.startConversationView()" title="Click to start conversation">
+          <canvas id="jarvis-arc-reactor-canvas" width="340" height="340" style="cursor: pointer;"></canvas>
+          <div class="live-hud-state-container" style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
             <span class="live-hud-pulse-ring" id="live-hud-pulse-ring"></span>
-            <span id="live-hud-state-label" class="live-hud-state-text">LISTENING</span>
+            <span id="live-hud-state-label" class="live-hud-state-text" style="font-weight: 800; letter-spacing: 0.1em; color: #10b981;">LISTENING</span>
           </div>
+          <!-- Prominent Start Conversation Action Button -->
+          <button class="om-btn om-btn-primary" id="btn-modal-start-chat" onclick="event.stopPropagation(); window.omJarvisLive.startConversationView()" style="margin-top: 14px; border-radius: 9999px; padding: 10px 28px; font-weight: 700; font-size: 0.92rem; background: linear-gradient(135deg, var(--om-cyan), #3b82f6); border: none; box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); cursor: pointer;">
+            💬 Start Conversation with <span id="modal-active-persona-label">J.A.R.V.I.S.</span>
+          </button>
         </div>
 
         <!-- Live Transcripts HUD -->
-        <div class="live-transcripts-card">
+        <div class="live-transcripts-card" style="margin-top: 12px; width: 100%; max-width: 480px; display: none;">
           <div class="transcript-row user-row">
             <span class="transcript-speaker-tag">YOU:</span>
             <span id="live-user-transcript" class="transcript-text">"Listening to your voice..."</span>
           </div>
           <div class="transcript-row jarvis-row">
             <span class="transcript-speaker-tag jarvis-tag">PERSONA:</span>
-            <span id="live-jarvis-transcript" class="transcript-text">At your service. All tactical systems are operating at nominal efficiency.</span>
+            <span id="live-jarvis-transcript" class="transcript-text">At your service.</span>
           </div>
         </div>
 
         <!-- Continuous Context Chat History Overlay (Section 2) -->
-        <div class="live-chat-history-overlay active" id="live-chat-history-overlay" style="display: block; background: #070d19; border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: left; overflow: hidden;">
+        <div class="live-chat-history-overlay" id="live-chat-history-overlay" style="display: none; background: #070d19; border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: left; overflow: hidden;">
           <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
             <div style="display: flex; align-items: center; gap: 8px;">
               <span>💬</span>
@@ -2981,7 +2980,7 @@
         <span class="mob-nav-icon">✨</span>
         <span>Spark</span>
       </button>
-      <button class="mob-nav-btn special-live" id="mob-nav-live" onclick="window.omJarvisLive.startSession()">
+      <button class="mob-nav-btn special-live" id="mob-nav-live" onclick="window.omJarvisLive.openModal()">
         <span class="mob-nav-icon">⚡</span>
         <span>Live Voice</span>
       </button>
@@ -2996,11 +2995,16 @@
     </div>
   </nav>
 
-  <!-- Nexus Live Compact Pulsing Animation Orb (Docked on Left Side) -->
-  <div class="orb-widget-mini listening-animation-ring" id="orb-widget-mini" title="Nexus Live Active • Click to Stop" onclick="window.omJarvisLive && window.omJarvisLive.stopSession()">
-    <div class="listening-ring-wave wave-1"></div>
-    <div class="listening-ring-wave wave-2"></div>
-    <div class="listening-ring-core"></div>
+  <!-- Nexus Live Centered Animated Arc Reactor Mini Orb (ChatGPT-style, centered directly above prompt box) -->
+  <div class="orb-widget-mini listening-animation-ring" id="orb-widget-mini" title="Nexus Live Active • Click to switch assistant" onclick="window.omJarvisLive && window.omJarvisLive.handleMiniOrbClick(event)">
+    <div class="mini-orb-outer-dashed-ring"></div>
+    <div class="mini-orb-spokes-ring"></div>
+    <div class="mini-orb-wave wave-1"></div>
+    <div class="mini-orb-wave wave-2"></div>
+    <div class="mini-orb-core">
+      <span class="mini-orb-letter" id="mini-orb-letter">J</span>
+    </div>
+    <button class="mini-orb-close-badge" id="mini-orb-close-badge" onclick="event.stopPropagation(); window.omJarvisLive.stopSession();" title="Close Live Voice">✕</button>
   </div>
 
   <!-- Floating Minimized PiP Widget (Small form / Background Voice & Tasks) -->
@@ -3028,28 +3032,28 @@
   <div id="om-toast-container"></div>
 
   <!-- Scripts (Strict Cache Busting Enabled) -->
-  <script src="assets/js/config.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/i18n.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/chatStore.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/analytics.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/files.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/voice.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/projects.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/planner.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/dashboard.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/assistant.js?v=3.3.1.20261002.165152"></script>
-  <script src="assets/js/app.js?v=3.3.1.20261002.165152"></script>
+  <script src="assets/js/config.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/i18n.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261002.172141"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.165152')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.172141')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
             registration.update();
