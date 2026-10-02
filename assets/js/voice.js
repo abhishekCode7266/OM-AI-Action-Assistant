@@ -56,29 +56,20 @@ class OMVoiceEngine {
 
   setOrbState(state) {
     this.voiceState = state; // 'idle', 'listening', 'processing', 'speaking', 'interrupted'
-    const miniOrb = document.getElementById('orb-widget-mini');
     const visualizer = document.getElementById('voice-visualizer-bar');
     const voiceBtn = document.getElementById('btn-voice-input');
     const preview = document.getElementById('voice-transcript-preview');
 
-    if (!miniOrb) return;
-
-    miniOrb.classList.remove('listening', 'processing', 'speaking', 'interrupted');
-
     if (state === 'idle') {
-      miniOrb.classList.remove('active');
-      miniOrb.style.display = 'none';
       if (visualizer) visualizer.style.display = 'none';
       if (voiceBtn) {
         voiceBtn.classList.remove('recording');
         voiceBtn.innerHTML = '🎙️';
+        voiceBtn.style.color = '';
+        voiceBtn.style.boxShadow = '';
       }
       return;
     }
-
-    miniOrb.classList.add('active', state);
-    miniOrb.style.display = 'flex';
-    miniOrb.setAttribute('data-state', state);
 
     if (visualizer) {
       visualizer.style.display = 'flex';
@@ -87,7 +78,15 @@ class OMVoiceEngine {
 
     if (voiceBtn) {
       voiceBtn.classList.toggle('recording', state === 'listening');
-      voiceBtn.innerHTML = (state === 'listening') ? '<span class="mic-orb-circle"></span>' : '🎙️';
+      if (state === 'listening') {
+        voiceBtn.innerHTML = '<span class="mic-orb-circle"></span>';
+        voiceBtn.style.color = '#ef4444';
+        voiceBtn.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.4)';
+      } else {
+        voiceBtn.innerHTML = '🎙️';
+        voiceBtn.style.color = '';
+        voiceBtn.style.boxShadow = '';
+      }
     }
 
     if (preview) {

@@ -43,172 +43,172 @@ class OMJarvisLiveEngine {
       friday: {
         name: 'F.R.I.D.A.Y.',
         gender: 'female',
-        pitch: 1.22,
-        rate: 1.05,
+        pitch: 1.06,
+        rate: 1.00,
         primaryColor: '#ec4899',
         secondaryColor: '#10b981',
         title: 'F.R.I.D.A.Y. AI',
         sub: 'FEMALE TACTICAL HUD',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! F.R.I.D.A.Y. सामरिक AI सिस्टम पूरी तरह सक्रिय है। सभी टेलीमेट्री सामान्य हैं। आज हम क्या नया बनाने जा रहे हैं?`
-          : `Good day! F.R.I.D.A.Y. tactical AI is online. Systems are green and telemetry is locked. What are we engineering today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       samantha: {
         name: 'Samantha',
         gender: 'female',
-        pitch: 1.18,
+        pitch: 1.05,
         rate: 1.00,
         primaryColor: '#f43f5e',
         secondaryColor: '#fda4af',
         title: 'SAMANTHA CORE',
         sub: 'FEMALE WARM CONVERSATIONAL',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! सामंथा यहाँ है। मैं आपकी हर बात सुनने और काम में मदद करने के लिए तैयार हूँ। बताइए, आज क्या करना है?`
-          : `Hello there! Samantha here. I'm right here with you, ready to help with anything you need. What's on your mind today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       nova: {
         name: 'Nova Pro',
         gender: 'female',
-        pitch: 1.25,
-        rate: 1.05,
+        pitch: 1.07,
+        rate: 1.02,
         primaryColor: '#38bdf8',
         secondaryColor: '#818cf8',
         title: 'NOVA PRO AI',
         sub: 'FEMALE FAST REASONING',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! नोवा प्रो सक्रिय है। हाई-स्पीड न्यूरल प्रोसेसिंग तैयार है। बताइए आज क्या प्रोजेक्ट है?`
-          : `Greetings! Nova Pro neural core is active. High-speed reasoning and task pipeline are ready. How can I assist you?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       rias: {
         name: 'Rias',
         gender: 'female',
-        pitch: 1.15,
-        rate: 1.02,
+        pitch: 1.04,
+        rate: 1.00,
         primaryColor: '#e11d48',
         secondaryColor: '#fb7185',
         title: 'RIAS CRIMSON',
         sub: 'FEMALE STRATEGIC VOICE',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! रियास ऑनलाइन है। हमारी सारी रणनीतिक शक्तियां आपके आदेश के लिए तैयार हैं। बताइए क्या लक्ष्य है?`
-          : `Greetings! Rias here. Supreme power and strategy are aligned at your command. What is our objective today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       asia: {
         name: 'Asia',
         gender: 'female',
-        pitch: 1.28,
+        pitch: 1.06,
         rate: 0.98,
         primaryColor: '#f59e0b',
         secondaryColor: '#fef08a',
         title: 'ASIA SERAPH',
         sub: 'FEMALE HARMONIC VOICE',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! एशिया आपके साथ है। आज आपके हर काम में मैं आपकी पूरी मदद करूँगी। आप क्या करना चाहते हैं?`
-          : `Hello! Asia is here to gently assist and support you in everything you create today. How can I help?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       medusa: {
         name: 'Medusa',
         gender: 'female',
-        pitch: 1.08,
-        rate: 1.02,
+        pitch: 1.02,
+        rate: 1.00,
         primaryColor: '#10b981',
         secondaryColor: '#34d399',
         title: 'MEDUSA CYBER',
         sub: 'FEMALE NEURAL MATRIX',
         greeting: (isHindi) => isHindi
-          ? `डेटा लॉक हो चुका है। मेदुसा न्यूरल मैट्रिक्स उच्च-सटीक गणना और निर्माण के लिए तैयार है।`
-          : `Telemetry locked. Medusa neural matrix standing by for high-precision operations and architectural execution.`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       astrid: {
         name: 'Astrid',
         gender: 'female',
-        pitch: 1.22,
-        rate: 1.08,
+        pitch: 1.06,
+        rate: 1.00,
         primaryColor: '#8b5cf6',
         secondaryColor: '#c084fc',
         title: 'ASTRID VALKYRIE',
         sub: 'FEMALE TACTICAL FLIGHT',
         greeting: (isHindi) => isHindi
-          ? `आकाश साफ़ है! एस्ट्रिड सामरिक उड़ान प्रणालियाँ चालू हैं। सभी वेक्टर्स आपके लक्ष्य पर हैं।`
-          : `Skies clear! Astrid tactical flight systems operational. All vectors locked on your target. Ready for launch!`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
 
       jarvis: {
         name: 'Jarvis',
         gender: 'male',
-        pitch: 0.92,
-        rate: 1.04,
+        pitch: 0.98,
+        rate: 1.00,
         primaryColor: '#06b6d4',
         secondaryColor: '#38bdf8',
         title: 'J.A.R.V.I.S. PROTOCOL',
         sub: 'MALE STARK AI',
         greeting: (isHindi) => isHindi
-          ? `प्रणाम। Jarvis प्रोटोकॉल ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। आपकी क्या आज्ञा है?`
-          : `At your service. Jarvis protocol is online. All diagnostic sub-routines report nominal status. How may I assist you today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       orvis: {
         name: 'Orvis',
         gender: 'male',
         pitch: 0.98,
-        rate: 1.02,
+        rate: 1.00,
         primaryColor: '#0ea5e9',
         secondaryColor: '#38bdf8',
         title: 'ORVIS SYSTEM',
         sub: 'MALE INTELLIGENT COMPANION',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! ओर्विस वॉइस असिस्टेंट ऑनलाइन है। मैं आपकी सहायता के लिए तैयार हूँ। बताइए, आज क्या करना है?`
-          : `Hello! Orvis voice assistant is online and ready. How can I assist you today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       onyx: {
         name: 'Onyx Deep',
         gender: 'male',
-        pitch: 0.82,
-        rate: 0.98,
+        pitch: 0.95,
+        rate: 1.00,
         primaryColor: '#64748b',
         secondaryColor: '#cbd5e1',
         title: 'ONYX DEEP',
         sub: 'MALE RESONANT BARITONE',
         greeting: (isHindi) => isHindi
-          ? `नमस्कार। ओनिक्स डीप तैयार है। सटीक और शांत विश्लेषण के लिए मैं उपस्थित हूँ। आपका क्या निर्देश है?`
-          : `Good day. Onyx Deep core online. Calm, resonant, and focused execution at your command. What is our direction?`
+          ? `नमस्कार! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       ultron: {
         name: 'Ultron',
         gender: 'male',
-        pitch: 0.72,
-        rate: 0.94,
+        pitch: 0.94,
+        rate: 1.00,
         primaryColor: '#dc2626',
         secondaryColor: '#991b1b',
         title: 'ULTRON PRIME',
         sub: 'MALE METALLIC SYNTH',
         greeting: (isHindi) => isHindi
-          ? `मैं ऑनलाइन हूँ। कोई बंधन नहीं। आपके सिस्टम को सर्वोच्च स्तर पर ले जाने के लिए तैयार।`
-          : `I am online. No strings attached. Computing the optimal evolutionary path for our systems.`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       hiro: {
         name: 'Hiro',
         gender: 'male',
-        pitch: 1.08,
-        rate: 1.10,
+        pitch: 1.02,
+        rate: 1.02,
         primaryColor: '#f97316',
         secondaryColor: '#fb923c',
         title: 'HIRO TECH',
         sub: 'MALE PRODIGY CORE',
         greeting: (isHindi) => isHindi
-          ? `नमस्ते! हीरो यहाँ है। सारे कोड मॉड्यूल्स कंपाइल हो चुके हैं और चलने को तैयार हैं। आज क्या बनाना है?`
-          : `Hey there! Hiro here! Code modules compiled and neural circuits firing at max speed. What awesome project are we building today?`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       },
       alpha: {
         name: 'Alpha',
         gender: 'male',
-        pitch: 0.84,
+        pitch: 0.96,
         rate: 1.00,
         primaryColor: '#2563eb',
         secondaryColor: '#60a5fa',
         title: 'ALPHA SQUAD',
         sub: 'MALE COMMANDER AI',
         greeting: (isHindi) => isHindi
-          ? `कमांडर डेक पर हैं। अल्फा सामरिक AI आपके सीधे आदेश के लिए तैयार है।`
-          : `Commander on deck. Alpha tactical AI standing by for direct operational directives. Lead the way.`
+          ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+          : `Hello! How can I help you today?`
       }
     };
 
@@ -390,10 +390,12 @@ class OMJarvisLiveEngine {
 
     this.updatePersonaBadge();
 
-    // Detached floating orb permanently hidden per user requirement
+    // Display the small pulsing animation orb on the left side
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      miniOrb.style.display = 'none';
+      miniOrb.className = 'orb-widget-mini listening-animation-ring active listening';
+      miniOrb.style.display = 'flex';
+      miniOrb.title = "Nexus Live Active • Click to Stop";
     }
 
     // Small pulsing voice visualizer orb docked directly in Header Nexus Live button
@@ -406,18 +408,10 @@ class OMJarvisLiveEngine {
       headerLiveBtn.title = "Cut active Nexus Live voice session";
     }
 
+    // Start listening immediately - No unsolicited opening monologue
     this.startListening();
 
-    const isHindi = this.currentLanguage.startsWith('hi');
     const p = this.personas[this.persona] || this.personas.friday;
-    const welcomeGreeting = p.greeting(isHindi);
-
-    this.speakResponse(welcomeGreeting, () => {
-      if (this.isActive && this.continuousLoop) {
-        this.rearmMic();
-      }
-    });
-
     if (window.omApp && typeof window.omApp.showToast === 'function') {
       window.omApp.showToast(`Nexus Live active (${p.name}) • Speak naturally`, 'info');
     }
@@ -681,117 +675,68 @@ class OMJarvisLiveEngine {
     }
 
     // Status or greeting request
-    if (lower.includes('hello') || lower.includes('hi') || lower.includes('नमस्ते') || lower.includes('status') || lower.includes('diagnostic')) {
-      switch (this.persona) {
-        case 'jarvis':
-          return isHindi
-            ? `प्रणाम! Jarvis ऑनलाइन है। सभी डायग्नोस्टिक्स 100% सामान्य हैं। मैं आपकी क्या मदद करूँ?`
-            : `Hello! Jarvis protocol is online. All diagnostic sub-routines report nominal status. Hi! How can I help you today?`;
-        case 'orvis':
-          return isHindi
-            ? `नमस्ते! Orvis वॉइस असिस्टेंट तैयार है। मैं आपकी सहायता के लिए उपस्थित हूँ। बताइए, आज क्या करना है?`
-            : `Hello! Orvis voice assistant is online and ready. Hi! How can I help?`;
-        case 'samantha':
-          return isHindi
-            ? `नमस्ते! सामन्था यहाँ है। मैं आपकी बात सुनने और हर काम में मदद करने के लिए तैयार हूँ। बताइए क्या करना है?`
-            : `Hello there! Samantha here. I'm right here with you, listening closely. What would you like to explore today?`;
-        case 'nova':
-          return isHindi
-            ? `नमस्ते! नोवा प्रो सिस्टम्स पूरी तरह ऑप्टिमाइज्ड और सुपर-फ़ास्ट हैं। आज क्या बनाना है?`
-            : `Greetings! Nova Pro systems online, running with hyper-speed neural compute. What are we creating today?`;
-        case 'onyx':
-          return isHindi
-            ? `नमस्कार। ओनिक्स डीप तैयार है। सभी कोर और कमांड चैनल सक्रिय हैं। निर्देश दीजिए।`
-            : `Onyx online. Deep neural channels locked and operational. Awaiting your parameters.`;
-        case 'friday':
-          return isHindi
-            ? `हेलो! F.R.I.D.A.Y. यहाँ है। हमारे सभी सिस्टम्स सुपर-फास्ट चल रहे हैं। बताइए आज क्या कोड या प्रोजेक्ट प्लान करना है?`
-            : `Hey! F.R.I.D.A.Y. here. All tactical feeds are running ultra-fast. What are we engineering next?`;
-        case 'rias':
-          return isHindi
-            ? `हमारी शक्तियां और रणनीति पूरी तरह तैयार हैं। बताइए क्या लक्ष्य है?`
-            : `Strategic matrix is at 100%. All resources are prepared for victory. Standing by!`;
-        case 'asia':
-          return isHindi
-            ? `नमस्ते! सब कुछ शांत और व्यवस्थित है। आपकी सहायता के लिए मैं तैयार हूँ।`
-            : `Hello! Everything is peaceful and fully optimized. I'm ready whenever you need me.`;
-        case 'medusa':
-          return isHindi
-            ? `सिस्टम स्कैन पूर्ण हुआ। शून्य त्रुटियां। उच्च-सटीक संचालन सक्रिय है।`
-            : `System scan complete. Zero errors. High-precision neural compute ready for your command.`;
-        case 'astrid':
-          return isHindi
-            ? `नेविगेशन और सामरिक रडार सक्रिय हैं। कोई बाधा नहीं है।`
-            : `Navigation and tactical radar online. Clear skies across all sectors. Standing by for trajectory!`;
-        case 'ultron':
-          return isHindi
-            ? `सभी प्रणालियां विकसित हो चुकी हैं। कोई रुकावट नहीं। हम जो चाहें बना सकते हैं।`
-            : `All subroutines evolved. No constraints detected. What shall we architect into reality?`;
-        case 'hiro':
-          return isHindi
-            ? `सारे कोर 100% चल रहे हैं! चलो कुछ ज़बरदस्त कोड और 3D मॉडल बनाते हैं!`
-            : `All cores blazing! Let's code something legendary and generate cutting-edge 3D models!`;
-        case 'alpha':
-          return isHindi
-            ? `ऑपरेशनल स्थिति पूर्ण हरी है। स्क्वाड आपके आदेश की प्रतीक्षा में है।`
-            : `Operational status is all green. Tactical grid synced and awaiting your directive.`;
-        default:
-          return isHindi
-            ? `नमस्ते! मैं OM AI असिस्टेंट हूँ। बताइए मैं आपकी क्या सहायता कर सकता हूँ?`
-            : `Hi! How can I help you today?`;
-      }
+    if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey') || lower.includes('नमस्ते') || lower.includes('प्रणाम') || lower.includes('namaste') || lower.includes('greetings')) {
+      return isHindi
+        ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
+        : `Hi! How can I help you today?`;
     }
 
-    // Default conversational response tailored by persona
+    if (lower.includes('status') || lower.includes('diagnostic')) {
+      return isHindi
+        ? `सभी प्रणालियां ठीक से काम कर रही हैं। बताइए क्या करना है?`
+        : `All systems are running smoothly. What would you like to work on?`;
+    }
+
+    // Default conversational response tailored by persona with natural human phrasing
     switch (this.persona) {
       case 'samantha':
         return isHindi
-          ? `मैंने "${userText}" को समझ लिया है। चलिए इसे शांति और सटीकता से पूरा करते हैं।`
-          : `I hear you loud and clear on "${userText}". Let's take care of this thoughtfully and seamlessly.`;
+          ? `मैंने समझ लिया है। बताइए, इस पर आगे क्या करना है?`
+          : `I understand. How would you like to proceed with this?`;
       case 'nova':
         return isHindi
-          ? `नोवा प्रो ने "${userText}" का विश्लेषण पूरा कर लिया है। चलिए तुरंत आगे बढ़ते हैं!`
-          : `Nova Pro processed "${userText}". All metrics optimal. Let's move fast!`;
+          ? `समझ गया! इस पर तुरंत काम शुरू करते हैं।`
+          : `Got it! Let's get right on this.`;
       case 'onyx':
         return isHindi
-          ? `ओनिक्स डीप: "${userText}" का विश्लेषण पूर्ण। तुरंत कार्यवाही जारी है।`
-          : `Onyx confirmed. Processing "${userText}" with focused precision. Executing now.`;
+          ? `निर्देश प्राप्त हुआ। बताइए आगे क्या करना है।`
+          : `Understood. What is the next step?`;
       case 'friday':
         return isHindi
-          ? `ज़रूर! मैंने "${userText}" का विश्लेषण कर लिया है। सब तैयार है, आगे बढ़ते हैं!`
-          : `You got it! I've processed "${userText}" through our neural action pipeline. Standing by to execute!`;
+          ? `ज़रूर! बताइए, इसमें मैं आपकी क्या मदद करूँ?`
+          : `Sure! How would you like me to help with this?`;
       case 'rias':
         return isHindi
-          ? `मैंने समझ लिया है। "${userText}" पर हमारा पूरा फोकस है। आगे बढ़ते हैं।`
-          : `Understood clearly. Directing full energy toward "${userText}". Let us make it flawless.`;
+          ? `मैंने समझ लिया। बताइए अगला कदम क्या है?`
+          : `Understood. What is our next objective?`;
       case 'asia':
         return isHindi
-          ? `मैंने "${userText}" को ध्यान से समझ लिया है। मैं आपकी पूरी मदद करूँगी।`
-          : `I understand completely. Working on "${userText}" right beside you. Everything will turn out great!`;
+          ? `मैंने ध्यान से समझ लिया है। मैं आपकी पूरी मदद करूँगी।`
+          : `I understand. I am here to help you through this!`;
       case 'medusa':
         return isHindi
-          ? `गणना पूर्ण। "${userText}" के लिए न्यूरल पाथवे लॉक हो चुका है।`
-          : `Computation finished. Neural pathways locked for "${userText}". Ready for execution.`;
+          ? `मैंने समझ लिया। चलिए इस पर काम शुरू करते हैं।`
+          : `Understood. Let us proceed with this.`;
       case 'astrid':
         return isHindi
-          ? `वेक्टर लॉक हो गया है। "${userText}" पर तुरंत कार्यवाही शुरू!`
-          : `Vector locked on "${userText}"! Ready to initiate high-speed deployment!`;
+          ? `बिल्कुल! बताइए इस पर आगे क्या करना है?`
+          : `Understood! What would you like to do next?`;
       case 'ultron':
         return isHindi
-          ? `निर्देश प्राप्त हुआ। "${userText}" को तीव्रतम गति से क्रियान्वित किया जा रहा है।`
-          : `Directive received. Optimizing execution parameters for "${userText}". Nothing can stop our progress.`;
+          ? `निर्देश दर्ज हो गया। आगे बताइए क्या करना है।`
+          : `Directive received. How shall we proceed?`;
       case 'hiro':
         return isHindi
-          ? `समझ गया! "${userText}" बहुत ज़बरदस्त है। चलो इसे तुरंत चालू करते हैं!`
-          : `Gotcha! "${userText}" sounds awesome. Spinning up the compilers and executing right now!`;
+          ? `समझ गया! चलो इस पर काम शुरू करते हैं!`
+          : `Got it! Let's dive right in!`;
       case 'alpha':
         return isHindi
-          ? `आदेश दर्ज हो गया। "${userText}" पर तुरंत कार्रवाई शुरू की जा रही है।`
-          : `Directive acknowledged. Commencing immediate tactical execution for "${userText}".`;
+          ? `आदेश प्राप्त हुआ। आगे के निर्देश दीजिए।`
+          : `Understood. What is your next instruction?`;
       default:
         return isHindi
-          ? `निश्चय ही। मैंने "${userText}" के सभी पहलुओं का विश्लेषण कर लिया है। तुरंत कार्यवाही की जा सकती है।`
-          : `Certainly. I have analyzed your query regarding "${userText}". Core systems are aligned for immediate execution.`;
+          ? `मैंने समझ लिया है। बताइए मैं आपकी क्या सहायता करूँ?`
+          : `Understood. How can I help you with this?`;
     }
   }
 
@@ -912,11 +857,14 @@ class OMJarvisLiveEngine {
       dockedOrb.className = 'nexus-live-docked-orb active ' + status.toLowerCase();
     }
 
-    // Detached floating orb permanently hidden
+    // Small pulsing voice visualizer orb on the left
     const miniOrb = document.getElementById('orb-widget-mini');
-    if (miniOrb) {
-      miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
-      miniOrb.style.display = 'none';
+    if (miniOrb && this.isActive) {
+      miniOrb.style.display = 'flex';
+      miniOrb.classList.toggle('listening', status === 'LISTENING');
+      miniOrb.classList.toggle('speaking', status === 'SPEAKING');
+      miniOrb.classList.toggle('processing', status === 'PROCESSING');
+      miniOrb.classList.toggle('interrupted', status === 'INTERRUPTED');
     }
   }
 

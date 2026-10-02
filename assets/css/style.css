@@ -4037,17 +4037,57 @@ h1, h2, h3, h4, h5 {
   100% { transform: scale(1.1) rotate(360deg); }
 }
 
-/* Detached floating orb permanently hidden from chat area per user directive */
+/* ==========================================================================
+   Nexus Live Small Floating Orb on Left Side
+   Shows only this compact pulsing animation orb on the left while full chat is visible
+   ========================================================================== */
 .listening-animation-ring,
-.orb-widget-mini,
-#orb-widget-mini {
-  display: none !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  height: 0 !important;
-  width: 0 !important;
-  overflow: hidden !important;
+.orb-widget-mini {
+  position: fixed;
+  bottom: 96px;
+  left: calc(var(--sidebar-width, 260px) + 20px);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.95) 0%, rgba(14, 165, 233, 0.9) 100%);
+  box-shadow: 0 0 18px rgba(0, 242, 254, 0.8), 0 0 36px rgba(0, 195, 255, 0.45);
+  cursor: pointer;
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s ease, bottom 0.3s ease, transform 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  backdrop-filter: blur(8px);
+}
+
+body.sidebar-collapsed .listening-animation-ring,
+body.sidebar-collapsed .orb-widget-mini,
+.om-sidebar.collapsed ~ .om-main-workspace .orb-widget-mini {
+  left: 20px;
+}
+
+.listening-animation-ring.active,
+.orb-widget-mini.active {
+  display: flex !important;
+  animation: orb-gentle-pulse 2.2s infinite ease-in-out;
+}
+
+@keyframes orb-gentle-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 16px rgba(0, 242, 254, 0.75), 0 0 32px rgba(0, 195, 255, 0.4); }
+  50% { transform: scale(1.08); box-shadow: 0 0 24px rgba(0, 242, 254, 0.95), 0 0 44px rgba(0, 195, 255, 0.6); }
+  100% { transform: scale(1); box-shadow: 0 0 16px rgba(0, 242, 254, 0.75), 0 0 32px rgba(0, 195, 255, 0.4); }
+}
+
+.listening-animation-ring:hover,
+.orb-widget-mini:hover {
+  transform: scale(1.14);
+  box-shadow: 0 0 28px rgba(0, 195, 255, 0.95), 0 0 55px rgba(0, 195, 255, 0.6);
+}
+
+.listening-animation-ring:active,
+.orb-widget-mini:active {
+  transform: scale(0.92);
 }
 
 /* Concentric Listening Waves mimicking original ring style */
@@ -4176,27 +4216,17 @@ h1, h2, h3, h4, h5 {
 @media (max-width: 768px) {
   .listening-animation-ring,
   .orb-widget-mini {
-    top: 68px;
-    left: 18px;
-    width: 44px;
-    height: 44px;
+    top: auto;
+    bottom: 84px;
+    left: 14px;
+    width: 42px;
+    height: 42px;
   }
   .listening-animation-ring.active,
   .orb-widget-mini.active {
-    animation: orb-slide-to-left-mobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards, orb-gentle-float 2.8s infinite 0.45s ease-in-out;
+    display: flex !important;
   }
-  @keyframes orb-slide-to-left-mobile {
-    0% {
-      left: 50%;
-      transform: translateX(-50%) scale(1.15);
-      opacity: 0.6;
-    }
-    100% {
-      left: 18px;
-      transform: none;
-      opacity: 1;
-    }
-  }
+}
   .listening-ring-core {
     width: 18px;
     height: 18px;
