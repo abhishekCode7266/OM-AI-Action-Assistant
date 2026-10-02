@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.153202">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.162320">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -335,10 +335,10 @@
           <!-- Global World Language Selector (20+ Languages) -->
           <div class="mode-dropdown-wrap">
             <select class="mode-select-pill" id="global-lang-selector" title="Global World Language (Speech & Text)" onchange="if(window.omI18n) window.omI18n.setConversationLanguage(this.value); else if(window.omVoice) window.omVoice.setLanguage(this.value)">
-              <option value="en-US">🇺🇸 English (US)</option>
-              <option value="hi-IN">🇮🇳 हिन्दी (Hindi)</option>
+              <option value="en-US">🇺🇸 English</option>
+              <option value="hi-IN">🇮🇳 हिन्दी</option>
               <option value="en-GB">🇬🇧 English (UK)</option>
-              <option value="en-IN">🇮🇳 English (India)</option>
+              <option value="en-IN">🇮🇳 English (IN)</option>
               <option value="es-ES">🇪🇸 Español</option>
               <option value="fr-FR">🇫🇷 Français</option>
               <option value="de-DE">🇩🇪 Deutsch</option>
@@ -359,53 +359,71 @@
           </div>
 
           <!-- Dual Voice Gender Toggle (Male / Female) -->
-          <button class="om-btn om-btn-ghost om-btn-sm" id="btn-toggle-voice-gender" onclick="if(window.omApp) window.omApp.toggleVoiceGender()" title="Switch Voice: Male (J.A.R.V.I.S.) / Female (F.R.I.D.A.Y.)" style="padding: 6px 10px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.12);">
+          <button class="om-btn om-btn-ghost om-btn-sm" id="btn-toggle-voice-gender" onclick="if(window.omApp) window.omApp.toggleVoiceGender()" title="Switch Voice: Male (J.A.R.V.I.S.) / Female (F.R.I.D.A.Y.)" style="padding: 4px 8px; font-size: 0.78rem; border: 1px solid rgba(255,255,255,0.12);">
             <span id="header-gender-icon">👨</span>
             <span id="header-gender-label">Male</span>
           </button>
 
           <!-- AI Model Quick Switcher (Nexus 2.0 / 1.5 Pro / Autonomous) -->
           <div class="mode-dropdown-wrap">
-            <select class="mode-select-pill" id="chat-model-quick-selector" title="Select Nexus AI / OM Model" style="border-color: rgba(6, 182, 212, 0.4);">
-              <option value="nexus-2.0-flash">⚡ Nexus 2.0 Flash</option>
-              <option value="nexus-1.5-pro">🧠 Nexus 1.5 Pro</option>
-              <option value="nexus-1.5-flash">🚀 Nexus 1.5 Flash</option>
-              <option value="om-autonomous">🤖 OM Offline Engine</option>
+            <select class="mode-select-pill" id="chat-model-quick-selector" title="Select Nexus AI / OM Model" style="border-color: rgba(6, 182, 212, 0.4); padding: 4px 8px; font-size: 0.78rem;">
+              <option value="nexus-2.0-flash">⚡ Nexus 2.0</option>
+              <option value="nexus-1.5-pro">🧠 Nexus 1.5</option>
+              <option value="nexus-1.5-flash">🚀 Nexus Flash</option>
+              <option value="om-autonomous">🤖 OM Engine</option>
             </select>
           </div>
 
           <!-- 8 Specialized Modes Selector -->
           <div class="mode-dropdown-wrap">
-            <select class="mode-select-pill" id="chat-mode-selector" title="Select AI Specialization Mode">
-              <option value="general">💬 General Assistant</option>
-              <option value="coding">💻 Coding & Debugging</option>
-              <option value="data">📊 Data Analyst & CSV</option>
-              <option value="research">🔎 Deep Research</option>
-              <option value="writing">📝 Professional Writing</option>
-              <option value="project">🚀 Project Builder</option>
-              <option value="career">💼 Career & Interview</option>
-              <option value="study">🎓 Study & Tutoring</option>
+            <select class="mode-select-pill" id="chat-mode-selector" title="Select AI Specialization Mode" style="padding: 4px 8px; font-size: 0.78rem;">
+              <option value="general">💬 General</option>
+              <option value="coding">💻 Coding</option>
+              <option value="data">📊 Data</option>
+              <option value="research">🔎 Research</option>
+              <option value="writing">📝 Writing</option>
+              <option value="project">🚀 Project</option>
+              <option value="career">💼 Career</option>
+              <option value="study">🎓 Study</option>
             </select>
           </div>
 
-          <button class="om-btn om-btn-primary om-btn-sm" id="btn-header-nexus-live" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession();" title="Nexus Live Voice Conversation" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem; white-space: nowrap; flex-shrink: 0;">
-            <span>🎙️ Nexus Live</span>
+          <!-- Nexus Live with Docked Pulse Orb Indicator -->
+          <button class="om-btn om-btn-primary om-btn-sm nexus-live-header-btn" id="btn-header-nexus-live" onclick="if(window.omJarvisLive) window.omJarvisLive.toggleSession();" title="Nexus Live Voice Conversation" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; font-size: 0.78rem; white-space: nowrap; flex-shrink: 0;">
+            <span class="nexus-live-docked-orb" id="nexus-live-docked-orb"></span>
+            <span id="nexus-live-header-text">🎙️ Nexus Live</span>
           </button>
-          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-3d-dismantle" onclick="window.omDismantler.openModal('drone')" title="3D Text-to-3D Assemblable Studio" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem;">
-            <span>📐</span>
-            <span>3D Studio</span>
-          </button>
-          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-neural-canvas" onclick="if(window.omApp) window.omApp.openNeuralCanvas()" title="Holographic Neural Thought Canvas" style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 0.8rem;">
+
+          <!-- Thought Map -->
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-neural-canvas" onclick="if(window.omApp) window.omApp.openNeuralCanvas()" title="Holographic Neural Thought Canvas" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; flex-shrink: 0;">
             <span>🧠</span>
             <span class="header-btn-text">Thought Map</span>
           </button>
-          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-cyber-terminal" onclick="if(window.omApp) window.omApp.openCyberTerminal()" title="Cyber Terminal CLI Simulator" style="display: flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 0.8rem;">
+
+          <!-- Terminal (Restored directly after Thought Map) -->
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-cyber-terminal" onclick="if(window.omApp) window.omApp.openCyberTerminal()" title="Cyber Terminal CLI Simulator" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; flex-shrink: 0;">
             <span>💻</span>
             <span class="header-btn-text">Terminal</span>
           </button>
 
-          <button class="header-icon-btn" id="btn-export-chat" title="Export conversation as Markdown"><span>📥</span> <span class="export-btn-label">Export</span></button>
-          <button class="header-icon-btn btn-clear-chat" id="btn-clear-chat" onclick="window.clearCurrentChat && window.clearCurrentChat()" title="🗑️ Clear Chat History (चैट हिस्ट्री हटाएं)"><span>🗑️</span> <span style="font-size: 0.76rem; font-weight: 600;">Clear Chat</span></button>
+          <!-- Export (Restored directly next to Terminal) -->
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-export-chat" onclick="if(window.omApp) window.omApp.exportChatHistory()" title="Export conversation as Markdown" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; flex-shrink: 0;">
+            <span>📥</span>
+            <span class="export-btn-label">Export</span>
+          </button>
+
+          <!-- Clear Chat -->
+          <button class="om-btn om-btn-ghost om-btn-sm btn-clear-chat" id="btn-clear-chat" onclick="if(window.omApp) window.omApp.clearCurrentChat(); else if(window.clearCurrentChat) window.clearCurrentChat();" title="🗑️ Clear Chat History (चैट साफ़ करें)" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; flex-shrink: 0; color: #f87171; border: 1px solid rgba(248,113,113,0.25);">
+            <span>🗑️</span>
+            <span style="font-size: 0.76rem; font-weight: 600;">Clear</span>
+          </button>
+
+          <!-- 3D Studio -->
+          <button class="om-btn om-btn-secondary om-btn-sm" id="btn-header-3d-dismantle" onclick="window.omDismantler.openModal('drone')" title="3D Text-to-3D Assemblable Studio" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; flex-shrink: 0;">
+            <span>📐</span>
+            <span>3D Studio</span>
+          </button>
+
           <button class="header-icon-btn btn-open-settings" title="Settings">⚙️</button>
         </div>
       </header>
@@ -2978,8 +2996,8 @@
     </div>
   </nav>
 
-  <!-- Floating Voice Orb Animation (Gracefully Centered Above Chat View) -->
-  <div class="orb-widget-mini listening-animation-ring" id="orb-widget-mini" title="Voice AI Active • Click to Stop & Send" onclick="window.handleVoiceOrbClick && window.handleVoiceOrbClick(event)">
+  <!-- Floating Voice Orb Relocated to Header Nexus Live Button (Detached chat orb removed) -->
+  <div class="orb-widget-mini listening-animation-ring" id="orb-widget-mini" style="display: none !important; pointer-events: none !important; visibility: hidden !important;" aria-hidden="true">
     <div class="listening-ring-wave wave-1"></div>
     <div class="listening-ring-wave wave-2"></div>
     <div class="listening-ring-core"></div>
@@ -3010,28 +3028,28 @@
   <div id="om-toast-container"></div>
 
   <!-- Scripts (Strict Cache Busting Enabled) -->
-  <script src="assets/js/config.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/i18n.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/chatStore.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/analytics.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/files.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/voice.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/projects.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/planner.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/dashboard.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/assistant.js?v=3.3.1.20261002.153202"></script>
-  <script src="assets/js/app.js?v=3.3.1.20261002.153202"></script>
+  <script src="assets/js/config.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/i18n.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261002.162320"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261002.162320"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.153202')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.162320')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
             registration.update();

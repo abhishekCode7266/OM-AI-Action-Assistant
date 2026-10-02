@@ -514,7 +514,7 @@ class OMI18nEngine {
 
     const nexusLiveBtn = document.getElementById('btn-header-nexus-live');
     if (nexusLiveBtn && !window.omJarvisLive?.isActive) {
-      nexusLiveBtn.innerHTML = `<span>🎙️ ${this.t('nexusLive', 'Nexus Live')}</span>`;
+      nexusLiveBtn.innerHTML = `<span class="nexus-live-docked-orb" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">🎙️ ${this.t('nexusLive', 'Nexus Live')}</span>`;
     }
 
     const chatInput = document.getElementById('chat-user-input');

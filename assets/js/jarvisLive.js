@@ -354,6 +354,14 @@ class OMJarvisLiveEngine {
     }
   }
 
+  toggleSession() {
+    if (this.isActive) {
+      this.stopSession();
+    } else {
+      this.startSession();
+    }
+  }
+
   startSession(persona = null) {
     if (persona && this.personas[persona]) {
       this.persona = persona;
@@ -382,20 +390,19 @@ class OMJarvisLiveEngine {
 
     this.updatePersonaBadge();
 
-    // Display the pulsing voice visualizer on the left as a small, simple orb
+    // Detached floating orb permanently hidden per user requirement
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      miniOrb.className = 'orb-widget-mini listening-animation-ring active listening';
-      miniOrb.style.display = 'flex';
-      miniOrb.title = "Nexus Live Active • Click to Cut";
+      miniOrb.style.display = 'none';
     }
 
-    // Keep visible 'Cut' option active across header
+    // Small pulsing voice visualizer orb docked directly in Header Nexus Live button
     const headerLiveBtn = document.getElementById('btn-header-nexus-live');
     if (headerLiveBtn) {
+      headerLiveBtn.classList.add('active', 'listening');
       headerLiveBtn.style.background = '#ef4444';
       headerLiveBtn.style.borderColor = '#dc2626';
-      headerLiveBtn.innerHTML = '<span>✂️ Cut Nexus Live</span>';
+      headerLiveBtn.innerHTML = '<span class="nexus-live-docked-orb active listening" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">✂️ Cut Live</span>';
       headerLiveBtn.title = "Cut active Nexus Live voice session";
     }
 
@@ -496,9 +503,11 @@ class OMJarvisLiveEngine {
     // Revert external UI elements
     const headerLiveBtn = document.getElementById('btn-header-nexus-live');
     if (headerLiveBtn) {
+      headerLiveBtn.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
       headerLiveBtn.style.background = '';
       headerLiveBtn.style.borderColor = '';
-      headerLiveBtn.innerHTML = '<span>🎙️ Nexus Live</span>';
+      const text = window.omI18n ? window.omI18n.t('nexusLive', 'Nexus Live') : 'Nexus Live';
+      headerLiveBtn.innerHTML = `<span class="nexus-live-docked-orb" id="nexus-live-docked-orb"></span><span id="nexus-live-header-text">🎙️ ${text}</span>`;
       headerLiveBtn.title = "Nexus Live Voice Conversation";
     }
 
@@ -890,20 +899,24 @@ class OMJarvisLiveEngine {
       else pipState.style.color = '#94a3b8';
     }
 
-    // Small pulsing voice visualizer orb on the left
+    // Pulse animation on the docked Nexus Live orb
+    const headerLiveBtn = document.getElementById('btn-header-nexus-live');
+    const dockedOrb = document.getElementById('nexus-live-docked-orb');
+    if (headerLiveBtn && this.isActive) {
+      headerLiveBtn.classList.toggle('listening', status === 'LISTENING');
+      headerLiveBtn.classList.toggle('speaking', status === 'SPEAKING');
+      headerLiveBtn.classList.toggle('processing', status === 'PROCESSING');
+      headerLiveBtn.classList.toggle('interrupted', status === 'INTERRUPTED');
+    }
+    if (dockedOrb && this.isActive) {
+      dockedOrb.className = 'nexus-live-docked-orb active ' + status.toLowerCase();
+    }
+
+    // Detached floating orb permanently hidden
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      if (this.isActive) {
-        miniOrb.classList.add('active');
-        miniOrb.style.display = 'flex';
-        miniOrb.classList.toggle('listening', status === 'LISTENING');
-        miniOrb.classList.toggle('speaking', status === 'SPEAKING');
-        miniOrb.classList.toggle('processing', status === 'PROCESSING');
-        miniOrb.classList.toggle('interrupted', status === 'INTERRUPTED');
-      } else {
-        miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
-        miniOrb.style.display = 'none';
-      }
+      miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
+      miniOrb.style.display = 'none';
     }
   }
 

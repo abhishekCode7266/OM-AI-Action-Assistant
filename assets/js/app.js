@@ -930,17 +930,25 @@ class OMApp {
   }
 
   handleClearAllHistory() {
-    const total = (this.chatStore.getAllChats() || []).length;
-    if (total === 0) {
-      this.showToast('No chat history to delete.', 'info');
-      return;
-    }
-    if (confirm(`Are you sure you want to delete all ${total} chat history sessions? This will permanently wipe your conversations for privacy.`)) {
-      this.chatStore.clearAllChats();
+    try {
+      if (this.chatStore) {
+        this.chatStore.clearAllChats();
+      }
+      localStorage.removeItem("om_chat_history");
+      if (typeof window.setMessages === 'function') {
+        window.setMessages([]);
+      }
+      const container = document.getElementById('chat-messages-container');
+      if (container) container.innerHTML = '';
+      const welcomeScreen = document.getElementById('om-welcome-screen');
+      if (welcomeScreen) welcomeScreen.style.display = 'flex';
       this.renderSidebar();
       this.renderChatMessages();
       this.updateHeaderInfo();
-      this.showToast('🗑️ All chat history has been permanently deleted.', 'success');
+      this.showToast('🗑️ सभी चैट हिस्ट्री साफ़ कर दी गई है। (All History Cleared)', 'success');
+    } catch (e) {
+      console.error("handleClearAllHistory error:", e);
+      this.showToast('चैट साफ़ करने में त्रुटि आई।', 'error');
     }
   }
 
@@ -2485,7 +2493,7 @@ Key Ideas & Notes:
   }
 
   clearCurrentChat() {
-    if (confirm("क्या आप यह चैट हिस्ट्री हटाना चाहते हैं?")) {
+    try {
       const active = this.chatStore ? this.chatStore.getActiveChat() : null;
       if (active) {
         active.messages = [];
@@ -2495,9 +2503,17 @@ Key Ideas & Notes:
       if (typeof window.setMessages === 'function') {
         window.setMessages([]);
       }
+      const container = document.getElementById('chat-messages-container');
+      if (container) container.innerHTML = '';
+      const welcomeScreen = document.getElementById('om-welcome-screen');
+      if (welcomeScreen) welcomeScreen.style.display = 'flex';
       this.renderChatMessages();
       this.renderSidebar();
-      this.showToast('🗑️ चैट हिस्ट्री हटा दी गई है।', 'success');
+      this.updateHeaderInfo();
+      this.showToast('🗑️ चैट पूरी तरह साफ़ कर दी गई है। (Chat Cleared)', 'success');
+    } catch (e) {
+      console.error("clearCurrentChat error:", e);
+      this.showToast('चैट साफ़ करने में त्रुटि आई।', 'error');
     }
   }
 
@@ -4084,12 +4100,14 @@ window.clearCurrentChat = function() {
   if (window.omApp) {
     window.omApp.clearCurrentChat();
   } else {
-    if (confirm("क्या आप यह चैट हिस्ट्री हटाना चाहते हैं?")) {
-      if (typeof window.setMessages === 'function') {
-        window.setMessages([]);
-      }
-      localStorage.removeItem("om_chat_history");
+    if (typeof window.setMessages === 'function') {
+      window.setMessages([]);
     }
+    localStorage.removeItem("om_chat_history");
+    const container = document.getElementById('chat-messages-container');
+    if (container) container.innerHTML = '';
+    const welcomeScreen = document.getElementById('om-welcome-screen');
+    if (welcomeScreen) welcomeScreen.style.display = 'flex';
   }
 };
 
