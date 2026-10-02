@@ -3129,20 +3129,12 @@ Key Ideas & Notes:
   }
 
   // =========================================================================
-  // 5. Voice Assistant Modal (Section 4)
+  // 5. Unified Voice Experience: Nexus Live Exclusivity
   // =========================================================================
   openVoiceModal() {
     this.closeProfilePopover();
     if (window.omJarvisLive) {
       window.omJarvisLive.startSession();
-      return;
-    }
-    const modal = document.getElementById('voice-assistant-modal');
-    if (modal) {
-      modal.classList.add('active');
-      if (this.voice) {
-        this.voice.startRecording();
-      }
     }
   }
 

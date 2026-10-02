@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.144301">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.152451">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1857,8 +1857,8 @@
           </div>
         </div>
 
-        <!-- Central Arc Reactor / Waveform Canvas -->
-        <div class="live-visualizer-container">
+        <!-- Central Arc Reactor / Waveform Canvas (Oversized activation orb removed in favor of compact left pulsing orb) -->
+        <div class="live-visualizer-container" id="live-visualizer-container" style="display: none;">
           <canvas id="jarvis-arc-reactor-canvas" width="340" height="340"></canvas>
           <div class="live-hud-state-container">
             <span class="live-hud-pulse-ring" id="live-hud-pulse-ring"></span>
@@ -2356,113 +2356,8 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       5. Voice Assistant Mode Modal (Section 4)
-       ========================================================================= -->
-  <div class="om-modal-overlay" id="voice-assistant-modal">
-    <div class="om-modal-content" style="max-width: 580px; width: 92%; text-align: center; padding: 28px 24px;">
-      <div style="display: flex; justify-content: flex-end; margin-top: -12px; margin-right: -10px;">
-        <button class="modal-close-btn" onclick="document.getElementById('voice-assistant-modal').classList.remove('active'); if(window.omVoice) window.omVoice.stopRecording();">✕</button>
-      </div>
+  <!-- Redundant Voice Assistant Modal removed: Nexus Live is the sole unified voice interface -->
 
-      <div class="voice-modal-orb-wrap" style="position: relative; width: 120px; height: 120px; margin: 10px auto 20px auto;">
-        <div id="voice-modal-reactor-orb" style="width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #06b6d4 0%, #3b82f6 50%, #030712 100%); box-shadow: 0 0 35px rgba(6, 182, 212, 0.6); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; cursor: pointer; transition: transform 0.2s ease;" onclick="if(window.omVoice) window.omVoice.toggleRecording();" title="Click to Speak / Mute">
-          🎙️
-        </div>
-        <div style="position: absolute; inset: -8px; border: 2px dashed rgba(6, 182, 212, 0.4); border-radius: 50%; animation: spinSlow 12s linear infinite; pointer-events: none;"></div>
-      </div>
-
-      <h3 id="voice-modal-title" style="margin: 0; font-size: 1.3rem; color: #fff;">OM Voice Assistant Active</h3>
-      <p id="voice-modal-state-text" style="font-size: 0.82rem; color: var(--om-cyan); margin: 6px 0 16px 0;">Listening for natural human commands...</p>
-
-      <div id="voice-modal-live-ticker" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; min-height: 60px; font-size: 0.88rem; color: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-        Say: "OM, create a Python calculator" or "Ek Flutter app bana do"
-      </div>
-
-      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 14px;">
-        <button class="om-btn om-btn-primary" onclick="if(window.omVoice) window.omVoice.startRecording();">🎙️ Start Listening</button>
-        <button class="om-btn om-btn-secondary" onclick="if(window.omVoice) window.omVoice.stopRecording();">⏹ Stop Listening</button>
-        <button class="om-btn om-btn-secondary" onclick="document.getElementById('voice-custom-profile-builder').style.display = document.getElementById('voice-custom-profile-builder').style.display === 'none' ? 'block' : 'none';">➕ Custom Voice Studio</button>
-      </div>
-
-      <!-- Selectable Voice Profiles Matrix (Spec 34 & 35) -->
-      <div style="text-align: left; margin-bottom: 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px;">
-        <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-          <span>🎙️ Selectable AI Voice Profiles</span>
-          <span style="font-size: 0.7rem; color: var(--om-cyan);">Natural Speech-to-Speech Flow</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;" id="voice-profiles-selection-grid">
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-jarvis')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Tactical Resonant Baritone Voice">
-            <span>⚡ <strong>Jarvis</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-orvis')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Intelligent Companion Voice">
-            <span>🌐 <strong>Orvis</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-friday')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;" title="Female Tactical Voice">
-            <span>🛡️ <strong>F.R.I.D.A.Y.</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-nova')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
-            <span>✨ <strong>Nova</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-atlas')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
-            <span>🏛️ <strong>Atlas</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-echo')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
-            <span>🌊 <strong>Echo</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-onyx')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
-            <span>💎 <strong>Onyx</strong></span>
-          </button>
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omVoice && window.omVoice.setActiveVoiceProfile('voice-aarya')" style="justify-content: flex-start; text-align: left; padding: 6px 10px; border-radius: 8px;">
-            <span>🇮🇳 <strong>Aarya (Hindi)</strong></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Custom AI Voice Profile Builder (Spec 34) -->
-      <div id="voice-custom-profile-builder" style="display: none; text-align: left; background: rgba(6, 182, 212, 0.06); border: 1.5px solid rgba(6, 182, 212, 0.35); border-radius: 10px; padding: 12px; margin-bottom: 14px;">
-        <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 8px;">➕ Create Bespoke AI Voice Profile</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-          <div>
-            <label style="font-size: 0.72rem; color: #94a3b8;">Voice Profile Name</label>
-            <input type="text" id="custom-voice-name" class="om-input" placeholder="e.g. Athena Tactical" style="font-size: 0.8rem; padding: 5px 8px;">
-          </div>
-          <div>
-            <label style="font-size: 0.72rem; color: #94a3b8;">Provider (Engine)</label>
-            <input type="text" id="custom-voice-provider" class="om-input" placeholder="e.g. Stark Neural / ElevenLabs" style="font-size: 0.8rem; padding: 5px 8px;">
-          </div>
-          <div>
-            <label style="font-size: 0.72rem; color: #94a3b8;">Provider ID</label>
-            <input type="text" id="custom-voice-id" class="om-input" placeholder="e.g. custom-athena-01" style="font-size: 0.8rem; padding: 5px 8px;">
-          </div>
-          <div>
-            <label style="font-size: 0.72rem; color: #94a3b8;">Language Locale</label>
-            <select id="custom-voice-lang" class="om-select" style="font-size: 0.8rem; padding: 5px 8px;">
-              <option value="en-US">English (US)</option>
-              <option value="hi-IN">हिन्दी (Hindi)</option>
-              <option value="en-GB">English (UK)</option>
-              <option value="es-ES">Español</option>
-              <option value="fr-FR">Français</option>
-              <option value="de-DE">Deutsch</option>
-              <option value="ja-JP">日本語</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-bottom: 8px;">
-          <label style="font-size: 0.72rem; color: #94a3b8;">Voice Style & Timbre</label>
-          <input type="text" id="custom-voice-style" class="om-input" placeholder="e.g. Crisp Analytical Baritone" style="font-size: 0.8rem; padding: 5px 8px;">
-        </div>
-        <div style="display: flex; justify-content: flex-end; gap: 8px;">
-          <button class="om-btn om-btn-xs om-btn-ghost" onclick="document.getElementById('voice-custom-profile-builder').style.display='none'">Cancel</button>
-          <button class="om-btn om-btn-xs om-btn-primary" onclick="window.omApp && window.omApp.createCustomVoiceProfile()">Save Voice to Library</button>
-        </div>
-      </div>
-
-      <div style="font-size: 0.72rem; color: #94a3b8;">
-        Voice commands are automatically executed through the OM Task & Goal Engine.
-      </div>
-    </div>
-  </div>
 
   <!-- =========================================================================
        6. Developer Tools, Diagnostics, API Keys & Deployments Modal (Section 11, 12, 13, 14)
@@ -3115,28 +3010,28 @@
   <div id="om-toast-container"></div>
 
   <!-- Scripts (Strict Cache Busting Enabled) -->
-  <script src="assets/js/config.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/i18n.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/chatStore.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/analytics.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/files.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/voice.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/projects.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/planner.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/dashboard.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/assistant.js?v=3.3.1.20261002.144301"></script>
-  <script src="assets/js/app.js?v=3.3.1.20261002.144301"></script>
+  <script src="assets/js/config.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/i18n.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261002.152451"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261002.152451"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.144301')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.152451')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
             registration.update();

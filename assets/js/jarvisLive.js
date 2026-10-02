@@ -367,35 +367,30 @@ class OMJarvisLiveEngine {
     }
 
     this.isActive = true;
+
+    // Do NOT display oversized blocking modal; keep chat view and chat history panel visible!
     const modal = document.getElementById('nexus-live-modal') || document.getElementById('gemini-live-modal');
     if (modal) {
-      modal.classList.add('active');
+      modal.classList.remove('active');
     }
 
-    // Ensure PiP is hidden when full modal opens
+    // Ensure PiP is hidden
     const pip = document.getElementById('floating-live-pip-widget');
     if (pip) {
       pip.classList.remove('active');
     }
 
     this.updatePersonaBadge();
-    this.initVisualizer();
 
-    const overlay = document.getElementById('live-chat-history-overlay');
-    if (overlay) {
-      overlay.style.display = 'block';
-      this.updateChatHistoryOverlay();
-    }
-
-    // Display the pulsing voice visualizer on the left as a small orb
+    // Display the pulsing voice visualizer on the left as a small, simple orb
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      miniOrb.classList.add('active', 'listening');
+      miniOrb.className = 'orb-widget-mini listening-animation-ring active listening';
       miniOrb.style.display = 'flex';
       miniOrb.title = "Nexus Live Active • Click to Cut";
     }
 
-    // Keep visible 'Cut' option active across header and prompt dock
+    // Keep visible 'Cut' option active across header
     const headerLiveBtn = document.getElementById('btn-header-nexus-live');
     if (headerLiveBtn) {
       headerLiveBtn.style.background = '#ef4444';
@@ -404,7 +399,7 @@ class OMJarvisLiveEngine {
       headerLiveBtn.title = "Cut active Nexus Live voice session";
     }
 
-
+    this.startListening();
 
     const isHindi = this.currentLanguage.startsWith('hi');
     const p = this.personas[this.persona] || this.personas.friday;
@@ -415,6 +410,10 @@ class OMJarvisLiveEngine {
         this.rearmMic();
       }
     });
+
+    if (window.omApp && typeof window.omApp.showToast === 'function') {
+      window.omApp.showToast(`Nexus Live active (${p.name}) • Speak naturally`, 'info');
+    }
   }
 
   minimizeToPiP() {
@@ -581,6 +580,8 @@ class OMJarvisLiveEngine {
         window.omApp.renderChatMessages(true);
       }
     }
+
+    this.updateHUDStatus('PROCESSING');
 
     // Process through real cognitive AI engine
     let assistantResponse = null;
@@ -889,17 +890,20 @@ class OMJarvisLiveEngine {
       else pipState.style.color = '#94a3b8';
     }
 
-    // Centered listening animation ring sync
+    // Small pulsing voice visualizer orb on the left
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
-      if (this.isActive || status === 'SPEAKING' || status === 'LISTENING') {
+      if (this.isActive) {
         miniOrb.classList.add('active');
         miniOrb.style.display = 'flex';
+        miniOrb.classList.toggle('listening', status === 'LISTENING');
+        miniOrb.classList.toggle('speaking', status === 'SPEAKING');
+        miniOrb.classList.toggle('processing', status === 'PROCESSING');
+        miniOrb.classList.toggle('interrupted', status === 'INTERRUPTED');
       } else {
-        miniOrb.classList.remove('active');
+        miniOrb.classList.remove('active', 'listening', 'speaking', 'processing', 'interrupted');
         miniOrb.style.display = 'none';
       }
-      miniOrb.classList.toggle('speaking', status === 'SPEAKING');
     }
   }
 
