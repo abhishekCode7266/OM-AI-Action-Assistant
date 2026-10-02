@@ -2136,6 +2136,10 @@ h1, h2, h3, h4, h5 {
   padding: 4px 10px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: 100%;
 }
 
 .live-dot-pulse {
@@ -2236,7 +2240,8 @@ h1, h2, h3, h4, h5 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
   width: 100%;
 }
 
@@ -2474,6 +2479,10 @@ h1, h2, h3, h4, h5 {
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  flex-shrink: 0;
 }
 
 .persona-pill-btn:hover {

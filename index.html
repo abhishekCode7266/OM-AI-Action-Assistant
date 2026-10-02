@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.112855">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.124042">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -193,9 +193,9 @@
             <span class="nav-item-icon">📋</span>
             <span class="nav-item-title">Tasks</span>
           </div>
-          <div class="sidebar-nav-item" onclick="window.omApp.openVoiceModal()" title="Voice Assistant & Live Voice HUD">
-            <span class="nav-item-icon">⚡</span>
-            <span class="nav-item-title">Voice</span>
+          <div class="sidebar-nav-item" onclick="if(window.omJarvisLive) window.omJarvisLive.startSession();" title="Nexus Live – Unified Conversational AI & Real-time Voice HUD">
+            <span class="nav-item-icon">🎙️</span>
+            <span class="nav-item-title">Nexus Live</span>
           </div>
           <div class="sidebar-nav-item" onclick="window.omApp.openGemsModal()" title="Gems – Specialized AI Personas & Custom Agents">
             <span class="nav-item-icon">💎</span>
@@ -276,12 +276,17 @@
           </div>
         </div>
 
-        <!-- Recents Section Header with Delete History Option -->
-        <div class="sidebar-section-header" style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <!-- Recents Section Header with Export & Delete History Option -->
+        <div class="sidebar-section-header" style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
           <span class="section-title">Recents</span>
-          <button class="btn-clear-history-all" id="btn-clear-all-history" onclick="window.omApp.handleClearAllHistory()" title="Clear all chat history from local storage">
-            🗑️ <span>Clear All</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="om-btn om-btn-xs om-btn-secondary" id="btn-sidebar-export-chat" onclick="if(window.omApp) window.omApp.exportChatHistory()" title="Export conversation as Markdown" style="padding: 2px 8px; font-size: 0.72rem; border-radius: 6px;">
+              📥 <span>Export</span>
+            </button>
+            <button class="btn-clear-history-all" id="btn-clear-all-history" onclick="window.omApp.handleClearAllHistory()" title="Clear all chat history from local storage">
+              🗑️ <span>Clear All</span>
+            </button>
+          </div>
         </div>
 
         <!-- Chronologically Grouped Chat History -->
@@ -501,6 +506,13 @@
                 <div>
                   <div class="attach-item-title">Attach Document</div>
                   <div class="attach-item-desc">PDF, CSV, TXT, JSON, Code</div>
+                </div>
+              </div>
+              <div class="attach-popup-item" onclick="if(window.omApp) { window.omApp.closeInputAttachMenu(); window.omApp.exportChatHistory(); }">
+                <span class="attach-item-icon">📥</span>
+                <div>
+                  <div class="attach-item-title">Export Chat (Markdown)</div>
+                  <div class="attach-item-desc">Download conversation as .md document</div>
                 </div>
               </div>
               <div class="attach-popup-item" onclick="if(window.omApp) window.omApp.closeInputAttachMenu(); if(window.omMediaVision) window.omMediaVision.toggleCameraShare();">
@@ -1809,7 +1821,7 @@
         </div>
 
         <!-- Continuous Context Chat History Overlay (Section 2) -->
-        <div class="live-chat-history-overlay" id="live-chat-history-overlay" style="display: none; background: #070d19; border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: left; overflow: hidden;">
+        <div class="live-chat-history-overlay active" id="live-chat-history-overlay" style="display: block; background: #070d19; border: 1.5px solid rgba(6, 182, 212, 0.4); border-radius: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; text-align: left; overflow: hidden;">
           <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
             <div style="display: flex; align-items: center; gap: 8px;">
               <span>💬</span>
@@ -3045,27 +3057,27 @@
   <div id="om-toast-container"></div>
 
   <!-- Scripts (Strict Cache Busting Enabled) -->
-  <script src="assets/js/config.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/chatStore.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/analytics.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/files.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/voice.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/projects.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/planner.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/dashboard.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/assistant.js?v=3.3.1.20261002.112855"></script>
-  <script src="assets/js/app.js?v=3.3.1.20261002.112855"></script>
+  <script src="assets/js/config.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261002.124042"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261002.124042"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.112855')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.124042')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
             registration.update();

@@ -300,6 +300,10 @@ class OMApp {
     if (exportBtn) {
       exportBtn.addEventListener('click', () => this.exportCurrentChat());
     }
+    const sidebarExportBtn = document.getElementById('btn-sidebar-export-chat');
+    if (sidebarExportBtn) {
+      sidebarExportBtn.addEventListener('click', () => this.exportCurrentChat());
+    }
 
     // Clear Chat Messages Button
     // Clear Chat Messages Button
@@ -1025,6 +1029,10 @@ class OMApp {
     a.click();
     URL.revokeObjectURL(url);
     this.showToast('Chat exported as Markdown file', 'success');
+  }
+
+  exportChatHistory() {
+    this.exportCurrentChat();
   }
 
   copyText(text) {
@@ -3114,6 +3122,10 @@ Key Ideas & Notes:
   // =========================================================================
   openVoiceModal() {
     this.closeProfilePopover();
+    if (window.omJarvisLive) {
+      window.omJarvisLive.startSession();
+      return;
+    }
     const modal = document.getElementById('voice-assistant-modal');
     if (modal) {
       modal.classList.add('active');

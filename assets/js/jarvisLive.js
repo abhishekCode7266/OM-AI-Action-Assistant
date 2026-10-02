@@ -376,6 +376,12 @@ class OMJarvisLiveEngine {
     this.updatePersonaBadge();
     this.initVisualizer();
 
+    const overlay = document.getElementById('live-chat-history-overlay');
+    if (overlay) {
+      overlay.style.display = 'block';
+      this.updateChatHistoryOverlay();
+    }
+
     // Display the pulsing voice visualizer on the left as a small orb
     const miniOrb = document.getElementById('orb-widget-mini');
     if (miniOrb) {
@@ -565,46 +571,86 @@ class OMJarvisLiveEngine {
     }
 
     const isHindi = this.currentLanguage.startsWith('hi');
-    const lower = userSpeech.toLowerCase();
 
-    // Check if this is a coding / Python execution command
-    const isCodeExecution = (
-      lower.includes('python') || lower.includes('code') || lower.includes('project') || 
-      lower.includes('hello code') || lower.includes('script') || lower.includes('program') || 
-      lower.includes('programme') || lower.includes('execute') || lower.includes('chalao') || 
-      lower.includes('banao') || lower.includes('likho') || lower.includes('calculator') ||
-      (lower.includes('run') && !lower.includes('running'))
-    );
-
-    // Section 4: Auto-minimize big voice orb to PiP as soon as a task starts
-    // so the screen work is clear and unobstructed while voice conversation continues
-    const isTaskAction = isCodeExecution ||
-      lower.includes('terminal') || lower.includes('कमांड') || lower.includes('cli') ||
-      lower.includes('thought map') || lower.includes('neural canvas') || lower.includes('माइंड मैप') ||
-      lower.includes('screen share') || lower.includes('स्क्रीन शेयर') ||
-      lower.includes('camera') || lower.includes('कैमरा') ||
-      lower.includes('3d') || lower.includes('cad') || lower.includes('model') || lower.includes('dismantle') || lower.includes('assemble') ||
-      lower.includes('notebook') || lower.includes('नोटबुक') || lower.includes('pdf');
-
-    // Section 4: Pure Natural Conversation Flow (no extra auto sections or unsolicited modals)
-    const replyText = this.generatePersonaResponse(userSpeech, isHindi, isCodeExecution);
-
-    // Record message in active chat store
+    // Goal 2: Connect Nexus Live to the real AI response engine (same answer path as main chat)
+    // Goal 3: Fix mic behavior - do not trigger unintended modes or unsolicited popups
     const chatStore = window.omChatStore;
-    if (chatStore) {
-      let active = chatStore.getActiveChat();
-      if (!active) active = chatStore.createChat("Live Voice Conversation");
-      chatStore.addMessage(active.id, { sender: 'user', text: userSpeech });
-      chatStore.addMessage(active.id, { sender: 'assistant', text: replyText });
+    let activeChat = chatStore ? chatStore.getActiveChat() : null;
+    if (!activeChat && chatStore) {
+      activeChat = chatStore.createChat("Nexus Live Conversation");
+    }
+
+    // Immediately record User message in active chat and render in chat view
+    if (chatStore && activeChat) {
+      chatStore.addMessage(activeChat.id, { sender: 'user', text: userSpeech });
       if (window.omApp) {
         window.omApp.renderSidebar();
-        window.omApp.renderChatMessages();
+        window.omApp.renderChatMessages(true);
+      }
+    }
+
+    // Process through real cognitive AI engine
+    let assistantResponse = null;
+    const currentMode = activeChat ? (activeChat.mode || 'general') : 'general';
+
+    if (window.omAssistant && typeof window.omAssistant.processUserMessage === 'function') {
+      try {
+        assistantResponse = await window.omAssistant.processUserMessage(userSpeech, []);
+      } catch (err) {
+        console.warn("Nexus Live real AI engine call fallback:", err);
+      }
+    }
+
+    if (!assistantResponse || !assistantResponse.text) {
+      assistantResponse = (window.omAssistant && typeof window.omAssistant.generateAutonomousFallback === 'function')
+        ? window.omAssistant.generateAutonomousFallback(userSpeech, [], currentMode, [])
+        : { text: this.generatePersonaResponse(userSpeech, isHindi, false) };
+    }
+
+    const fullResponseText = (assistantResponse && assistantResponse.text)
+      ? assistantResponse.text
+      : (isHindi ? "मैंने आपके निर्देश को प्रोसेस कर दिया है।" : "I have processed your request.");
+
+    // Record Assistant response in active chat store and update chat messages view
+    if (chatStore && activeChat) {
+      chatStore.addMessage(activeChat.id, {
+        sender: 'assistant',
+        text: fullResponseText,
+        reasoning: assistantResponse.reasoning || '',
+        actions: assistantResponse.actions || [],
+        citations: assistantResponse.citations || ['Nexus Live Neural Engine']
+      });
+      if (window.omApp) {
+        window.omApp.renderSidebar();
+        window.omApp.renderChatMessages(true);
       }
       this.updateChatHistoryOverlay();
     }
 
+    // Extract clean spoken text for TTS (strip code blocks/tables so speech is clean & natural)
+    let cleanSpeech = fullResponseText
+      .replace(/```[\s\S]*?```/g, isHindi ? 'कोड और परिणाम आपकी चैट स्क्रीन पर दिखाए गए हैं।' : 'The code has been generated and displayed in your chat view.')
+      .replace(/<[^>]*>/g, '')
+      .replace(/[#*_`~>\[\]]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (cleanSpeech.length > 320) {
+      const sentences = cleanSpeech.match(/[^.!?]+[.!?]+/g);
+      if (sentences && sentences.length > 0) {
+        cleanSpeech = sentences.slice(0, 3).join(' ');
+      } else {
+        cleanSpeech = cleanSpeech.slice(0, 320) + '...';
+      }
+    }
+
+    const liveJarvisTranscriptEl = document.getElementById('live-jarvis-transcript');
+    if (liveJarvisTranscriptEl) {
+      liveJarvisTranscriptEl.textContent = cleanSpeech || fullResponseText.slice(0, 160);
+    }
+
     // Speak response out loud
-    this.speakResponse(replyText, () => {
+    this.speakResponse(cleanSpeech || fullResponseText, () => {
       if (this.isActive && this.continuousLoop) {
         this.rearmMic();
       }

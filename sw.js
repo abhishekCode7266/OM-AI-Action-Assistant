@@ -4,7 +4,7 @@
  * Tagline: "Think. Plan. Act. Achieve."
  */
 
-const CACHE_NAME = 'om-assistant-v3.3.1-build.20261002.112855';
+const CACHE_NAME = 'om-assistant-v3.3.1-build.20261002.124042';
 
 const STATIC_ASSETS = [
   './',
