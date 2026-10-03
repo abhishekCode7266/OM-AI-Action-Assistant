@@ -128,8 +128,10 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. Check for OpenAI Key (Server environment variable)
-  const openaiKey = process.env.OPENAI_API_KEY;
+  // 2. Check for OpenAI Key (Server environment variable or client-supplied)
+  const openaiKey = (body.apiKey && body.apiKey.startsWith('sk-'))
+    ? body.apiKey
+    : process.env.OPENAI_API_KEY;
   if (openaiKey) {
     try {
       const messages = [{ role: 'system', content: fullSystemPrompt }];

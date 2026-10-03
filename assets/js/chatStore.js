@@ -959,6 +959,10 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
       }
       this.saveChats();
 
+      // Permanent local cleanup of all historical buffers
+      localStorage.removeItem(`om_chat_${chatId}`);
+      localStorage.removeItem("om_chat_history");
+
       // Delete from backend server as well
       try {
         const deleteUrl = (window.OM_CONFIG && typeof window.OM_CONFIG.getApiUrl === 'function')
@@ -974,6 +978,20 @@ Agar aapka live link open nahi ho raha, toh ye 4 points check karein:
 
   clearAllChats() {
     this.chats = [];
+    localStorage.removeItem("om_chat_history");
+    localStorage.removeItem(this.CHATS_KEY);
+    const fresh = this.createChat("New Chat");
+    this.activeChatId = fresh.id;
+    this.saveChats();
+    return fresh;
+  }
+
+  permanentWipeAllHistory() {
+    this.chats = [];
+    localStorage.removeItem(this.CHATS_KEY);
+    localStorage.removeItem("om_chat_history");
+    localStorage.removeItem(this.ACTIVE_CHAT_KEY);
+    this.clearAllMemory();
     const fresh = this.createChat("New Chat");
     this.activeChatId = fresh.id;
     this.saveChats();

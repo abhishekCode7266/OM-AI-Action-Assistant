@@ -651,14 +651,14 @@ class OMVoiceEngine {
       },
       {
         id: 'voice-nova',
-        name: 'Nova Pro',
-        provider: 'Google Neural Core',
-        providerId: 'google-nova-13',
+        name: 'Nova Spark',
+        provider: 'Google Gemini Neural Core',
+        providerId: 'google-gemini-nova-13',
         language: 'en-US',
         style: 'Fast Conversational',
         gender: 'female',
-        pitch: 1.25,
-        rate: 1.05,
+        pitch: 1.10,
+        rate: 1.02,
         enabled: true
       },
       {

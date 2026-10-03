@@ -37,6 +37,8 @@ class OMJarvisLiveEngine {
     this.developerName = 'User';
     this.userTitle = 'User';
     this.isModalOpen = false;
+    this.isMicMuted = false;
+    this.isSpeakerMuted = false;
 
     // Roster of 9 Personas (5 Female, 4 Male)
     this.personas = {
@@ -68,14 +70,14 @@ class OMJarvisLiveEngine {
           : `Hello! How can I help you today?`
       },
       nova: {
-        name: 'Nova Pro',
+        name: 'Nova Spark',
         gender: 'female',
         pitch: 1.07,
         rate: 1.02,
         primaryColor: '#38bdf8',
         secondaryColor: '#818cf8',
-        title: 'NOVA PRO AI',
-        sub: 'FEMALE FAST REASONING',
+        title: 'NOVA SPARK AI',
+        sub: 'FEMALE FAST REASONING (GEMINI NEURAL)',
         greeting: (isHindi) => isHindi
           ? `नमस्ते! मैं आपकी क्या सहायता करूँ?`
           : `Hello! How can I help you today?`
@@ -557,7 +559,7 @@ class OMJarvisLiveEngine {
   }
 
   rearmMic() {
-    if (!this.isActive) return;
+    if (!this.isActive || this.isMicMuted) return;
     if (this.recognition && !this.isListening) {
       try {
         this.recognition.lang = this.currentLanguage;
@@ -566,6 +568,49 @@ class OMJarvisLiveEngine {
         // Recognition may already be listening
       }
     }
+  }
+
+  toggleMicMute() {
+    this.isMicMuted = !this.isMicMuted;
+    if (this.isMicMuted) {
+      try { if (this.recognition) this.recognition.abort(); } catch (e) {}
+      this.isListening = false;
+      this.updateHUDStatus('MIC MUTED');
+    } else {
+      this.updateHUDStatus('STANDBY');
+      this.rearmMic();
+    }
+    this.updateControlsUI();
+    if (window.omApp) {
+      window.omApp.showToast(this.isMicMuted ? '🎤 Nexus Mic Muted' : '🎤 Nexus Mic Active', 'info');
+    }
+  }
+
+  toggleSpeakerMute() {
+    this.isSpeakerMuted = !this.isSpeakerMuted;
+    if (this.isSpeakerMuted && this.isSpeaking) {
+      this.stopSpeaking();
+    }
+    this.updateControlsUI();
+    if (window.omApp) {
+      window.omApp.showToast(this.isSpeakerMuted ? '🔇 Voice Speaker Muted' : '🔊 Voice Speaker Active', 'info');
+    }
+  }
+
+  updateControlsUI() {
+    const micBtns = document.querySelectorAll('.nexus-mic-toggle-btn');
+    micBtns.forEach(b => {
+      b.innerHTML = this.isMicMuted ? '🔇 Mic Muted' : '🎙️ Mic Active';
+      b.classList.toggle('om-btn-danger', this.isMicMuted);
+      b.classList.toggle('om-btn-secondary', !this.isMicMuted);
+    });
+
+    const spkBtns = document.querySelectorAll('.nexus-speaker-toggle-btn');
+    spkBtns.forEach(b => {
+      b.innerHTML = this.isSpeakerMuted ? '🔇 Speaker Muted' : '🔊 Speaker Active';
+      b.classList.toggle('om-btn-danger', this.isSpeakerMuted);
+      b.classList.toggle('om-btn-secondary', !this.isSpeakerMuted);
+    });
   }
 
   async handleLiveUserSpeech(userSpeech) {
@@ -789,6 +834,13 @@ class OMJarvisLiveEngine {
     const jarvisTranscriptEl = document.getElementById('live-jarvis-transcript');
     if (jarvisTranscriptEl) {
       jarvisTranscriptEl.textContent = cleanText;
+    }
+
+    if (this.isSpeakerMuted) {
+      this.isSpeaking = false;
+      this.updateHUDStatus('STANDBY');
+      if (onComplete) onComplete();
+      return;
     }
 
     this.currentUtterance = new SpeechSynthesisUtterance(cleanText);

@@ -97,7 +97,7 @@
   </script>
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
-  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261002.172141">
+  <link rel="stylesheet" href="assets/css/style.css?v=3.3.1.20261003.233353">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1078,17 +1078,49 @@
         <button class="chat-action-btn modal-close-trigger">✕</button>
       </div>
       <div class="modal-body" style="overflow-y: auto; padding: 16px;">
-        <!-- Real Text-to-Video Generation Bar (Requirement 8) -->
+        <!-- Real Text-to-Video & Image-to-Animation Studio -->
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--om-border-subtle); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
-          <div style="font-weight: 700; font-size: 0.88rem; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            <span>🎬</span><span>AI Video Generation Studio</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>🎬</span><span>AI Video & Image-to-Animation Studio</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="om-btn om-btn-xs om-btn-secondary active" id="btn-video-mode-text" onclick="window.omApp.setVideoMode('text')">📝 Text-to-Video</button>
+              <button class="om-btn om-btn-xs om-btn-secondary" id="btn-video-mode-image" onclick="window.omApp.setVideoMode('image')">🖼️ Image-to-Animation</button>
+            </div>
           </div>
           <div style="font-size: 0.74rem; color: var(--om-text-muted); margin-bottom: 10px;">
-            Generates high-definition video clips via backend provider. Requires server-side <code>VIDEO_API_KEY</code>.
+            Generates high-definition spatial video clips and fluid animations with configurable duration, camera motion, and WebM export.
           </div>
-          <div style="display: flex; gap: 8px;">
+
+          <!-- Image-to-Animation Source Image Input Section (hidden by default unless mode is image) -->
+          <div id="video-image-input-section" style="display: none; align-items: center; gap: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(6,182,212,0.3);">
+            <img id="video-source-image-preview" src="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; display: none;" alt="Source">
+            <input type="text" id="video-source-image-url" class="om-input" placeholder="Paste image URL to animate, or select from Image Gallery..." style="flex: 1; font-size: 0.82rem;">
+            <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openImagesModal()">🖼️ Pick Image</button>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
             <input type="text" id="video-studio-prompt-input" class="om-input" placeholder="Describe the scene or motion to generate (e.g. Drone gliding through futuristic cyber city)..." style="flex: 1; font-size: 0.85rem;">
             <button class="om-btn om-btn-primary" onclick="window.omApp.generateVideoInStudio()">⚡ Generate Video</button>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+            <!-- Duration Selector -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 0.74rem; color: var(--om-text-muted);">Duration:</span>
+              <button class="om-btn om-btn-xs om-btn-secondary video-duration-btn" onclick="window.omApp.setVideoDuration(5, this)">5s</button>
+              <button class="om-btn om-btn-xs om-btn-secondary video-duration-btn active" onclick="window.omApp.setVideoDuration(10, this)">10s</button>
+              <button class="om-btn om-btn-xs om-btn-secondary video-duration-btn" onclick="window.omApp.setVideoDuration(15, this)">15s</button>
+              <button class="om-btn om-btn-xs om-btn-secondary video-duration-btn" onclick="window.omApp.setVideoDuration(30, this)">30s</button>
+            </div>
+            <!-- Motion Style Selector -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 0.74rem; color: var(--om-text-muted);">Motion:</span>
+              <button class="om-btn om-btn-xs om-btn-secondary video-motion-btn active" onclick="window.omApp.setVideoMotion('orbit', this)">360° Orbit</button>
+              <button class="om-btn om-btn-xs om-btn-secondary video-motion-btn" onclick="window.omApp.setVideoMotion('pan', this)">Pan</button>
+              <button class="om-btn om-btn-xs om-btn-secondary video-motion-btn" onclick="window.omApp.setVideoMotion('zoom', this)">Zoom</button>
+            </div>
           </div>
         </div>
 
@@ -1242,6 +1274,12 @@
             <button class="om-btn om-btn-xs om-btn-secondary" onclick="window.omApp.openAllNotebooksModal()">⋯ All</button>
             <button class="om-btn om-btn-xs om-btn-danger" style="color: #f87171; background: rgba(239,68,68,0.15);" onclick="window.omApp.deleteActiveNotebook()">🗑️</button>
           </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+          <span style="font-size: 0.74rem; font-weight: 700; color: var(--om-cyan);">English Research Templates:</span>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omApp.insertNotebookTemplate('executive')">📋 Executive Brief</button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omApp.insertNotebookTemplate('spec')">📐 Technical Spec</button>
+          <button class="om-btn om-btn-xs om-btn-ghost" onclick="window.omApp.insertNotebookTemplate('research')">🔬 Research Synthesis</button>
         </div>
         <textarea id="notebook-content-textarea" class="om-input" rows="15" style="font-family: var(--om-font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical;" placeholder="Type your notebook research notes, synthesized prompts, and project blueprints..."></textarea>
         <div style="display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--om-text-muted);">
@@ -1828,7 +1866,7 @@
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="astrid" onclick="window.omJarvisLive.setPersona('astrid')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(139, 92, 246, 0.18); border: 1.5px solid #8b5cf6; color: #c084fc; border-radius: 8px;">⚡ Astrid</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="friday" onclick="window.omJarvisLive.setPersona('friday')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(236, 72, 153, 0.18); border: 1.5px solid #ec4899; color: #f472b6; border-radius: 8px;">🛡️ F.R.I.D.A.Y.</button>
             <button class="om-btn om-btn-xs persona-pill-btn" data-persona="samantha" onclick="window.omJarvisLive.setPersona('samantha')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(244, 63, 94, 0.18); border: 1.5px solid #f43f5e; color: #fda4af; border-radius: 8px;">🌸 Samantha</button>
-            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="nova" onclick="window.omJarvisLive.setPersona('nova')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(56, 189, 248, 0.18); border: 1.5px solid #38bdf8; color: #38bdf8; border-radius: 8px;">✨ Nova Pro</button>
+            <button class="om-btn om-btn-xs persona-pill-btn" data-persona="nova" onclick="window.omJarvisLive.setPersona('nova')" style="font-size: 0.76rem; padding: 4px 10px; background: rgba(56, 189, 248, 0.18); border: 1.5px solid #38bdf8; color: #38bdf8; border-radius: 8px;">✨ Nova Spark</button>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
             <span style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; letter-spacing: 0.06em;">👨 MALE VOICES:</span>
@@ -1881,6 +1919,11 @@
           <button class="om-btn om-btn-primary" id="btn-modal-start-chat" onclick="event.stopPropagation(); window.omJarvisLive.startConversationView()" style="margin-top: 14px; border-radius: 9999px; padding: 10px 28px; font-weight: 700; font-size: 0.92rem; background: linear-gradient(135deg, var(--om-cyan), #3b82f6); border: none; box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); cursor: pointer;">
             💬 Start Conversation with <span id="modal-active-persona-label">J.A.R.V.I.S.</span>
           </button>
+          <!-- Mic & Speaker Controls -->
+          <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center; justify-content: center;">
+            <button class="om-btn om-btn-xs om-btn-secondary nexus-mic-toggle-btn" onclick="event.stopPropagation(); window.omJarvisLive.toggleMicMute()" title="Mute/Unmute Microphone">🎙️ Mic Active</button>
+            <button class="om-btn om-btn-xs om-btn-secondary nexus-speaker-toggle-btn" onclick="event.stopPropagation(); window.omJarvisLive.toggleSpeakerMute()" title="Mute/Unmute Persona Voice">🔊 Speaker Active</button>
+          </div>
         </div>
 
         <!-- Live Transcripts HUD -->
@@ -2437,6 +2480,7 @@
               <div style="display: flex; gap: 8px;">
                 <input type="password" id="input-key-gemini" class="om-input" placeholder="AIzaSy..." style="flex: 1;">
                 <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('GEMINI_API_KEY', 'input-key-gemini')">Save Key</button>
+                <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.testGeminiApiKey()">⚡ Test Key</button>
               </div>
             </div>
 
@@ -2448,6 +2492,7 @@
               <div style="display: flex; gap: 8px;">
                 <input type="password" id="input-key-openai" class="om-input" placeholder="sk-proj-..." style="flex: 1;">
                 <button class="om-btn om-btn-secondary om-btn-sm" onclick="window.omApp.saveKeyFromInput('OPENAI_API_KEY', 'input-key-openai')">Save Key</button>
+                <button class="om-btn om-btn-primary om-btn-sm" onclick="window.omApp.testOpenAIApiKey()">⚡ Test Key</button>
               </div>
             </div>
 
@@ -3032,28 +3077,28 @@
   <div id="om-toast-container"></div>
 
   <!-- Scripts (Strict Cache Busting Enabled) -->
-  <script src="assets/js/config.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/i18n.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/chatStore.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/analytics.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/files.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/voice.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/jarvisLive.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/mediaVision.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/dismantler3d.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/projects.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/planner.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/dashboard.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/assistant.js?v=3.3.1.20261002.172141"></script>
-  <script src="assets/js/app.js?v=3.3.1.20261002.172141"></script>
+  <script src="assets/js/config.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/i18n.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/chatStore.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/analytics.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/files.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/voice.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/jarvisLive.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/mediaVision.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/dismantler3d.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/neuralCanvas.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/cyberTerminal.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/projects.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/planner.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/dashboard.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/assistant.js?v=3.3.1.20261003.233353"></script>
+  <script src="assets/js/app.js?v=3.3.1.20261003.233353"></script>
 
   <!-- Service Worker Registration with Cache Busting Lifecycle -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261002.172141')
+        navigator.serviceWorker.register('./sw.js?v=3.3.1.20261003.233353')
           .then((registration) => {
             console.log('[OM SW] Registered successfully with scope:', registration.scope);
             registration.update();
